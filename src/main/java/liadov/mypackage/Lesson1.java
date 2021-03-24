@@ -1,4 +1,4 @@
-package liadov.my_package;
+package liadov.mypackage;
 
 /**
  * Lesson1 contains String practice methods

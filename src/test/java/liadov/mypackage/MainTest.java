@@ -1,4 +1,4 @@
-package liadov.my_package;
+package liadov.mypackage;
 
 public class MainTest {
 }
