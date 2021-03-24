@@ -3,7 +3,7 @@ package liadov.my_package;
 public class Main {
     public static void main(String[] args) {
         Lesson1 lesson = new Lesson1();
-        
+
         lesson.getStringLength("Practice with String");
         lesson.compareStringsIgnoreCase("testString1", "TESTString1");
         lesson.createStringByConstructor("Test String");
