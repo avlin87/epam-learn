@@ -1,5 +1,7 @@
 package liadov.mypackage.lesson2;
 
+import java.util.Arrays;
+
 public class Cache<T> {
     private Object[] cache;
     private int capacity;
@@ -110,4 +112,12 @@ public class Cache<T> {
         return capacity;
     }
 
+    @Override
+    public String toString() {
+        return "Cache{" +
+                "cache=" + Arrays.toString(cache) +
+                ", cacheCapacity=" + capacity +
+                ", countCacheElements=" + countElements +
+                '}';
+    }
 }

@@ -1,9 +1,11 @@
 package liadov.mypackage.lesson2;
 
+import java.util.Arrays;
+
 public class Storage<T> {
     private Object[] storage;
     private Cache<T> cache;
-    private int countElements = 0;
+    private int countStorageElements = 0;
     private int storageCapacity;
 
     /**
@@ -25,7 +27,7 @@ public class Storage<T> {
         storage = new Object[storageCapacity];
         for (int i = 0; i < elements.length; i++) {
             storage[i] = elements[i];
-            countElements++;
+            countStorageElements++;
         }
         cache = new Cache<>(storage.length);
     }
@@ -36,10 +38,10 @@ public class Storage<T> {
      * @param element This element will be added to storage
      */
     public void add(T element) {
-        if (countElements >= storage.length) {
+        if (countStorageElements >= storage.length) {
             increaseCapacityOfStorage();
         }
-        storage[countElements++] = element;
+        storage[countStorageElements++] = element;
     }
 
     /**
@@ -47,16 +49,16 @@ public class Storage<T> {
      */
     @SuppressWarnings("unchecked")
     public void delete() {
-        if (cache.isPresent((T) storage[countElements - 1])) {
-            cache.delete((T) storage[countElements - 1]);
+        if (cache.isPresent((T) storage[countStorageElements - 1])) {
+            cache.delete((T) storage[countStorageElements - 1]);
         }
-        storage[--countElements] = null;
+        storage[--countStorageElements] = null;
     }
 
     /**
      * Method remove everything from Cache
      */
-    private void clear() {
+    public void clear() {
         cache.clear();
     }
 
@@ -67,7 +69,7 @@ public class Storage<T> {
      */
     @SuppressWarnings("unchecked")
     public T getLast() {
-        return (T) storage[countElements - 1];
+        return (T) storage[countStorageElements - 1];
     }
 
     /**
@@ -99,5 +101,15 @@ public class Storage<T> {
             tempStorage[i] = storage[i];
         }
         storage = tempStorage;
+    }
+
+    @Override
+    public String toString() {
+        return "Storage{" +
+                "storage=" + Arrays.toString(storage) +
+                ", countStorageElements=" + countStorageElements +
+                ", storageCapacity=" + storageCapacity +
+                ", CACHE=" + cache +
+                '}';
     }
 }
