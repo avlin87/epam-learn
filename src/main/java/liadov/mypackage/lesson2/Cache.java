@@ -28,7 +28,6 @@ public class Cache<T> {
             moveLeftAllCacheElements();
             cache[capacity - 1] = element;
         }
-        printCache();
     }
 
     /**
@@ -43,7 +42,6 @@ public class Cache<T> {
             }
             cache[--countElements] = null;
         }
-        printCache();
     }
 
     /**
@@ -89,12 +87,20 @@ public class Cache<T> {
         countElements = 0;
     }
 
+    /**
+     * Method moves to the left all of Cache elements
+     */
     private void moveLeftAllCacheElements() {
         for (int i = 0; i < cache.length - 1; i++) {
             cache[i] = cache[i + 1];
         }
     }
 
+    /**
+     * Method finds id of element in Cache
+     * @param element this element id will be found
+     * @return int
+     */
     private int getElementID(T element) {
         for (int i = 0; i < cache.length; i++) {
             if (cache[i].equals(element)) {
@@ -104,11 +110,4 @@ public class Cache<T> {
         return capacity;
     }
 
-    /*to be removed*/
-    private void printCache() {
-        for (int i = 0; i < cache.length; i++) {
-            System.out.print(cache[i] + " ");
-        }
-        System.out.println();
-    }
 }

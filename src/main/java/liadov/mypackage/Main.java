@@ -1,6 +1,7 @@
 package liadov.mypackage;
 
 import liadov.mypackage.lesson2.Cache;
+import liadov.mypackage.lesson2.Storage;
 
 public class Main {
     public static void main(String[] args) {
@@ -11,23 +12,18 @@ public class Main {
         cache.add("two");
         cache.add("three");
         cache.add("fore");
-        cache.clear();
-        System.out.println("очищен");
-        cache.add("one");
-        cache.add("two");
-        cache.add("three");
-        cache.add("fore");
 
-        System.out.println(cache.get("two"));
-        System.out.println(cache.get("three"));
-        System.out.println(cache.get("one"));
+        Storage<Integer> storage = new Storage<>(new Integer[]{2,4});
 
-        System.out.println(cache.isPresent("three"));
-        cache.delete("three");
-        System.out.println(cache.isPresent("three"));
-        cache.delete("fore");
-        cache.delete("two");
-        cache.delete("two");
-
+        storage.add(2);
+        storage.add(17);
+        storage.add(99);
+        storage.delete();
+        storage.add(11);
+        storage.add(81);
+        storage.add(24);
+        System.out.println(storage.getLast());
+        System.out.println(storage.get(1));
+        System.out.println(storage.get(1));
     }
 }
