@@ -14,7 +14,7 @@ public class Storage<T> {
     public Storage() {
         storageCapacity = 10;
         storage = new Object[storageCapacity];
-        cache = new Cache<>(storage.length);
+        cache = new Cache<>(storageCapacity);
     }
 
     /**
@@ -29,7 +29,7 @@ public class Storage<T> {
             storage[i] = elements[i];
             countStorageElements++;
         }
-        cache = new Cache<>(storage.length);
+        cache = new Cache<>(10);
     }
 
     /**
@@ -56,9 +56,13 @@ public class Storage<T> {
     }
 
     /**
-     * Method remove everything from Cache
+     * Method remove everything from Storage and Cache
      */
     public void clear() {
+        for (int i = 0; i < storage.length; i++) {
+            storage[i] = null;
+        }
+        countStorageElements = 0;
         cache.clear();
     }
 
