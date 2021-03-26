@@ -27,7 +27,7 @@ public class Cache<T> {
             cache[countElements++] = element;
         } else {
             cache[0] = null;
-            moveLeftAllCacheElements();
+            moveLeftCacheElements();
             cache[capacity - 1] = element;
         }
     }
@@ -39,9 +39,7 @@ public class Cache<T> {
      */
     public void delete(T element) {
         if (isPresent(element)) {
-            for (int i = getElementID(element); i < cache.length - 1; i++) {
-                cache[i] = cache[i + 1];
-            }
+            moveLeftCacheElements(getElementID(element));
             cache[--countElements] = null;
         }
     }
@@ -65,14 +63,12 @@ public class Cache<T> {
      * Method returns requested element from Cache
      *
      * @param element this element will found in Cache and moved to top
-     * @return requested element
+     * @return if found return requested element else null
      */
     @SuppressWarnings("unchecked")
     public T get(T element) {
         if (isPresent(element)) {
-            for (int i = getElementID(element); i < cache.length - 1; i++) {
-                cache[i] = cache[i + 1];
-            }
+            moveLeftCacheElements(getElementID(element));
             cache[countElements - 1] = element;
             return (T) cache[countElements - 1];
         }
@@ -90,16 +86,27 @@ public class Cache<T> {
     }
 
     /**
-     * Method moves to the left all of Cache elements
+     * Method moves to the left Cache elements
+     * Elements move to the left starts from first value of idBeginMove if Method receives idBeginMove
+     * else move to the left all of elements if Method receives blank idBeginMove
+     *
+     * @param idBeginMove can be specified with starting index to start move. All element will be moved to the left in case of blank value
      */
-    private void moveLeftAllCacheElements() {
-        for (int i = 0; i < cache.length - 1; i++) {
-            cache[i] = cache[i + 1];
+    private void moveLeftCacheElements(int... idBeginMove) {
+        if (idBeginMove.length == 0) {
+            for (int i = 0; i < cache.length - 1; i++) {
+                cache[i] = cache[i + 1];
+            }
+        } else {
+            for (int i = idBeginMove[0]; i < cache.length - 1; i++) {
+                cache[i] = cache[i + 1];
+            }
         }
     }
 
     /**
      * Method finds id of element in Cache
+     *
      * @param element this element id will be found
      * @return int
      */
@@ -109,7 +116,7 @@ public class Cache<T> {
                 return i;
             }
         }
-        return capacity;
+        return capacity - 1;
     }
 
     @Override
