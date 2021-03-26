@@ -74,6 +74,7 @@ public class Storage<T> {
 
     /**
      * Method returns requested element of storage by index
+     *
      * @param index element with this index will be returned from storage
      * @return requested element
      */
@@ -90,12 +91,13 @@ public class Storage<T> {
      * Method increase capacity of storage
      */
     private void increaseCapacityOfStorage() {
-        if (storageCapacity < 1)
+        if (storageCapacity < 1) {
             storageCapacity = 1;
-        else if (storageCapacity < 2)
+        } else if (storageCapacity < 2) {
             storageCapacity = 2 * storageCapacity;
-        else
+        } else {
             storageCapacity = (int) (1.5 * storageCapacity);
+        }
         Object[] tempStorage = new Object[storageCapacity];
         for (int i = 0; i < storage.length; i++) {
             tempStorage[i] = storage[i];

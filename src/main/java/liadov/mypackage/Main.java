@@ -10,7 +10,7 @@ public class Main {
         System.out.println("Cache:");
 
         Cache<String> cache = new Cache<>(3);
-        
+
         cache.add("one");
         System.out.println("add(\"one\"), result: " + cache);
         cache.add("two");
@@ -22,7 +22,7 @@ public class Main {
         cache.delete("two");
         System.out.println("delete(\"two\"), result: " + cache);
         System.out.println("isPresent(\"four\"): " + cache.isPresent("four"));
-        System.out.println("get(\"three\"): " + cache.get("three"));
+        System.out.println("get(\"three\"): \"" + cache.get("three") + "\" " + cache);
         cache.clear();
         System.out.println("cache.clear(), result: " + cache);
 
