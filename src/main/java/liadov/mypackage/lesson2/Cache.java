@@ -19,8 +19,8 @@ public class Cache<T> {
 
     /**
      * Method for adding element to Cache.
-     *
      * @param element This element will be added to Cache
+     * @param index index of element that this element has in storage
      */
     public void add(T element, int index) {
         if (countElements < capacity) {
@@ -29,7 +29,6 @@ public class Cache<T> {
             cache[0] = null;
             moveLeftCacheElements();
             cache[capacity - 1] = new CacheElement<>(element, index);
-            ;
         }
     }
 
@@ -46,7 +45,7 @@ public class Cache<T> {
     }
 
     /**
-     * Method for checking whether element is present in Cache
+     * Method for checking whether element is present in Cache by element
      *
      * @param element the presence of this element is checked
      * @return boolean
@@ -60,6 +59,11 @@ public class Cache<T> {
         return false;
     }
 
+    /**
+     * Method for checking whether element is present in Cache by index
+     * @param index index of element to be found in Cache
+     * @return boolean
+     */
     public boolean isPresent(int index) {
         for (int i = 0; i < cache.length; i++) {
             if (cache[i] != null && cache[i].index == index) {
@@ -71,7 +75,7 @@ public class Cache<T> {
 
     /**
      * Method returns requested element from Cache
-     * @param index
+     * @param index index of element that this element has in storage
      * @return if found return requested element else null
      */
     public T get(int index) {
@@ -85,8 +89,8 @@ public class Cache<T> {
     }
 
     /**
-     *
-     * @param index
+     * Method returns CacheElement from Cache by index
+     * @param index index of element that this element has in storage
      * @return if found return requested CacheElement else null
      */
     private CacheElement<T> getExistingCacheElementByIndex(int index) {
@@ -128,7 +132,7 @@ public class Cache<T> {
     }
 
     /**
-     * Method finds id of element in Cache
+     * Method finds id of element in Cache by element
      *
      * @param element this element id will be found
      * @return int
@@ -142,6 +146,11 @@ public class Cache<T> {
         return capacity - 1;
     }
 
+    /**
+     * Method finds id of element in Cache by index
+     * @param index index of element that this element has in storage
+     * @return int
+     */
     private int getElementID(int index) {
         for (int i = 0; i < cache.length; i++) {
             if (cache[i].index==index) {
