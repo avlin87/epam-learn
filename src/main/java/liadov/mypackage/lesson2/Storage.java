@@ -84,10 +84,10 @@ public class Storage<T> {
      */
     @SuppressWarnings("unchecked")
     public T get(int index) {
-        if (cache.isPresent((T) storage[index])) {
-            return cache.get((T) storage[index]);
+        if (cache.isPresent(index)) {
+            return cache.get(index);
         }
-        cache.add((T) storage[index]);
+        cache.add((T) storage[index], index);
         return (T) storage[index];
     }
 
