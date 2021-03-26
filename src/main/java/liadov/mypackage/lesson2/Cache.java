@@ -3,7 +3,7 @@ package liadov.mypackage.lesson2;
 import java.util.Arrays;
 
 public class Cache<T> {
-    private Object[] cache;
+    private CacheElement<T>[] cache;
     private int capacity;
     private int countElements = 0;
 
@@ -14,7 +14,7 @@ public class Cache<T> {
      */
     public Cache(int capacity) {
         this.capacity = capacity;
-        cache = new Object[capacity];
+        cache = new CacheElement[capacity];
     }
 
     /**
@@ -22,13 +22,14 @@ public class Cache<T> {
      *
      * @param element This element will be added to Cache
      */
-    public void add(T element) {
+    public void add(T element, int index) {
         if (countElements < capacity) {
-            cache[countElements++] = element;
+            cache[countElements++] = new CacheElement<>(element, index);
         } else {
             cache[0] = null;
             moveLeftCacheElements();
-            cache[capacity - 1] = element;
+            cache[capacity - 1] = new CacheElement<>(element, index);
+            ;
         }
     }
 
@@ -52,7 +53,16 @@ public class Cache<T> {
      */
     public boolean isPresent(T element) {
         for (int i = 0; i < cache.length; i++) {
-            if (cache[i] != null && cache[i].equals(element)) {
+            if (cache[i] != null && cache[i].element.equals(element)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isPresent(int index) {
+        for (int i = 0; i < cache.length; i++) {
+            if (cache[i] != null && cache[i].index == index) {
                 return true;
             }
         }
@@ -61,16 +71,29 @@ public class Cache<T> {
 
     /**
      * Method returns requested element from Cache
-     *
-     * @param element this element will found in Cache and moved to top
+     * @param index
      * @return if found return requested element else null
      */
-    @SuppressWarnings("unchecked")
-    public T get(T element) {
-        if (isPresent(element)) {
-            moveLeftCacheElements(getElementID(element));
-            cache[countElements - 1] = element;
-            return (T) cache[countElements - 1];
+    public T get(int index) {
+        if (isPresent(index)) {
+            CacheElement<T> tempElement = getExistingCacheElementByIndex(index);
+            moveLeftCacheElements(getElementID(index));
+            cache[countElements - 1] = tempElement;
+            return cache[countElements - 1].element;
+        }
+        return null;
+    }
+
+    /**
+     *
+     * @param index
+     * @return if found return requested CacheElement else null
+     */
+    private CacheElement<T> getExistingCacheElementByIndex(int index) {
+        for (int i = 0; i < cache.length; i++) {
+            if (cache[i].index==index){
+                return cache[i];
+            }
         }
         return null;
     }
@@ -112,7 +135,16 @@ public class Cache<T> {
      */
     private int getElementID(T element) {
         for (int i = 0; i < cache.length; i++) {
-            if (cache[i].equals(element)) {
+            if (cache[i].element.equals(element)) {
+                return i;
+            }
+        }
+        return capacity - 1;
+    }
+
+    private int getElementID(int index) {
+        for (int i = 0; i < cache.length; i++) {
+            if (cache[i].index==index) {
                 return i;
             }
         }
