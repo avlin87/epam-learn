@@ -16,7 +16,8 @@ public class CacheElement <T>{
         if (this == o) return true;
         if (!(o instanceof CacheElement)) return false;
         CacheElement<?> that = (CacheElement<?>) o;
-        return index == that.index && element.equals(that.element);
+        if (index != that.index) return false;
+        return element != null ? element.equals(that.element) : that.element == null;
     }
 
     @Override
