@@ -18,17 +18,19 @@ public class Cache<T> {
     }
 
     /**
-     * Method for adding element to Cache.
+     * Method for adding element to Cache if element is not null.
      *
-     * @param element This element will be added to Cache
+     * @param element This element will be added to Cache if element is not null.
      * @param index   index of element that this element has in storage
      */
     public void add(T element, int index) {
-        if (countElements < capacity) {
-            cache[countElements++] = new CacheElement<>(element, index);
-        } else {
-            moveLeftCacheElements();
-            cache[capacity - 1] = new CacheElement<>(element, index);
+        if (element != null) {
+            if (countElements < capacity) {
+                cache[countElements++] = new CacheElement<>(element, index);
+            } else {
+                moveLeftCacheElements();
+                cache[capacity - 1] = new CacheElement<>(element, index);
+            }
         }
     }
 
