@@ -27,7 +27,6 @@ public class Cache<T> {
         if (countElements < capacity) {
             cache[countElements++] = new CacheElement<>(element, index);
         } else {
-            cache[0] = null;
             moveLeftCacheElements();
             cache[capacity - 1] = new CacheElement<>(element, index);
         }
