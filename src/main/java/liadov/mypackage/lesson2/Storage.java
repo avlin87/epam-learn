@@ -33,15 +33,17 @@ public class Storage<T> {
     }
 
     /**
-     * Method adds received element to storage
+     * Method adds received element to storage if element is not null
      *
-     * @param element This element will be added to storage
+     * @param element This element will be added to storage if element is not null
      */
     public void add(T element) {
-        if (countStorageElements >= storage.length) {
-            increaseCapacityOfStorage();
+        if (element != null) {
+            if (countStorageElements >= storage.length) {
+                increaseCapacityOfStorage();
+            }
+            storage[countStorageElements++] = element;
         }
-        storage[countStorageElements++] = element;
     }
 
     /**
