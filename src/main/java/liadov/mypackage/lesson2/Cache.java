@@ -19,8 +19,9 @@ public class Cache<T> {
 
     /**
      * Method for adding element to Cache.
+     *
      * @param element This element will be added to Cache
-     * @param index index of element that this element has in storage
+     * @param index   index of element that this element has in storage
      */
     public void add(T element, int index) {
         if (countElements < capacity) {
@@ -61,6 +62,7 @@ public class Cache<T> {
 
     /**
      * Method for checking whether element is present in Cache by index
+     *
      * @param index index of element to be found in Cache
      * @return boolean
      */
@@ -75,6 +77,7 @@ public class Cache<T> {
 
     /**
      * Method returns requested element from Cache
+     *
      * @param index index of element that this element has in storage
      * @return if found return requested element else null
      */
@@ -90,12 +93,13 @@ public class Cache<T> {
 
     /**
      * Method returns CacheElement from Cache by index
+     *
      * @param index index of element that this element has in storage
      * @return if found return requested CacheElement else null
      */
     private CacheElement<T> getExistingCacheElementByIndex(int index) {
         for (int i = 0; i < cache.length; i++) {
-            if (cache[i].index==index){
+            if (cache[i].index == index) {
                 return cache[i];
             }
         }
@@ -120,14 +124,12 @@ public class Cache<T> {
      * @param idBeginMove can be specified with starting index to start move. All element will be moved to the left in case of blank value
      */
     private void moveLeftCacheElements(int... idBeginMove) {
-        if (idBeginMove.length == 0) {
-            for (int i = 0; i < cache.length - 1; i++) {
-                cache[i] = cache[i + 1];
-            }
-        } else {
-            for (int i = idBeginMove[0]; i < cache.length - 1; i++) {
-                cache[i] = cache[i + 1];
-            }
+        int startingIndex = 0;
+        if (idBeginMove.length > 0) {
+            startingIndex = idBeginMove[0];
+        }
+        for (int i = startingIndex; i < cache.length - 1; i++) {
+            cache[i] = cache[i + 1];
         }
     }
 
@@ -148,12 +150,13 @@ public class Cache<T> {
 
     /**
      * Method finds id of element in Cache by index
+     *
      * @param index index of element that this element has in storage
      * @return int
      */
     private int getElementID(int index) {
         for (int i = 0; i < cache.length; i++) {
-            if (cache[i].index==index) {
+            if (cache[i].index == index) {
                 return i;
             }
         }
