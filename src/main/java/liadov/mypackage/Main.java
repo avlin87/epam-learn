@@ -1,13 +1,25 @@
 package liadov.mypackage;
 
 import liadov.mypackage.lesson2.Cache;
+import liadov.mypackage.lesson2.CacheElement;
 import liadov.mypackage.lesson2.Storage;
 
 public class Main {
     public static void main(String[] args) {
         System.out.println("Hello World");
 
-        System.out.println("Cache:");
+        String equalsCheck = "\nCheck equals() Method of CacheElement class:" +
+                "\n first element: %s" +
+                "\n second element: %s" +
+                "\n result: %s" +
+                "\n";
+
+        CacheElement<String> cacheElement1 = new CacheElement<>(null,1);
+        CacheElement<String> cacheElement2 = new CacheElement<>(null,1);
+        System.out.printf(equalsCheck, cacheElement1,cacheElement2,cacheElement1.equals(cacheElement2));
+        System.out.printf(equalsCheck, cacheElement1,null,cacheElement1.equals(null));
+
+        System.out.println("\nCache:");
 
         Cache<String> cache = new Cache<>(3);
 
