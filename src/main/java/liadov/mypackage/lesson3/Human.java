@@ -12,14 +12,29 @@ public class Human {
         this.address = address;
     }
 
+    /**
+     * Method return String value of fullName variable
+     *
+     * @return String value of fullName variable
+     */
     public String getFullName() {
         return fullName;
     }
 
+    /**
+     * Method return int value of age variable
+     *
+     * @return int value of age variable
+     */
     public int getAge() {
         return age;
     }
 
+    /**
+     * Method return String value of combined Address class variables
+     *
+     * @return String value as Full address
+     */
     public String getFullStringAddress() {
         return address.toString();
     }
