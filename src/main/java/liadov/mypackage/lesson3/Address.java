@@ -29,7 +29,8 @@ public class Address {
         return apartment;
     }
 
-    public String getFullAddress() {
+    @Override
+    public String toString() {
         return "Address{" +
                 "city='" + city + '\'' +
                 ", street='" + street + '\'' +
