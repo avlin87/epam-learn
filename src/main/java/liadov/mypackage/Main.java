@@ -24,7 +24,13 @@ public class Main {
         humanOperations.sortHumanByAddress();
         System.out.println(humanOperations);
 
-        User.sayHello(new User("Now Or Never", Role.ADMIN));
+        Map<Role, String> roleDescription = new HashMap<>();
+        roleDescription.put(Role.ADMIN, "ADMIN: User who has administrative grants");
+        roleDescription.put(Role.USER, "USER: User who has moderate grants");
+        roleDescription.put(Role.MODERATOR, "MODERATOR: User who has moderator grants");
+        User testUser = new User("Now Or Never", Role.ADMIN);
+        testUser.setRoleDescription(roleDescription);
+        testUser.sayHello(testUser);
 
         sortingHashMapExample();
     }
