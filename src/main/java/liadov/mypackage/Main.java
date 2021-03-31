@@ -26,25 +26,27 @@ public class Main {
 
         User.sayHello(new User("Now Or Never", Role.ADMIN));
 
-        /**
-         * Sorting of HashMap example:
-         */
-        {
-            HashMapSortOperations sortOperations = new HashMapSortOperations();
+        sortingHashMapExample();
+    }
 
-            HashMap<String, Integer> map = new HashMap<>();
-            map.put("e_one", 1);
-            map.put("b_two", 2);
-            map.put("a_three", 3);
-            map.put("c_six", 6);
-            map.put("f_three", 3);
-            map.put("d_five", 5);
+    /**
+     * Method intended for representation of result examples for 9 and 10 requirements implementation.
+     */
+    private static void sortingHashMapExample() {
+        HashMapSortOperations sortOperations = new HashMapSortOperations();
 
-            System.out.println("before sorting: " + map);
-            map = sortOperations.getHashMapSortedByKey(map);
-            System.out.println("Sorted by Key: " + map);
-            map = sortOperations.getHashMapSortedByValue(map);
-            System.out.println("Sorter by Value:" + map);
-        }
+        HashMap<String, Integer> map = new HashMap<>();
+        map.put("e_one", 1);
+        map.put("b_two", 2);
+        map.put("a_three", 3);
+        map.put("c_six", 6);
+        map.put("f_three", 3);
+        map.put("d_five", 5);
+
+        System.out.println("before sorting: " + map);
+        map = sortOperations.getHashMapSortedByKey(map);
+        System.out.println("Sorted by Key: " + map);
+        map = sortOperations.getHashMapSortedByValue(map);
+        System.out.println("Sorter by Value:" + map);
     }
 }
