@@ -2,7 +2,7 @@ package liadov.mypackage.lesson3;
 
 import java.util.*;
 
-public class HashMapSortOperations<T, V> {
+public class HashMapSortOperations {
 
     /**
      * 9. Method sort received hashMap by Key and returns LinkedHashMap object
@@ -10,7 +10,7 @@ public class HashMapSortOperations<T, V> {
      * @param hashMap <key,value> this hashMap will be sorted by Key
      * @return LinkedHashMap<key, value> sorted by Key
      */
-    public HashMap<T, V> getHashMapSortedByKey(HashMap<T, V> hashMap) {
+    public <T, V> HashMap<T, V> getHashMapSortedByKey(HashMap<T, V> hashMap) {
         SortedMap<T, V> sortedTreeMap = new TreeMap<>(hashMap);
         LinkedHashMap<T, V> sortedHashMap = new LinkedHashMap<>(sortedTreeMap);
         return sortedHashMap;
@@ -22,7 +22,7 @@ public class HashMapSortOperations<T, V> {
      * @param hashMap <key,value> this hashMap will be sorted by Value
      * @return LinkedHashMap<key, value> sorted by Value
      */
-    public HashMap<T, V> getHashMapSortedByValue(HashMap<T, V> hashMap) {
+    public <T, V> HashMap<T, V> getHashMapSortedByValue(HashMap<T, V> hashMap) {
         LinkedHashMap<T, V> sortedHashMap = new LinkedHashMap<>();
         Set<V> sortList = new TreeSet<>(hashMap.values());
         for (V v : sortList) {

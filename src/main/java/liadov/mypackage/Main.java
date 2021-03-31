@@ -30,7 +30,7 @@ public class Main {
          * Sorting of HashMap example:
          */
         {
-            HashMapSortOperations<String, Integer> sortOperations = new HashMapSortOperations();
+            HashMapSortOperations sortOperations = new HashMapSortOperations();
 
             HashMap<String, Integer> map = new HashMap<>();
             map.put("e_one", 1);
