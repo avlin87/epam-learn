@@ -50,22 +50,15 @@ public class Main {
         System.out.println("add(17): " + storage);
         storage.add(99);
         storage.add(14);
-        storage.add(24);
         storage.add(29);
-        System.out.println("add(99): " + storage);
         storage.delete();
-        System.out.println("delete(): " + storage);
-        System.out.println("storage.getLast(): " + storage.getLast());
-        //storage.get(55);
-        System.out.println("storage.get(1): " + storage.get(1) + " - " + storage);
-        System.out.println("storage.get(1): " + storage.get(1) + " - " + storage);
-        System.out.println("storage.get(1): " + storage.get(1) + " - " + storage);
-        System.out.println("storage.get(2): " + storage.get(2) + " - " + storage);
-        System.out.println("storage.get(0): " + storage.get(0) + " - " + storage);
-        System.out.println("storage.get(6): " + storage.get(5) + " - " + storage);
+        storage.getLast();
+        storage.get(1);
+        storage.get(1);
+        storage.get(55);
+        storage.get(0);
+        storage.get(4);
         storage.delete();
-        System.out.println("delete(): " + storage);
         storage.clear();
-        System.out.println("storage.clear: " + storage);
     }
 }

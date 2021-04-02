@@ -1,5 +1,6 @@
 package liadov.mypackage.lesson2;
 
+import liadov.mypackage.lesson4.MyCheckedException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Arrays;
@@ -28,8 +29,9 @@ public class Cache<T> {
      * @param index   index of element that this element has in storage
      */
     public void add(T element, int index) {
-        log.info(String.format("Cache [%d]: element [%s]<%s> to [%d] index will be added", this.hashCode(), element, element.getClass().getName(),index));
+        log.info(String.format("Cache [%d]: element is NULL and will NOT be added", this.hashCode()));
         if (element != null) {
+            log.info(String.format("Cache [%d]: element [%s]<%s> to [%d] index will be added", this.hashCode(), element, element.getClass().getName(), index));
             if (countElements < capacity) {
                 cache[countElements++] = new CacheElement<>(element, index);
             } else {
@@ -45,7 +47,7 @@ public class Cache<T> {
      * @param element This element will be removed from Cache if present
      */
     public void delete(T element) {
-        log.info(String.format("Cache [%d]: element [%s]<%s> to [%d] index will be added", this.hashCode(), element, element.getClass().getName(),getElementID(element)));
+        log.info(String.format("Cache [%d]: element [%s]<%s> to [%d] index will be added", this.hashCode(), element, element.getClass().getName(), getElementID(element)));
         if (isPresent(element)) {
             moveLeftCacheElements(getElementID(element));
             cache[--countElements] = null;
@@ -82,7 +84,7 @@ public class Cache<T> {
                 return true;
             }
         }
-        log.debug(String.format("Cache [%d]: element with index [%d] NOT found", this.hashCode(),index));
+        log.debug(String.format("Cache [%d]: element with index [%d] NOT found", this.hashCode(), index));
         return false;
     }
 
@@ -92,15 +94,15 @@ public class Cache<T> {
      * @param index index of element that this element has in storage
      * @return if found return requested element else null
      */
-    public T get(int index) {
+    public T get(int index) throws MyCheckedException {
         if (isPresent(index)) {
             CacheElement<T> tempElement = getExistingCacheElementByIndex(index);
             moveLeftCacheElements(getElementID(index));
             cache[countElements - 1] = tempElement;
-            log.debug(String.format("Cache [%d]: returned element [%s] with index [%d]", this.hashCode(), cache[countElements - 1].element ,index));
+            log.debug(String.format("Cache [%d]: returned element [%s] with index [%d]", this.hashCode(), cache[countElements - 1].element, index));
             return cache[countElements - 1].element;
         }
-        log.debug(String.format("Cache [%d]: returned NULL",this.hashCode()));
+        log.debug(String.format("Cache [%d]: returned NULL", this.hashCode()));
         return null;
     }
 
@@ -108,17 +110,18 @@ public class Cache<T> {
      * Method returns CacheElement from Cache by index
      *
      * @param index index of element that this element has in storage
-     * @return if found return requested CacheElement else null
+     * @return if found return requested CacheElement
+     * @throws MyCheckedException in case CacheElement was not found
      */
-    private CacheElement<T> getExistingCacheElementByIndex(int index) {
+    private CacheElement<T> getExistingCacheElementByIndex(int index) throws MyCheckedException {
         for (int i = 0; i < cache.length; i++) {
             if (cache[i].index == index) {
-                log.info(String.format("Cache [%d]: private method returned CacheElement %s", this.hashCode(),cache[i]));
+                log.info(String.format("Cache [%d]: private method returned CacheElement %s", this.hashCode(), cache[i]));
                 return cache[i];
             }
         }
         log.info(String.format("Cache [%d]: private method returned NULL", this.hashCode()));
-        return null;
+        throw new MyCheckedException();
     }
 
     /**

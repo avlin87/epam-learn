@@ -15,4 +15,13 @@ public class MyCheckedException extends IOException {
         super(message, cause);
     }
 
+    public String getFullStackTrace(){
+        StringBuilder sb = new StringBuilder();
+        sb.append(this.toString());
+        for (StackTraceElement element:super.getStackTrace()) {
+            sb.append("\n\t"+element.toString());
+        }
+        return sb.toString();
+    }
+
 }

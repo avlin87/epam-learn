@@ -12,4 +12,13 @@ public class MyUncheckedArrayIndexOutOfBoundsException extends ArrayIndexOutOfBo
     public MyUncheckedArrayIndexOutOfBoundsException(String s) {
         super(s);
     }
+
+    public String getFullStackTrace(){
+        StringBuilder sb = new StringBuilder();
+        sb.append(this.toString());
+        for (StackTraceElement element:super.getStackTrace()) {
+            sb.append("\n\t"+element.toString());
+        }
+        return sb.toString();
+    }
 }
