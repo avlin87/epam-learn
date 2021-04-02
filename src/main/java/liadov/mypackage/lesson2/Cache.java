@@ -1,7 +1,10 @@
 package liadov.mypackage.lesson2;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.Arrays;
 
+@Slf4j
 public class Cache<T> {
     private CacheElement<T>[] cache;
     private int capacity;
@@ -15,6 +18,7 @@ public class Cache<T> {
     public Cache(int capacity) {
         this.capacity = capacity;
         cache = new CacheElement[capacity];
+        log.info(String.format("Cache [%d] with [%d] capacity created", this.hashCode(), capacity));
     }
 
     /**
@@ -24,6 +28,7 @@ public class Cache<T> {
      * @param index   index of element that this element has in storage
      */
     public void add(T element, int index) {
+        log.info(String.format("Cache [%d]: element [%s]<%s> to [%d] index will be added", this.hashCode(), element, element.getClass().getName(),index));
         if (element != null) {
             if (countElements < capacity) {
                 cache[countElements++] = new CacheElement<>(element, index);
@@ -40,6 +45,7 @@ public class Cache<T> {
      * @param element This element will be removed from Cache if present
      */
     public void delete(T element) {
+        log.info(String.format("Cache [%d]: element [%s]<%s> to [%d] index will be added", this.hashCode(), element, element.getClass().getName(),getElementID(element)));
         if (isPresent(element)) {
             moveLeftCacheElements(getElementID(element));
             cache[--countElements] = null;
@@ -55,9 +61,11 @@ public class Cache<T> {
     public boolean isPresent(T element) {
         for (int i = 0; i < cache.length; i++) {
             if (cache[i] != null && cache[i].element.equals(element)) {
+                log.debug(String.format("Cache [%d]: element [%s]<%s> is found", this.hashCode(), element, element.getClass().getName()));
                 return true;
             }
         }
+        log.debug(String.format("Cache [%d]: element [%s]<%s> NOT found", this.hashCode(), element, element.getClass().getName()));
         return false;
     }
 
@@ -70,9 +78,11 @@ public class Cache<T> {
     public boolean isPresent(int index) {
         for (int i = 0; i < cache.length; i++) {
             if (cache[i] != null && cache[i].index == index) {
+                log.debug(String.format("Cache [%d]: element [%s]<%s> with index [%d] is found", this.hashCode(), cache[i].element, cache[i].element.getClass().getName(), index));
                 return true;
             }
         }
+        log.debug(String.format("Cache [%d]: element with index [%d] NOT found", this.hashCode(),index));
         return false;
     }
 
@@ -87,8 +97,10 @@ public class Cache<T> {
             CacheElement<T> tempElement = getExistingCacheElementByIndex(index);
             moveLeftCacheElements(getElementID(index));
             cache[countElements - 1] = tempElement;
+            log.debug(String.format("Cache [%d]: returned element [%s] with index [%d]", this.hashCode(), cache[countElements - 1].element ,index));
             return cache[countElements - 1].element;
         }
+        log.debug(String.format("Cache [%d]: returned NULL",this.hashCode()));
         return null;
     }
 
@@ -101,9 +113,11 @@ public class Cache<T> {
     private CacheElement<T> getExistingCacheElementByIndex(int index) {
         for (int i = 0; i < cache.length; i++) {
             if (cache[i].index == index) {
+                log.info(String.format("Cache [%d]: private method returned CacheElement %s", this.hashCode(),cache[i]));
                 return cache[i];
             }
         }
+        log.info(String.format("Cache [%d]: private method returned NULL", this.hashCode()));
         return null;
     }
 
@@ -115,6 +129,7 @@ public class Cache<T> {
             cache[i] = null;
         }
         countElements = 0;
+        log.info(String.format("Cache [%d]: was cleared", this.hashCode()));
     }
 
     /**
@@ -129,6 +144,7 @@ public class Cache<T> {
         if (idBeginMove.length > 0) {
             startingIndex = idBeginMove[0];
         }
+        log.debug(String.format("Cache [%d]: elements moved LEFT starting with [%d] index", this.hashCode(), startingIndex));
         for (int i = startingIndex; i < cache.length - 1; i++) {
             cache[i] = cache[i + 1];
         }
@@ -143,9 +159,11 @@ public class Cache<T> {
     private int getElementID(T element) {
         for (int i = 0; i < cache.length; i++) {
             if (cache[i].element.equals(element)) {
+                log.debug(String.format("Cache [%d]: id of element [%s] identified with index=[%d]", this.hashCode(), element, i));
                 return i;
             }
         }
+        log.error(String.format("Cache [%d]: id of element [%s] unidentified", this.hashCode(), element));
         return capacity - 1;
     }
 
@@ -158,9 +176,11 @@ public class Cache<T> {
     private int getElementID(int index) {
         for (int i = 0; i < cache.length; i++) {
             if (cache[i].index == index) {
+                log.debug(String.format("Cache [%d]: element with index = [%d] identified with index = [%d] in cache", this.hashCode(), index, i));
                 return i;
             }
         }
+        log.error(String.format("Cache [%d]: element with index = [%d] unidentified", this.hashCode(), index));
         return capacity - 1;
     }
 

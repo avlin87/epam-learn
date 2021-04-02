@@ -3,12 +3,15 @@ package liadov.mypackage;
 import liadov.mypackage.lesson2.Cache;
 import liadov.mypackage.lesson2.CacheElement;
 import liadov.mypackage.lesson2.Storage;
+import liadov.mypackage.lesson4.MyCheckedException;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws MyCheckedException {
         System.out.println("Hello World");
 
-        String equalsCheck = "\nCheck equals() Method of CacheElement class:" +
+        /*String equalsCheck = "\nCheck equals() Method of CacheElement class:" +
                 "\n first element: %s" +
                 "\n second element: %s" +
                 "\n result: %s" +
@@ -36,7 +39,7 @@ public class Main {
         System.out.println("isPresent(\"four\"): " + cache.isPresent("four"));
         System.out.println("get(\"3\"): \"" + cache.get(3) + "\" " + cache);
         cache.clear();
-        System.out.println("cache.clear(), result: " + cache);
+        System.out.println("cache.clear(), result: " + cache);*/
 
         System.out.println("\nStorage");
 
@@ -46,14 +49,20 @@ public class Main {
         storage.add(17);
         System.out.println("add(17): " + storage);
         storage.add(99);
+        storage.add(14);
+        storage.add(24);
+        storage.add(29);
         System.out.println("add(99): " + storage);
         storage.delete();
         System.out.println("delete(): " + storage);
         System.out.println("storage.getLast(): " + storage.getLast());
+        //storage.get(55);
+        System.out.println("storage.get(1): " + storage.get(1) + " - " + storage);
+        System.out.println("storage.get(1): " + storage.get(1) + " - " + storage);
         System.out.println("storage.get(1): " + storage.get(1) + " - " + storage);
         System.out.println("storage.get(2): " + storage.get(2) + " - " + storage);
         System.out.println("storage.get(0): " + storage.get(0) + " - " + storage);
-        System.out.println("storage.get(1): " + storage.get(1) + " - " + storage);
+        System.out.println("storage.get(6): " + storage.get(5) + " - " + storage);
         storage.delete();
         System.out.println("delete(): " + storage);
         storage.clear();
