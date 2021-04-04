@@ -2,6 +2,7 @@ package liadov.mypackage;
 
 import liadov.mypackage.lesson2.Cache;
 import liadov.mypackage.lesson2.Storage;
+import liadov.mypackage.lesson4.IllegalStateOfCacheElement;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -11,10 +12,15 @@ public class Main {
 
         Cache<String> cache = new Cache<>(3);
 
-        cache.add("one",1);
-        cache.add("two",2);
-        cache.add("three",3);
-        cache.add("four",4);
+        cache.add("one", 1);
+        cache.add("two", 2);
+        cache.add("three", 3);
+        cache.add("four", 4);
+        try {
+            cache.get(55);
+        } catch (IllegalStateOfCacheElement illegalStateOfCacheElement) {
+            illegalStateOfCacheElement.printStackTrace();
+        }
         cache.delete("two");
         cache.clear();
 

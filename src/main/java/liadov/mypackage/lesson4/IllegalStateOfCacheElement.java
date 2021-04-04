@@ -1,25 +1,15 @@
 package liadov.mypackage.lesson4;
 
 /**
- * Thrown to indicate that an array has been accessed with an illegal index.
- * The index is either negative or greater than or equal to the size of the array.
+ * Signals that an attempt to access existing CacheElement failed
  */
-public class ElementDoesNotExistException extends ArrayIndexOutOfBoundsException {
+public class IllegalStateOfCacheElement extends Exception {
 
     /**
-     * Constructs an ElementDoesNotExistException with no detail message.
+     * Constructs an IllegalStateOfCacheElement with no detail message.
      */
-    public ElementDoesNotExistException() {
+    public IllegalStateOfCacheElement() {
         super();
-    }
-
-    /**
-     * Constructs a new ElementDoesNotExistException class with an argument indicating the illegal index.
-     *
-     * @param index - the illegal index
-     */
-    public ElementDoesNotExistException(int index) {
-        super(index);
     }
 
     /**
@@ -27,7 +17,7 @@ public class ElementDoesNotExistException extends ArrayIndexOutOfBoundsException
      *
      * @param message - the detail message
      */
-    public ElementDoesNotExistException(String message) {
+    public IllegalStateOfCacheElement(String message) {
         super(message);
     }
 
@@ -44,4 +34,5 @@ public class ElementDoesNotExistException extends ArrayIndexOutOfBoundsException
         }
         return sb.toString();
     }
+
 }

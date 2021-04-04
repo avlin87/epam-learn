@@ -1,7 +1,7 @@
 package liadov.mypackage.lesson2;
 
-import liadov.mypackage.lesson4.MyCheckedException;
-import liadov.mypackage.lesson4.MyUncheckedArrayIndexOutOfBoundsException;
+import liadov.mypackage.lesson4.IllegalStateOfCacheElement;
+import liadov.mypackage.lesson4.ElementDoesNotExistException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Arrays;
@@ -96,25 +96,25 @@ public class Storage<T> {
      *
      * @param index element with this index will be returned from storage
      * @return requested element
-     * @throws MyUncheckedArrayIndexOutOfBoundsException in case requested element out of range of current storage
+     * @throws ElementDoesNotExistException in case requested index is not present in current storage
      */
     @SuppressWarnings("unchecked")
-    public T get(int index) throws MyUncheckedArrayIndexOutOfBoundsException {
+    public T get(int index) throws ElementDoesNotExistException {
         try {
             if (cache.isPresent(index)) {
                 return cache.get(index);
             }
-        } catch (MyCheckedException e) {
+        } catch (IllegalStateOfCacheElement e) {
             log.error(e.getFullStackTrace());
         }
         try {
             if (index >= storage.length) {
-                throw new MyUncheckedArrayIndexOutOfBoundsException(index);
+                throw new ElementDoesNotExistException(index);
             }
             cache.add((T) storage[index], index);
             log.debug(String.format("Storage [%d]: returns element [%s] with index [%d]", this.hashCode(), storage[index], index));
             return (T) storage[index];
-        } catch (MyUncheckedArrayIndexOutOfBoundsException e) {
+        } catch (ElementDoesNotExistException e) {
             log.error(e.getFullStackTrace());
         }
         return null;

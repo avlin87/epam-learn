@@ -1,6 +1,6 @@
 package liadov.mypackage.lesson2;
 
-import liadov.mypackage.lesson4.MyCheckedException;
+import liadov.mypackage.lesson4.IllegalStateOfCacheElement;
 import liadov.mypackage.lesson4.ElementDoesNotExistException;
 import lombok.extern.slf4j.Slf4j;
 
@@ -49,11 +49,13 @@ public class Cache<T> {
      * @param element This element will be removed from Cache if present
      */
     public void delete(T element) {
-        log.info(String.format("Cache [%d]: element [%s]<%s> to [%d] index will be added", this.hashCode(), element, element.getClass().getName(), getElementID(element)));
         if (isPresent(element)) {
+            log.info(String.format("Cache [%d]: element [%s]<%s> to [%d] index will be removed", this.hashCode(), element, element.getClass().getName(), getElementID(element)));
             moveLeftCacheElements(getElementID(element));
             cache[--countElements] = null;
+            return;
         }
+        log.info(String.format("Cache [%d]: element [%s]<%s> was not found for removal", this.hashCode(), element, element.getClass().getName()));
     }
 
     /**
@@ -96,7 +98,7 @@ public class Cache<T> {
      * @param index index of element that this element has in storage
      * @return if found return requested element else null
      */
-    public T get(int index) throws MyCheckedException {
+    public T get(int index) throws IllegalStateOfCacheElement {
         if (isPresent(index)) {
             CacheElement<T> tempElement = getExistingCacheElementByIndex(index);
             moveLeftCacheElements(getElementID(index));
@@ -109,21 +111,22 @@ public class Cache<T> {
     }
 
     /**
-     * Method returns CacheElement from Cache by index
+     * Method returns existing CacheElement from Cache by index
      *
      * @param index index of element that this element has in storage
      * @return if found return requested CacheElement
-     * @throws MyCheckedException in case CacheElement was not found
+     * @throws IllegalStateOfCacheElement in case CacheElement was not found
      */
-    private CacheElement<T> getExistingCacheElementByIndex(int index) throws MyCheckedException {
+    private CacheElement<T> getExistingCacheElementByIndex(int index) throws IllegalStateOfCacheElement {
         for (int i = 0; i < cache.length; i++) {
             if (cache[i].index == index) {
                 log.info(String.format("Cache [%d]: private method returned CacheElement %s", this.hashCode(), cache[i]));
                 return cache[i];
             }
         }
-        log.info(String.format("Cache [%d]: private method returned NULL", this.hashCode()));
-        throw new MyCheckedException();
+        IllegalStateOfCacheElement illegalStateOfCacheElement = new IllegalStateOfCacheElement(String.format("Cache [%d]: existing element was not found", this.hashCode()));
+        log.error(illegalStateOfCacheElement.getFullStackTrace());
+        throw illegalStateOfCacheElement;
     }
 
     /**
@@ -160,16 +163,18 @@ public class Cache<T> {
      *
      * @param element this element id will be found
      * @return int
+     * @throws ElementDoesNotExistException in case element was not found
      */
-    private int getElementID(T element) {
+    private int getElementID(T element) throws ElementDoesNotExistException {
         for (int i = 0; i < cache.length; i++) {
             if (cache[i].element.equals(element)) {
                 log.debug(String.format("Cache [%d]: id of element [%s] identified with index=[%d]", this.hashCode(), element, i));
                 return i;
             }
         }
-        log.error(String.format("Cache [%d]: id of element [%s] unidentified", this.hashCode(), element));
-        return capacity - 1;
+        ElementDoesNotExistException elementDoesNotExistException = new ElementDoesNotExistException(String.format("Cache [%d]: id of element [%s] unidentified", this.hashCode(), element));
+        log.error(elementDoesNotExistException.getFullStackTrace());
+        throw elementDoesNotExistException;
     }
 
     /**
@@ -177,16 +182,18 @@ public class Cache<T> {
      *
      * @param index index of element that this element has in storage
      * @return int
+     * @throws ElementDoesNotExistException in case element was not found
      */
-    private int getElementID(int index) {
+    private int getElementID(int index) throws ElementDoesNotExistException {
         for (int i = 0; i < cache.length; i++) {
             if (cache[i].index == index) {
                 log.debug(String.format("Cache [%d]: element with index = [%d] identified with index = [%d] in cache", this.hashCode(), index, i));
                 return i;
             }
         }
-        log.error(String.format("Cache [%d]: element with index = [%d] unidentified", this.hashCode(), index));
-        throw new ElementDoesNotExistException(index);
+        ElementDoesNotExistException elementDoesNotExistException = new ElementDoesNotExistException(String.format("Cache [%d]: element with id [%d] does not exist", this.hashCode(), index));
+        log.error(elementDoesNotExistException.getFullStackTrace());
+        throw elementDoesNotExistException;
     }
 
     @Override
