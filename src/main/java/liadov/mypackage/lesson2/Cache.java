@@ -20,7 +20,7 @@ public class Cache<T> {
     public Cache(int capacity) {
         this.capacity = capacity;
         cache = new CacheElement[capacity];
-        log.info(String.format("Cache [%d] with [%d] capacity created", this.hashCode(), capacity));
+        log.info(toString());
     }
 
     /**
@@ -198,10 +198,11 @@ public class Cache<T> {
 
     @Override
     public String toString() {
-        return "Cache{" +
-                "cache=" + Arrays.toString(cache) +
-                ", cacheCapacity=" + capacity +
+        return "Cache [" + this.hashCode() + "]: {" +
+                "cacheCapacity=" + capacity +
                 ", countCacheElements=" + countElements +
+                ", cache=" + Arrays.toString(cache) +
                 '}';
     }
+
 }
