@@ -40,7 +40,4 @@
         <appender-ref ref="FILE-STORAGE"/>
     </logger>
 
-    <root level="error">
-        <appender-ref ref="CONSOLE"/>
-    </root>
 </configuration>
