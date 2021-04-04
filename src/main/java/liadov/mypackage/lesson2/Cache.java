@@ -1,6 +1,7 @@
 package liadov.mypackage.lesson2;
 
 import liadov.mypackage.lesson4.MyCheckedException;
+import liadov.mypackage.lesson4.ElementDoesNotExistException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Arrays;
@@ -29,7 +30,6 @@ public class Cache<T> {
      * @param index   index of element that this element has in storage
      */
     public void add(T element, int index) {
-        log.info(String.format("Cache [%d]: element is NULL and will NOT be added", this.hashCode()));
         if (element != null) {
             log.info(String.format("Cache [%d]: element [%s]<%s> to [%d] index will be added", this.hashCode(), element, element.getClass().getName(), index));
             if (countElements < capacity) {
@@ -38,6 +38,8 @@ public class Cache<T> {
                 moveLeftCacheElements();
                 cache[capacity - 1] = new CacheElement<>(element, index);
             }
+        } else {
+            log.info(String.format("Cache [%d]: element is NULL and will NOT be added", this.hashCode()));
         }
     }
 
@@ -184,7 +186,7 @@ public class Cache<T> {
             }
         }
         log.error(String.format("Cache [%d]: element with index = [%d] unidentified", this.hashCode(), index));
-        return capacity - 1;
+        throw new ElementDoesNotExistException(index);
     }
 
     @Override
