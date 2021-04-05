@@ -20,7 +20,7 @@ public class Storage<T> {
         storageCapacity = 10;
         storage = new Object[storageCapacity];
         cache = new Cache<>(storageCapacity);
-        log.info(String.format("Storage [%d] with default parameters created", this.hashCode()));
+        log.info("Storage [{}] with default parameters created", this.hashCode());
     }
 
     /**
@@ -36,8 +36,8 @@ public class Storage<T> {
             countStorageElements++;
         }
         cache = new Cache<>(10);
-        log.info(String.format("Storage [%d]: created with received elements.\nType of elements: [%s]", this.hashCode(), elements[0].getClass().getName()));
-        log.debug(String.format("Storage [%d]: state:\n%s", this.hashCode(), this.toString()));
+        log.info("Storage [{}]: created with received elements.\nType of elements: [{}]", this.hashCode(), elements[0].getClass().getName());
+        log.debug("Storage [{}]: state:\n{}", this.hashCode(), this.toString());
     }
 
     /**
@@ -46,7 +46,7 @@ public class Storage<T> {
      * @param element This element will be added to storage if element is not null
      */
     public void add(T element) {
-        log.info(String.format("Storage [%d]: element [%s] <%s> will be added with index [%d]", this.hashCode(), element, element.getClass().getName(), (countStorageElements + 1)));
+        log.info("Storage [{}]: element [{}] <{}> will be added with index [{}]", this.hashCode(), element, element.getClass().getName(), (countStorageElements + 1));
         if (element != null) {
             if (countStorageElements >= storage.length) {
                 increaseCapacityOfStorage();
@@ -60,7 +60,7 @@ public class Storage<T> {
      */
     @SuppressWarnings("unchecked")
     public void delete() {
-        log.info(String.format("Storage [%d]: element [%s] with index [%d]: will be deleted", this.hashCode(), storage[countStorageElements - 1], (countStorageElements - 1)));
+        log.info("Storage [{}]: element [{}] with index [{}]: will be deleted", this.hashCode(), storage[countStorageElements - 1], (countStorageElements - 1));
         if (cache.isPresent((T) storage[countStorageElements - 1])) {
             cache.delete((T) storage[countStorageElements - 1]);
         }
@@ -76,7 +76,7 @@ public class Storage<T> {
         }
         countStorageElements = 0;
         cache.clear();
-        log.info(String.format("Storage [%d]: cleared", this.hashCode()));
+        log.info("Storage [{}]: cleared", this.hashCode());
     }
 
     /**
@@ -86,7 +86,7 @@ public class Storage<T> {
      */
     @SuppressWarnings("unchecked")
     public T getLast() {
-        log.debug(String.format("Storage [%d]: returns element [%s] with index [%d]", this.hashCode(), storage[countStorageElements - 1], (countStorageElements - 1)));
+        log.debug("Storage [{}]: returns element [{}] with index [{}]", this.hashCode(), storage[countStorageElements - 1], (countStorageElements - 1));
         return (T) storage[countStorageElements - 1];
     }
 
@@ -112,7 +112,7 @@ public class Storage<T> {
                 throw new ElementDoesNotExistException(index);
             }
             cache.add((T) storage[index], index);
-            log.debug(String.format("Storage [%d]: returns element [%s] with index [%d]", this.hashCode(), storage[index], index));
+            log.debug("Storage [{}]: returns element [{}] with index [{}]", this.hashCode(), storage[index], index);
             return (T) storage[index];
         } catch (ElementDoesNotExistException e) {
             log.error(e.getFullStackTrace());
@@ -124,7 +124,7 @@ public class Storage<T> {
      * Method increase capacity of storage
      */
     private void increaseCapacityOfStorage() {
-        log.debug(String.format("Storage [%d]: capacity before increase %d", this.hashCode(), storageCapacity));
+        log.debug("Storage [{}]: capacity before increase {}", this.hashCode(), storageCapacity);
         if (storageCapacity < 1) {
             storageCapacity = 1;
         } else if (storageCapacity < 2) {
@@ -137,7 +137,7 @@ public class Storage<T> {
             tempStorage[i] = storage[i];
         }
         storage = tempStorage;
-        log.debug(String.format("Storage [%d]: capacity increased TO %d", this.hashCode(), storageCapacity));
+        log.debug("Storage [{}]: capacity increased TO {}", this.hashCode(), storageCapacity);
     }
 
     @Override
