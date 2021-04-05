@@ -31,7 +31,7 @@ public class Cache<T> {
      */
     public void add(T element, int index) {
         if (element != null) {
-            log.info(String.format("Cache [%d]: element [%s]<%s> to [%d] index will be added", this.hashCode(), element, element.getClass().getName(), index));
+            log.info("Cache [{}]: element [{}]<{}> to [{}] index will be added", this.hashCode(), element, element.getClass().getName(), index);
             if (countElements < capacity) {
                 cache[countElements++] = new CacheElement<>(element, index);
             } else {
@@ -39,7 +39,7 @@ public class Cache<T> {
                 cache[capacity - 1] = new CacheElement<>(element, index);
             }
         } else {
-            log.info(String.format("Cache [%d]: element is NULL and will NOT be added", this.hashCode()));
+            log.info("Cache [{}}]: element is NULL and will NOT be added", this.hashCode());
         }
     }
 
@@ -50,12 +50,12 @@ public class Cache<T> {
      */
     public void delete(T element) {
         if (isPresent(element)) {
-            log.info(String.format("Cache [%d]: element [%s]<%s> to [%d] index will be removed", this.hashCode(), element, element.getClass().getName(), getElementID(element)));
+            log.info("Cache [{}]: element [{}]<{}> to [{}] index will be removed", this.hashCode(), element, element.getClass().getName(), getElementID(element));
             moveLeftCacheElements(getElementID(element));
             cache[--countElements] = null;
             return;
         }
-        log.info(String.format("Cache [%d]: element [%s]<%s> was not found for removal", this.hashCode(), element, element.getClass().getName()));
+        log.info("Cache [{}]: element [{}]<{}> was not found for removal", this.hashCode(), element, element.getClass().getName());
     }
 
     /**
@@ -67,11 +67,11 @@ public class Cache<T> {
     public boolean isPresent(T element) {
         for (int i = 0; i < cache.length; i++) {
             if (cache[i] != null && cache[i].element.equals(element)) {
-                log.debug(String.format("Cache [%d]: element [%s]<%s> is found", this.hashCode(), element, element.getClass().getName()));
+                log.debug("Cache [{}]: element [{}]<{}> is found", this.hashCode(), element, element.getClass().getName());
                 return true;
             }
         }
-        log.debug(String.format("Cache [%d]: element [%s]<%s> NOT found", this.hashCode(), element, element.getClass().getName()));
+        log.debug("Cache [{}]: element [{}]<{}> NOT found", this.hashCode(), element, element.getClass().getName());
         return false;
     }
 
@@ -84,11 +84,11 @@ public class Cache<T> {
     public boolean isPresent(int index) {
         for (int i = 0; i < cache.length; i++) {
             if (cache[i] != null && cache[i].index == index) {
-                log.debug(String.format("Cache [%d]: element [%s]<%s> with index [%d] is found", this.hashCode(), cache[i].element, cache[i].element.getClass().getName(), index));
+                log.debug("Cache [{}]: element [{}]<{}> with index [{}] is found", this.hashCode(), cache[i].element, cache[i].element.getClass().getName(), index);
                 return true;
             }
         }
-        log.debug(String.format("Cache [%d]: element with index [%d] NOT found", this.hashCode(), index));
+        log.debug("Cache [{}]: element with index [{}] NOT found", this.hashCode(), index);
         return false;
     }
 
@@ -103,10 +103,10 @@ public class Cache<T> {
             CacheElement<T> tempElement = getExistingCacheElementByIndex(index);
             moveLeftCacheElements(getElementID(index));
             cache[countElements - 1] = tempElement;
-            log.debug(String.format("Cache [%d]: returned element [%s] with index [%d]", this.hashCode(), cache[countElements - 1].element, index));
+            log.debug("Cache [{}]: returned element [{}] with index [{}]", this.hashCode(), cache[countElements - 1].element, index);
             return cache[countElements - 1].element;
         }
-        log.debug(String.format("Cache [%d]: returned NULL", this.hashCode()));
+        log.debug("Cache [{}]: returned NULL", this.hashCode());
         return null;
     }
 
@@ -120,7 +120,7 @@ public class Cache<T> {
     private CacheElement<T> getExistingCacheElementByIndex(int index) throws IllegalStateOfCacheElement {
         for (int i = 0; i < cache.length; i++) {
             if (cache[i].index == index) {
-                log.info(String.format("Cache [%d]: private method returned CacheElement %s", this.hashCode(), cache[i]));
+                log.info("Cache [{}]: private method returned CacheElement {}", this.hashCode(), cache[i]);
                 return cache[i];
             }
         }
@@ -137,7 +137,7 @@ public class Cache<T> {
             cache[i] = null;
         }
         countElements = 0;
-        log.info(String.format("Cache [%d]: was cleared", this.hashCode()));
+        log.info("Cache [{}]: was cleared", this.hashCode());
     }
 
     /**
@@ -152,7 +152,7 @@ public class Cache<T> {
         if (idBeginMove.length > 0) {
             startingIndex = idBeginMove[0];
         }
-        log.debug(String.format("Cache [%d]: elements moved LEFT starting with [%d] index", this.hashCode(), startingIndex));
+        log.debug("Cache [{}]: elements moved LEFT starting with [{}] index", this.hashCode(), startingIndex);
         for (int i = startingIndex; i < cache.length - 1; i++) {
             cache[i] = cache[i + 1];
         }
@@ -168,11 +168,11 @@ public class Cache<T> {
     private int getElementID(T element) throws ElementDoesNotExistException {
         for (int i = 0; i < cache.length; i++) {
             if (cache[i].element.equals(element)) {
-                log.debug(String.format("Cache [%d]: id of element [%s] identified with index=[%d]", this.hashCode(), element, i));
+                log.debug("Cache [{}]: id of element [{}] identified with index=[{}]", this.hashCode(), element, i);
                 return i;
             }
         }
-        ElementDoesNotExistException elementDoesNotExistException = new ElementDoesNotExistException(String.format("Cache [%d]: id of element [%s] unidentified", this.hashCode(), element));
+        ElementDoesNotExistException elementDoesNotExistException = new ElementDoesNotExistException(String.format("Cache [{}]: id of element [{}] unidentified", this.hashCode(), element));
         log.error(elementDoesNotExistException.getFullStackTrace());
         throw elementDoesNotExistException;
     }
@@ -187,7 +187,7 @@ public class Cache<T> {
     private int getElementID(int index) throws ElementDoesNotExistException {
         for (int i = 0; i < cache.length; i++) {
             if (cache[i].index == index) {
-                log.debug(String.format("Cache [%d]: element with index = [%d] identified with index = [%d] in cache", this.hashCode(), index, i));
+                log.debug("Cache [{}]: element with index = [{}] identified with index = [{}] in cache", this.hashCode(), index, i);
                 return i;
             }
         }
