@@ -36,9 +36,9 @@
         <appender-ref ref="CONSOLE"/>
     </logger>
 
-    <!--<logger name="liadov.mypackage.lesson2.Storage" level="debug" additivity="false">
+    <logger name="liadov.mypackage.lesson5.CommandFilter" level="debug" additivity="false">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE-STORAGE"/>
-    </logger>-->
+    </logger>
 
 </configuration>
