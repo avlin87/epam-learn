@@ -18,7 +18,7 @@ public class CommandFilter {
             log.info("Command [{}] is present in Enum", command.toString());
             return chooseHandler(command, commandText);
         } catch (IllegalArgumentException e) {
-            log.warn(e.getMessage());
+            log.warn(e.toString());
             System.out.println("Command unidentified. Please type \"help\" to see available commands");
         }
         return true;
@@ -35,6 +35,8 @@ public class CommandFilter {
         switch (command) {
             case ADD: {
                 log.info("ADD command identified");
+                AddHandler addHandler = new AddHandler(commandText);
+                addHandler.proceedAddScenario();
                 break;
             }
             case DELETE: {

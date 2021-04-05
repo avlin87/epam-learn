@@ -23,6 +23,7 @@ public class Main {
             while (continueRun && scanner.hasNext()) {
                 if (scanner.hasNext()) {
                     commandText = scanner.nextLine();
+                    scanner.reset();
                     log.info("Command received from console: {}", commandText);
                     continueRun = commandFilter.parseCommand(commandText);
                     log.info("Variable continueRun = {}", continueRun);

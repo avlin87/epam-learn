@@ -18,13 +18,26 @@
         </rollingPolicy>
     </appender>
 
-    <appender name="FILE-STORAGE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>LOG/debugStorage.log</file>
+    <appender name="FILE-CommandFilter" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>LOG/debugCommandFilter.log</file>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} &lt;%M&gt; - %msg%n</Pattern>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"><!-- rollover daily -->
-            <fileNamePattern>LOG/archived/debugStorage.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <fileNamePattern>LOG/archived/debugCommandFilter.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>10MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="FILE-ADDHANDLER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>LOG/debugAddHandler.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} &lt;%M&gt; - %msg%n</Pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"><!-- rollover daily -->
+            <fileNamePattern>LOG/archived/debugAddHandler.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <maxFileSize>10MB</maxFileSize>
             </timeBasedFileNamingAndTriggeringPolicy>
@@ -32,13 +45,18 @@
     </appender>
 
     <logger name="liadov.mypackage.Main" level="debug" additivity="false">
-        <appender-ref ref="FILE-MAIN"/>
         <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE-MAIN"/>
     </logger>
 
     <logger name="liadov.mypackage.lesson5.CommandFilter" level="debug" additivity="false">
         <appender-ref ref="CONSOLE"/>
-        <appender-ref ref="FILE-STORAGE"/>
+        <appender-ref ref="FILE-CommandFilter"/>
+    </logger>
+
+    <logger name="liadov.mypackage.lesson5.AddHandler" level="debug" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE-ADDHANDLER"/>
     </logger>
 
 </configuration>
