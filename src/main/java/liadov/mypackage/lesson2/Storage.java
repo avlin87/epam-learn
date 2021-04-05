@@ -118,7 +118,7 @@ public class Storage<T> {
                 return cache.get(index);
             }
         } catch (IllegalStateOfCacheElement e) {
-            log.error(e.getFullStackTrace());
+            log.error(e.toString());
         }
         try {
             if (index >= storage.length) {
@@ -128,7 +128,7 @@ public class Storage<T> {
             log.debug("[{}]: returns element [{}] with index [{}]", this.UNIQ_ID, storage[index], index);
             return (T) storage[index];
         } catch (ElementDoesNotExistException e) {
-            log.error(e.getFullStackTrace());
+            log.error(e.toString());
         }
         return null;
     }

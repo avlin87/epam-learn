@@ -36,9 +36,10 @@ public class ElementDoesNotExistException extends ArrayIndexOutOfBoundsException
      *
      * @return String
      */
-    public String getFullStackTrace() {
+    @Override
+    public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(this.toString());
+        sb.append(super.toString());
         for (StackTraceElement element : super.getStackTrace()) {
             sb.append("\n\t" + element.toString());
         }

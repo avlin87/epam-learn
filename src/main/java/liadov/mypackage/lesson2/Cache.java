@@ -137,7 +137,7 @@ public class Cache<T> {
             }
         }
         IllegalStateOfCacheElement illegalStateOfCacheElement = new IllegalStateOfCacheElement(String.format("[%d]: existing element was not found", this.UNIQ_ID));
-        log.error(illegalStateOfCacheElement.getFullStackTrace());
+        log.error(illegalStateOfCacheElement.toString());
         throw illegalStateOfCacheElement;
     }
 
@@ -185,7 +185,7 @@ public class Cache<T> {
             }
         }
         ElementDoesNotExistException elementDoesNotExistException = new ElementDoesNotExistException(String.format("[{}]: id of element [{}] unidentified", this.UNIQ_ID, element));
-        log.error(elementDoesNotExistException.getFullStackTrace());
+        log.error(elementDoesNotExistException.toString());
         throw elementDoesNotExistException;
     }
 
@@ -204,7 +204,7 @@ public class Cache<T> {
             }
         }
         ElementDoesNotExistException elementDoesNotExistException = new ElementDoesNotExistException(String.format("[%d]: element with id [%d] does not exist", this.UNIQ_ID, index));
-        log.error(elementDoesNotExistException.getFullStackTrace());
+        log.error(elementDoesNotExistException.toString());
         throw elementDoesNotExistException;
     }
 
