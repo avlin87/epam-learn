@@ -14,6 +14,7 @@ public class AddHandler {
     private String fileName;
     private String text;
     private String[] inputText;
+    private int rowCount = 0;
 
     /**
      * Constructor that receives full text of ADD command
@@ -25,6 +26,10 @@ public class AddHandler {
         log.info(this.toString());
     }
 
+    /**
+     * Method validate whether it is possible to use provided command for ADD operation
+     * validation message appears in case command is incorrect
+     */
     public void proceedAddScenario() {
         boolean rowNumberProvided;
         boolean isEnoughValuesProvided;
@@ -63,96 +68,151 @@ public class AddHandler {
         }
     }
 
+    /**
+     * Method controls writing to File in case of ADD operation
+     *
+     * @param fileName  String - target name of a File
+     * @param text      - String text to be added to File
+     * @param rowNumber - int, starting point for adding text to File
+     */
     private void writeTextToFile(String fileName, String text, int... rowNumber) {
-        String tempString = "";
         File targetFile = new File(fileName);
         boolean isFileExist = targetFile.exists();
         boolean isTargetFileOriginallyEmpty = (targetFile.length() == 0);
-        log.info("target file found: {}", isFileExist);
         boolean rowNumberProvided = rowNumber.length > 0;
-        log.info("row number provided: {}", rowNumberProvided);
-        long filePointer;
-        int rowCount = 0;
-        List<String> existingText = new ArrayList<>();
+        boolean isFormattingLineRequired;
+        boolean IsDataAvailableForRestoration;
+        List<String> existingText = null;
 
+        log.info("target file found: {}", isFileExist);
+        log.info("target file originally empty: {}", isTargetFileOriginallyEmpty);
+        log.info("row number provided: {}", rowNumberProvided);
 
 
         try (RandomAccessFile accessFile = new RandomAccessFile(targetFile, "rws")) {
-
-            log.info("active file pointer = {}", accessFile.getFilePointer());
-
             if (rowNumberProvided) {
                 int startRow = rowNumber[0] - 1;
-                for (int i = 0; i < startRow; i++) {
-                    if (accessFile.readLine() == null) {
-                        accessFile.writeBytes("\n");
-                        log.info("new row added to reach row number={}, i={}", startRow, i);
-                    }
-                    rowCount++;
-                    log.info("active file pointer = {}", accessFile.getFilePointer());
-                    log.info("row count = {}", rowCount);
-                }
-                log.info("blank rows added if any were needed");
+                addAdditionalRows(accessFile, startRow);
             }
-
             if (isFileExist) {
-                filePointer = accessFile.getFilePointer();
-                log.info("file pointer = {}", filePointer);
-                while (tempString != null) {
-                    tempString = accessFile.readLine();
-                    log.info("tempString = \"{}\"", tempString);
-                    if (tempString == null) {
-                        log.info("no existing rows found");
-                        break;
-                    }
-                    rowCount++;
-                    log.info("row count = {}", rowCount);
-                    if (rowNumberProvided) {
-                        existingText.add(tempString);
-                        log.info("row received from file: {}", existingText.get(existingText.size() - 1));
-                    } else {
-                        log.info("row skipped");
-                    }
-                }
-                log.info("active file pointer = {}", accessFile.getFilePointer());
-                log.info("row count = {}", rowCount);
-                log.info("rowNumberProvided = {}", rowNumberProvided);
-                if (rowNumberProvided) {
-                    log.info("file Pointer changed from {} to {}", accessFile.getFilePointer(), filePointer);
-                    accessFile.seek(filePointer);
-                } else if (!isTargetFileOriginallyEmpty) {
-                    log.info("new line added");
-                    accessFile.writeBytes("\n");
-                    rowCount++;
-                    log.info("row count = {}", rowCount);
-                }
+                existingText = getExistingTextFromFile(accessFile, rowNumberProvided, isTargetFileOriginallyEmpty);
             }
-            System.out.println(isFileExist);
-            if ((isFileExist) && rowNumberProvided && (rowNumber[0] > rowCount) && (!isTargetFileOriginallyEmpty)) {
-                accessFile.writeBytes("\n");
-                rowCount++;
-                log.info("row count = {}", rowCount);
-                log.info("new row created: rowNumberProvided={}, rowNumber[0]={}, rowCount={}", rowNumberProvided, rowNumber.length > 0 ? rowNumber[0] : "null", rowCount);
-            } else {
-                log.info("new row NOT added: rowNumberProvided={}, rowNumber[0]={}, rowCount={}", rowNumberProvided, rowNumber.length > 0 ? rowNumber[0] : "null", rowCount);
-            }
+            isFormattingLineRequired = isFileExist && rowNumberProvided && (rowNumber[0] > rowCount) && (!isTargetFileOriginallyEmpty);
+            addFormattingLine(accessFile, isFormattingLineRequired);
 
             accessFile.writeBytes(text);
             log.info("new text added successfully");
 
-            if (rowNumberProvided && isFileExist && (existingText.size() > 0)) {
-                for (String existingString : existingText) {
-                    accessFile.writeBytes("\n");
-                    accessFile.writeBytes(existingString);
-                    log.info("old text restoration process: \"{}\"", existingString);
-                }
-            }
-            log.info("write operation successful");
+            IsDataAvailableForRestoration = rowNumberProvided && isFileExist && (existingText.size() > 0);
+            restoreOldText(accessFile, IsDataAvailableForRestoration, existingText);
+
         } catch (FileNotFoundException e) {
             log.warn(ExceptionHandler.getStackTrace(e));
         } catch (IOException e) {
             log.warn(ExceptionHandler.getStackTrace(e));
         }
+    }
+
+    /**
+     * Method restore existing text to File if required condition met
+     *
+     * @param accessFile                    RandomAccessFile
+     * @param isDataAvailableForRestoration boolean
+     * @param existingText                  List<String> text to be added to file
+     * @throws IOException
+     */
+    private void restoreOldText(RandomAccessFile accessFile, boolean isDataAvailableForRestoration, List<String> existingText) throws IOException {
+        if (isDataAvailableForRestoration) {
+            for (String existingString : existingText) {
+                accessFile.writeBytes("\n");
+                accessFile.writeBytes(existingString);
+                log.info("old text restoration process: \"{}\"", existingString);
+            }
+            log.info("Old text restored successfully");
+        } else {
+            log.info("restoration was not executed");
+        }
+    }
+
+    /**
+     * Method adding new row to file if required condition met
+     *
+     * @param accessFile               RandomAccessFile
+     * @param isFormattingLineRequired boolean
+     * @throws IOException
+     */
+    private void addFormattingLine(RandomAccessFile accessFile, boolean isFormattingLineRequired) throws IOException {
+        if (isFormattingLineRequired) {
+            accessFile.writeBytes("\n");
+            rowCount++;
+            log.info("Formatting row added. rowCount={}", rowCount);
+        } else {
+            log.info("Formatting row NOT added. rowCount={}", rowCount);
+        }
+    }
+
+    /**
+     * Method read existing text form file and return List<String> as a result
+     *
+     * @param accessFile                  RandomAccessFile
+     * @param rowNumberProvided           boolean
+     * @param isTargetFileOriginallyEmpty boolean
+     * @return List<String> existing text
+     * @throws IOException
+     */
+    private List<String> getExistingTextFromFile(RandomAccessFile accessFile, boolean rowNumberProvided, boolean isTargetFileOriginallyEmpty) throws IOException {
+        String tempString = "";
+        long filePointer = accessFile.getFilePointer();
+        log.info("file pointer = {}", filePointer);
+        List<String> existingText = new ArrayList<>();
+
+        while (tempString != null) {
+            tempString = accessFile.readLine();
+            log.info("row received from FILE: \"{}\"", tempString);
+            if (tempString == null) {
+                log.info("no existing rows found");
+                break;
+            }
+            if (rowNumberProvided) {
+                existingText.add(tempString);
+                log.info("row received from file: {}", existingText.get(existingText.size() - 1));
+            } else {
+                log.info("row skipped");
+            }
+            rowCount++;
+            log.info("row count = {}", rowCount);
+        }
+        if (rowNumberProvided) {
+            log.info("file Pointer changed from {} to {}", accessFile.getFilePointer(), filePointer);
+            accessFile.seek(filePointer);
+        } else if (!isTargetFileOriginallyEmpty) {
+            log.info("new line added");
+            accessFile.writeBytes("\n");
+            rowCount++;
+            log.info("row count = {}", rowCount);
+        }
+        return existingText;
+    }
+
+    /**
+     * Method read target file via accessFile and add new rows to file in case new text should be added beyond existing rows.
+     *
+     * @param accessFile RandomAccessFile
+     * @param startRow   int
+     * @throws IOException
+     */
+    private void addAdditionalRows(RandomAccessFile accessFile, int startRow) throws IOException {
+        for (int i = 0; i < startRow; i++) {
+            if (accessFile.readLine() == null) {
+                accessFile.writeBytes("\n");
+                log.info("new row added to reach row number={}, i={}", startRow, i);
+            }
+            rowCount++;
+
+            log.info("active file pointer = {}", accessFile.getFilePointer());
+            log.info("row count = {}", rowCount);
+        }
+        log.info("blank rows adding operation finished");
     }
 
     /**
