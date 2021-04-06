@@ -4,17 +4,13 @@ import liadov.mypackage.lesson5.exceptions.ExceptionHandler;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
-public class AddHandler {
-    private int rowNumber;
-    private String fileName;
+public class AddHandler extends CommandHandler {
+
     private String text;
-    private String[] inputText;
-    private int rowCount = 0;
 
     /**
      * Constructor that receives full text of ADD command
@@ -22,7 +18,7 @@ public class AddHandler {
      * @param inputText - full text of ADD command
      */
     public AddHandler(String inputText) {
-        this.inputText = inputText.split(" ");
+        setInputText(inputText.split(" "));
         log.info(this.toString());
     }
 
@@ -31,40 +27,13 @@ public class AddHandler {
      * validation message appears in case command is incorrect
      */
     public void proceedAddScenario() {
-        boolean rowNumberProvided;
-        boolean isEnoughValuesProvided;
-        try {
-            rowNumberProvided = validateRowNumber(inputText[1]);
-            log.info("row number specified in command: {}", rowNumberProvided);
-            isEnoughValuesProvided = (rowNumberProvided && (rowNumber >= 1) && (inputText.length > 3)) || (!rowNumberProvided && (inputText.length > 2));
-            log.info("EnoughValuesProvided: {}", isEnoughValuesProvided);
-            if (isEnoughValuesProvided) {
-                int fileNamePosition = 1;
-                if (rowNumberProvided) {
-                    fileNamePosition = 2;
-                }
-                parseFileName(inputText[fileNamePosition]);
-                parseText(inputText, fileNamePosition);
-                if (rowNumberProvided) {
-                    writeTextToFile(fileName, text, rowNumber);
-                } else {
-                    writeTextToFile(fileName, text);
-                }
+        if (validateCommand(2, 3)) {
+            parseText(getInputText(), getFileNamePosition());
+            if (getRowNumber() > 0) {
+                addTextToFile(getFileName(), text, getRowNumber());
             } else {
-                String rowNumberValidation = "";
-                if (rowNumberProvided && !(rowNumber >= 1)) {
-                    System.out.println("row number should be =>1 (in case it is specified)");
-                    rowNumberValidation = " row number=" + rowNumber + ", expected value >=1";
-                }
-                System.out.println("Please provide full command information. Type \"help\" to see command example");
-                log.info("Provided ADD command is not valid: length={}, expected length>={};{}", inputText.length, rowNumberProvided ? 4 : 3, rowNumberValidation);
+                addTextToFile(getFileName(), text);
             }
-        } catch (ArrayIndexOutOfBoundsException e) {
-            System.out.println("Please provide full command information. Type \"help\" to see command example");
-            log.info("add command has empty details [{}], \n{}", Arrays.toString(inputText), ExceptionHandler.getStackTrace(e));
-        } catch (FileNotFoundException e) {
-            System.out.println("File name is not valid");
-            log.info("File name is not valid, \n{}", ExceptionHandler.getStackTrace(e));
         }
     }
 
@@ -75,7 +44,7 @@ public class AddHandler {
      * @param text      - String text to be added to File
      * @param rowNumber - int, starting point for adding text to File
      */
-    private void writeTextToFile(String fileName, String text, int... rowNumber) {
+    private void addTextToFile(String fileName, String text, int... rowNumber) {
         File targetFile = new File(fileName);
         boolean isFileExist = targetFile.exists();
         boolean isTargetFileOriginallyEmpty = (targetFile.length() == 0);
@@ -88,23 +57,22 @@ public class AddHandler {
         log.info("target file originally empty: {}", isTargetFileOriginallyEmpty);
         log.info("row number provided: {}", rowNumberProvided);
 
-
-        try (RandomAccessFile accessFile = new RandomAccessFile(targetFile, "rws")) {
+        try (FileAccessController fileController = new FileAccessController(targetFile)) {
             if (rowNumberProvided) {
                 int startRow = rowNumber[0] - 1;
-                addAdditionalRows(accessFile, startRow);
+                addAdditionalRows(fileController, startRow);
             }
             if (isFileExist) {
-                existingText = getExistingTextFromFile(accessFile, rowNumberProvided, isTargetFileOriginallyEmpty);
+                existingText = fileController.getExistingTextFromFile(rowNumberProvided, isTargetFileOriginallyEmpty);
             }
-            isFormattingLineRequired = isFileExist && rowNumberProvided && (rowNumber[0] > rowCount) && (!isTargetFileOriginallyEmpty);
-            addFormattingLine(accessFile, isFormattingLineRequired);
-
-            accessFile.writeBytes(text);
+            isFormattingLineRequired = isFileExist && rowNumberProvided && (rowNumber[0] > fileController.getRowCount()) && (!isTargetFileOriginallyEmpty);
+            addFormattingLine(fileController, isFormattingLineRequired);
+            System.out.println(text);
+            fileController.writeBytes(text);
             log.info("new text added successfully");
 
             IsDataAvailableForRestoration = rowNumberProvided && isFileExist && (existingText.size() > 0);
-            restoreOldText(accessFile, IsDataAvailableForRestoration, existingText);
+            fileController.restoreOldText(IsDataAvailableForRestoration, existingText);
 
         } catch (FileNotFoundException e) {
             log.warn(ExceptionHandler.getStackTrace(e));
@@ -114,136 +82,41 @@ public class AddHandler {
     }
 
     /**
-     * Method restore existing text to File if required condition met
-     *
-     * @param accessFile                    RandomAccessFile
-     * @param isDataAvailableForRestoration boolean
-     * @param existingText                  List<String> text to be added to file
-     * @throws IOException
-     */
-    private void restoreOldText(RandomAccessFile accessFile, boolean isDataAvailableForRestoration, List<String> existingText) throws IOException {
-        if (isDataAvailableForRestoration) {
-            for (String existingString : existingText) {
-                accessFile.writeBytes("\n");
-                accessFile.writeBytes(existingString);
-                log.info("old text restoration process: \"{}\"", existingString);
-            }
-            log.info("Old text restored successfully");
-        } else {
-            log.info("restoration was not executed");
-        }
-    }
-
-    /**
      * Method adding new row to file if required condition met
      *
-     * @param accessFile               RandomAccessFile
+     * @param fileController           FileAccessController
      * @param isFormattingLineRequired boolean
      * @throws IOException
      */
-    private void addFormattingLine(RandomAccessFile accessFile, boolean isFormattingLineRequired) throws IOException {
+    private void addFormattingLine(FileAccessController fileController, boolean isFormattingLineRequired) throws IOException {
         if (isFormattingLineRequired) {
-            accessFile.writeBytes("\n");
-            rowCount++;
-            log.info("Formatting row added. rowCount={}", rowCount);
+            fileController.writeBytes("\n");
+            fileController.incrementRowCount();
+            log.info("Formatting row added. rowCount={}", fileController.getRowCount());
         } else {
-            log.info("Formatting row NOT added. rowCount={}", rowCount);
+            log.info("Formatting row NOT added. rowCount={}", fileController.getRowCount());
         }
-    }
-
-    /**
-     * Method read existing text form file and return List<String> as a result
-     *
-     * @param accessFile                  RandomAccessFile
-     * @param rowNumberProvided           boolean
-     * @param isTargetFileOriginallyEmpty boolean
-     * @return List<String> existing text
-     * @throws IOException
-     */
-    private List<String> getExistingTextFromFile(RandomAccessFile accessFile, boolean rowNumberProvided, boolean isTargetFileOriginallyEmpty) throws IOException {
-        String tempString = "";
-        long filePointer = accessFile.getFilePointer();
-        log.info("file pointer = {}", filePointer);
-        List<String> existingText = new ArrayList<>();
-
-        while (tempString != null) {
-            tempString = accessFile.readLine();
-            log.info("row received from FILE: \"{}\"", tempString);
-            if (tempString == null) {
-                log.info("no existing rows found");
-                break;
-            }
-            if (rowNumberProvided) {
-                existingText.add(tempString);
-                log.info("row received from file: {}", existingText.get(existingText.size() - 1));
-            } else {
-                log.info("row skipped");
-            }
-            rowCount++;
-            log.info("row count = {}", rowCount);
-        }
-        if (rowNumberProvided) {
-            log.info("file Pointer changed from {} to {}", accessFile.getFilePointer(), filePointer);
-            accessFile.seek(filePointer);
-        } else if (!isTargetFileOriginallyEmpty) {
-            log.info("new line added");
-            accessFile.writeBytes("\n");
-            rowCount++;
-            log.info("row count = {}", rowCount);
-        }
-        return existingText;
     }
 
     /**
      * Method read target file via accessFile and add new rows to file in case new text should be added beyond existing rows.
      *
-     * @param accessFile RandomAccessFile
-     * @param startRow   int
+     * @param fileController FileAccessController
+     * @param startRow       int
      * @throws IOException
      */
-    private void addAdditionalRows(RandomAccessFile accessFile, int startRow) throws IOException {
+    private void addAdditionalRows(FileAccessController fileController, int startRow) throws IOException {
         for (int i = 0; i < startRow; i++) {
-            if (accessFile.readLine() == null) {
-                accessFile.writeBytes("\n");
+            if (fileController.readLine() == null) {
+                fileController.writeBytes("\n");
                 log.info("new row added to reach row number={}, i={}", startRow, i);
             }
-            rowCount++;
+            fileController.incrementRowCount();
 
-            log.info("active file pointer = {}", accessFile.getFilePointer());
-            log.info("row count = {}", rowCount);
+            log.info("active file pointer = {}", fileController.getFilePointer());
+            log.info("row count = {}", fileController.getRowCount());
         }
         log.info("blank rows adding operation finished");
-    }
-
-    /**
-     * Method returns true in case rowNumber was parsed successfully
-     *
-     * @param rowNumberString string from witch rowNumber parsing should be executed
-     * @return true/false based on rowNumber parsing result
-     */
-    private boolean validateRowNumber(String rowNumberString) {
-        try {
-            rowNumber = Integer.parseInt(rowNumberString);
-            log.info("rowNumber parsed as {}", rowNumber);
-            return true;
-        } catch (NumberFormatException e) {
-            log.info("non Integer value provided as second word in command add [{}]", rowNumberString);
-        }
-        return false;
-    }
-
-    /**
-     * Method pars name of file as target for ADD operation
-     *
-     * @param fileName String text value
-     */
-    private void parseFileName(String fileName) throws FileNotFoundException {
-        if (fileName.length() > 0) {
-            this.fileName = fileName;
-            log.info("fileName parsed as {}", this.fileName);
-        } else {
-            throw new FileNotFoundException();
-        }
     }
 
     /**
@@ -272,10 +145,10 @@ public class AddHandler {
     @Override
     public String toString() {
         return "AddHandler{" +
-                "rowNumber=" + rowNumber +
-                ", fileName='" + fileName + '\'' +
+                "rowNumber=" + getRowNumber() +
+                ", fileName='" + getFileName() + '\'' +
                 ", text='" + text + '\'' +
-                ", inputText=" + Arrays.toString(inputText) +
+                ", inputText=" + Arrays.toString(getInputText()) +
                 '}';
     }
 }

@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class CommandFilter {
+
     /**
      * Method parsing first word of command
      *
@@ -41,6 +42,8 @@ public class CommandFilter {
             }
             case DELETE: {
                 log.info("DELETE command identified");
+                DeleteHandler deleteHandler = new DeleteHandler(commandText);
+                deleteHandler.proceedDeleteScenario();
                 break;
             }
             case PRINT: {

@@ -57,6 +57,19 @@
         </rollingPolicy>
     </appender>
 
+    <appender name="FILE-DELETEHANDLER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>LOG/debugDeleteHandler.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} &lt;%M&gt; - %msg%n</Pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"><!-- rollover daily -->
+            <fileNamePattern>LOG/archived/debugDelete.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>10MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+    </appender>
+
     <logger name="liadov.mypackage.Main" level="debug" additivity="false">
         <!--<appender-ref ref="CONSOLE"/>-->
         <appender-ref ref="FILE-MAIN"/>
@@ -70,6 +83,11 @@
     <logger name="liadov.mypackage.lesson5.AddHandler" level="debug" additivity="false">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE-ADDHANDLER"/>
+    </logger>
+
+    <logger name="liadov.mypackage.lesson5.DeleteHandler" level="debug" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE-DELETEHANDLER"/>
     </logger>
 
     <logger name="liadov.mypackage.lesson5.FileAccessController" level="debug" additivity="false">
