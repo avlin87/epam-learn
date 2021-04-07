@@ -53,7 +53,7 @@ public class DeleteHandler extends CommandHandler {
                 fileController.skipRows(rowNumber[0] - 1, false);
                 filePointDeleteStart = fileController.getFilePointer();
             } else {
-                filePointDeleteStart = fileController.getFilePointerBeforeLastRow() - 1;
+                filePointDeleteStart = fileController.getFilePointerBeforeLastRow();
             }
             log.info("file Point Delete Start ={}", filePointDeleteStart);
             log.info("selected row for removal: \"{}\"", fileController.readLine());

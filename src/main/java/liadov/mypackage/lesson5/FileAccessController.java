@@ -52,9 +52,11 @@ public class FileAccessController extends RandomAccessFile {
         long filePointer = this.getFilePointer();
         log.info("file pointer = {}", filePointer);
         List<String> existingText = new ArrayList<>();
+        long tempFilePointer = 0;
 
         while (true) {
-            filePointerBeforeLastRow = getFilePointer();
+            filePointerBeforeLastRow = tempFilePointer;
+            tempFilePointer = this.getFilePointer();
             String tempString = this.readLine();
             log.info("row received from FILE: \"{}\"", tempString);
             if (tempString == null) {
