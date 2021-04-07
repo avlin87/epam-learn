@@ -102,7 +102,6 @@ public class CommandHandler {
 
     public void validateRequestedRowIsPresent(boolean rowNumberProvided, int size, int rowNumber) throws UnreachableRequestedRow {
         if (rowNumberProvided && (size < rowNumber)) {
-            consolePrinter.printRowNumberNotReached();
             log.warn("requested row is not present in existing text. Existing text size {}, requested row {}", size, rowNumber);
             throw new UnreachableRequestedRow();
         }
