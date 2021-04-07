@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class CommandFilter {
-
+    private ConsolePrinter consolePrinter = ConsolePrinter.getInstance();
     /**
      * Method parsing first word of command
      *
@@ -22,7 +22,7 @@ public class CommandFilter {
             return chooseHandler(command, commandText);
         } catch (IllegalArgumentException e) {
             log.warn(e.toString());
-            System.out.println("Command unidentified. Please type \"help\" to see available commands");
+            consolePrinter.printCommandUnidentified();
         }
         return true;
     }
@@ -51,16 +51,18 @@ public class CommandFilter {
                 }
                 case PRINT: {
                     log.info("PRINT command identified");
+                    PrintHandler printHandler = new PrintHandler(commandText);
+                    printHandler.proceedPrintScenario();
                     break;
                 }
                 case HELP: {
                     log.info("HELP command identified");
-                    command.printAllAvailableCommands();
+                    consolePrinter.printAllAvailableCommands();
                     break;
                 }
                 case EXIT: {
                     log.info("EXIT command identified");
-                    System.out.println("\n*** Program successfully finished. Have a good day! ***");
+                    consolePrinter.printFinishProgram();
                     return false;
                 }
             }

@@ -67,7 +67,6 @@ public class AddHandler extends CommandHandler {
             }
             isFormattingLineRequired = isFileExist && rowNumberProvided && (rowNumber[0] > fileController.getRowCount()) && (!isTargetFileOriginallyEmpty);
             addFormattingLine(fileController, isFormattingLineRequired);
-            System.out.println(text);
             fileController.writeBytes(text);
             log.info("new text added successfully");
 

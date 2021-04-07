@@ -1,8 +1,10 @@
 package liadov.mypackage.lesson5;
 
 import liadov.mypackage.lesson5.exceptions.ExceptionHandler;
+import liadov.mypackage.lesson5.exceptions.UnreachableRequestedRow;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Arrays;
 
@@ -12,6 +14,7 @@ public class CommandHandler {
     private String fileName;
     private int fileNamePosition;
     private String[] inputText;
+    private ConsolePrinter consolePrinter = ConsolePrinter.getInstance();
 
     /**
      * Method validate correctness of received command
@@ -39,17 +42,17 @@ public class CommandHandler {
             } else {
                 String rowNumberValidation = "";
                 if (rowNumberProvided && !(getRowNumber() >= 1)) {
-                    System.out.println("row number should be =>1 (in case it is specified)");
+                    consolePrinter.printRowNumberValidation();
                     rowNumberValidation = " row number=" + getRowNumber() + ", expected value >=1";
                 }
-                System.out.println("Please provide full command information. Type \"help\" to see command example");
+                consolePrinter.printProvideFullCommand();
                 log.info("Provided ADD command is not valid: length={}, expected length>={};{}", getInputText().length, rowNumberProvided ? (minWithNumber + 1) : (minWithoutNumber + 1), rowNumberValidation);
             }
         } catch (ArrayIndexOutOfBoundsException e) {
-            System.out.println("Please provide full command information. Type \"help\" to see command example");
+            consolePrinter.printProvideFullCommand();
             log.info("add command has empty details [{}], \n{}", Arrays.toString(getInputText()), ExceptionHandler.getStackTrace(e));
         } catch (FileNotFoundException e) {
-            System.out.println("File name is not valid");
+            consolePrinter.printFileNotFound();
             log.info("File name is not valid, \n{}", ExceptionHandler.getStackTrace(e));
         }
         return false;
@@ -85,6 +88,21 @@ public class CommandHandler {
         } else {
             throw new FileNotFoundException();
         }
+    }
+
+    public void validateFile(File targetFile) throws FileNotFoundException {
+        if (!targetFile.exists()) {
+            log.info("target file was not found: {}", fileName);
+            throw new FileNotFoundException();
+        }
+    }
+
+    public void validateRequestedRowIsPresent(boolean rowNumberProvided, int size, int rowNumber) throws UnreachableRequestedRow {
+        if (rowNumberProvided && (size < rowNumber)) {
+            log.warn("requested row is not present in existing text. Existing text size {}, requested row {}", size, rowNumber);
+            throw new UnreachableRequestedRow();
+        }
+        log.info("requested row number present in file");
     }
 
     public int getRowNumber() {

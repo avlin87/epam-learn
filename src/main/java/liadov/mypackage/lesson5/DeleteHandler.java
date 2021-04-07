@@ -33,10 +33,7 @@ public class DeleteHandler extends CommandHandler {
 
     private void deleteTextFromFile(String fileName, int... rowNumber) throws FileNotFoundException, UnreachableRequestedRow {
         File targetFile = new File(fileName);
-        if (!targetFile.exists()) {
-            log.info("target file was not found: {}", fileName);
-            throw new FileNotFoundException();
-        }
+        validateFile(targetFile);
         boolean rowNumberProvided = rowNumber.length > 0;
         boolean isTargetFileOriginallyEmpty = (targetFile.length() == 0);
         List<String> existingText;
@@ -49,10 +46,8 @@ public class DeleteHandler extends CommandHandler {
         try (FileAccessController fileController = new FileAccessController(targetFile)) {
             existingText = fileController.getExistingTextFromFile(rowNumberProvided, isTargetFileOriginallyEmpty);
             log.info("row number provided {}, existing text size {}, row number {}", rowNumberProvided, existingText.size(), rowNumberProvided ? rowNumber[0] : "N/A");
-            if (rowNumberProvided && (existingText.size() < rowNumber[0])) {
-                log.warn("requested row is not present in existing text. Existing text size {}, requested row {}", existingText.size(), rowNumber[0]);
-                throw new UnreachableRequestedRow();
-            }
+            validateRequestedRowIsPresent(rowNumberProvided, existingText.size(), rowNumber[0]);
+
             if (rowNumberProvided) {
                 fileController.skipRows(rowNumber[0] - 1, false);
                 filePointDeleteStart = fileController.getFilePointer();
