@@ -9,6 +9,7 @@ import java.util.List;
 
 @Slf4j
 public class AddHandler extends CommandHandler {
+    ConsolePrinter consolePrinter = ConsolePrinter.getInstance();
 
     private String text;
 
@@ -72,7 +73,7 @@ public class AddHandler extends CommandHandler {
 
             IsDataAvailableForRestoration = rowNumberProvided && isFileExist && (existingText.size() > 0);
             fileController.restoreOldText(IsDataAvailableForRestoration, existingText, 0);
-
+            consolePrinter.printRowAddedSuccessfully();
         } catch (FileNotFoundException e) {
             log.warn("requested file was not found\n{}", ExceptionHandler.getStackTrace(e));
         } catch (IOException e) {

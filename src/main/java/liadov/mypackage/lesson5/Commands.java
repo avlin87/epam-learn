@@ -1,9 +1,9 @@
 package liadov.mypackage.lesson5;
 
 public enum Commands {
-    ADD("ADD (example: add 5 fileName \"text\")"),
-    DELETE("D (example: delete 5 fileName)"),
-    PRINT("P (print 4 fileName)"),
+    ADD("example: add 5 fileName.txt \"text\""),
+    DELETE("example: delete 1 fileName.txt)"),
+    PRINT("print 4 fileName.txt"),
     HELP("see list of available commands"),
     EXIT("finish current program");
 

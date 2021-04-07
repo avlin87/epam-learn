@@ -45,10 +45,23 @@ public class ConsolePrinter {
             sb.append(" - ");
             sb.append(command.getDESCRIPTION());
         }
+        sb.append("\nPlease Note: number is optional for commands");
         System.out.println(sb);
     }
 
     public void printText(String s) {
-        System.out.println(s);
+        System.out.println("Requested content: \n\""+s+"\"");
+    }
+
+    public void printRowAddedSuccessfully() {
+        System.out.println("Row added successfully");
+    }
+
+    public void printRowNumberNotReached() {
+        System.out.println("Requested row can not be reached");
+    }
+
+    public void printRowRemoved() {
+        System.out.println("Row removed successfully");
     }
 }

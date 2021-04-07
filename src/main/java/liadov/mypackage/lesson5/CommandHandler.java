@@ -86,12 +86,15 @@ public class CommandHandler {
             log.info("fileName parsed as {}", fileName);
             return fileName;
         } else {
+            consolePrinter.printFileNotFound();
+            log.info("target file was not found: {}", fileName);
             throw new FileNotFoundException();
         }
     }
 
     public void validateFile(File targetFile) throws FileNotFoundException {
         if (!targetFile.exists()) {
+            consolePrinter.printFileNotFound();
             log.info("target file was not found: {}", fileName);
             throw new FileNotFoundException();
         }
@@ -99,6 +102,7 @@ public class CommandHandler {
 
     public void validateRequestedRowIsPresent(boolean rowNumberProvided, int size, int rowNumber) throws UnreachableRequestedRow {
         if (rowNumberProvided && (size < rowNumber)) {
+            consolePrinter.printRowNumberNotReached();
             log.warn("requested row is not present in existing text. Existing text size {}, requested row {}", size, rowNumber);
             throw new UnreachableRequestedRow();
         }

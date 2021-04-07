@@ -67,6 +67,7 @@ public class CommandFilter {
                 }
             }
         } catch (UnreachableRequestedRow e) {
+            consolePrinter.printRowNumberNotReached();
             log.warn("Requested row can not be reached\n{}", ExceptionHandler.getStackTrace(e));
         }
         return true;

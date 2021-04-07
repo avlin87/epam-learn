@@ -11,6 +11,7 @@ import java.util.List;
 
 @Slf4j
 public class DeleteHandler extends CommandHandler {
+    ConsolePrinter consolePrinter = ConsolePrinter.getInstance();
 
     public DeleteHandler(String commandText) {
         setInputText(commandText.split(" "));
@@ -46,7 +47,7 @@ public class DeleteHandler extends CommandHandler {
         try (FileAccessController fileController = new FileAccessController(targetFile)) {
             existingText = fileController.getExistingTextFromFile(rowNumberProvided, isTargetFileOriginallyEmpty);
             log.info("row number provided {}, existing text size {}, row number {}", rowNumberProvided, existingText.size(), rowNumberProvided ? rowNumber[0] : "N/A");
-            validateRequestedRowIsPresent(rowNumberProvided, existingText.size(), rowNumber[0]);
+            validateRequestedRowIsPresent(rowNumberProvided, existingText.size(), rowNumberProvided ? rowNumber[0] : 0);
 
             if (rowNumberProvided) {
                 fileController.skipRows(rowNumber[0] - 1, false);
@@ -61,7 +62,7 @@ public class DeleteHandler extends CommandHandler {
             log.info("file size reduced {}", fileController.getFilePointer());
             fileController.restoreOldText(existingText.size() > 0, existingText, getRowNumber());
             log.info("file pointer start {} , end {}, current {}", filePointDeleteStart, filePointDeleteEnd, fileController.getFilePointer());
-
+            consolePrinter.printRowRemoved();
         } catch (IOException e) {
             log.warn(ExceptionHandler.getStackTrace(e));
         }

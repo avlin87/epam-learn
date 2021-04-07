@@ -28,6 +28,7 @@ public class PrintHandler extends CommandHandler {
                 }
             }
         } catch (FileNotFoundException e) {
+            consolePrinter.printFileNotFound();
             log.warn("Source file was not found\n{}", ExceptionHandler.getStackTrace(e));
         }
     }
@@ -42,14 +43,19 @@ public class PrintHandler extends CommandHandler {
 
         try (FileAccessController fileController = new FileAccessController(targetFile)) {
             existingText = fileController.getExistingTextFromFile(true, true);
-            validateRequestedRowIsPresent(rowNumberProvided, existingText.size(), rowNumber[0]);
+            validateRequestedRowIsPresent(rowNumberProvided, existingText.size(), rowNumberProvided ? rowNumber[0] : 0);
             if (rowNumberProvided) {
                 consolePrinter.printText(existingText.get(rowNumber[0] - 1));
 
             } else {
-                for (String s : existingText) {
-                    consolePrinter.printText(s);
+                StringBuilder stringBuilder = new StringBuilder();
+                for (int i = 0; i < existingText.size(); i++) {
+                    stringBuilder.append(existingText.get(i));
+                    if (i != existingText.size() - 1) {
+                        stringBuilder.append("\n");
+                    }
                 }
+                consolePrinter.printText(stringBuilder.toString());
             }
 
         } catch (IOException e) {
