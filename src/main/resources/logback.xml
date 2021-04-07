@@ -76,7 +76,7 @@
     </logger>
 
     <logger name="liadov.mypackage.lesson5.CommandFilter" level="debug" additivity="false">
-        <!--<appender-ref ref="CONSOLE"/>-->
+        <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE-CommandFilter"/>
     </logger>
 

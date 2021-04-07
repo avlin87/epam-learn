@@ -60,7 +60,7 @@ public class AddHandler extends CommandHandler {
         try (FileAccessController fileController = new FileAccessController(targetFile)) {
             if (rowNumberProvided) {
                 int startRow = rowNumber[0] - 1;
-                addAdditionalRows(fileController, startRow);
+                fileController.skipRows(startRow, true);
             }
             if (isFileExist) {
                 existingText = fileController.getExistingTextFromFile(rowNumberProvided, isTargetFileOriginallyEmpty);
@@ -72,10 +72,10 @@ public class AddHandler extends CommandHandler {
             log.info("new text added successfully");
 
             IsDataAvailableForRestoration = rowNumberProvided && isFileExist && (existingText.size() > 0);
-            fileController.restoreOldText(IsDataAvailableForRestoration, existingText);
+            fileController.restoreOldText(IsDataAvailableForRestoration, existingText, 0);
 
         } catch (FileNotFoundException e) {
-            log.warn(ExceptionHandler.getStackTrace(e));
+            log.warn("requested file was not found\n{}", ExceptionHandler.getStackTrace(e));
         } catch (IOException e) {
             log.warn(ExceptionHandler.getStackTrace(e));
         }
@@ -86,7 +86,7 @@ public class AddHandler extends CommandHandler {
      *
      * @param fileController           FileAccessController
      * @param isFormattingLineRequired boolean
-     * @throws IOException
+     * @throws IOException exception for file operations
      */
     private void addFormattingLine(FileAccessController fileController, boolean isFormattingLineRequired) throws IOException {
         if (isFormattingLineRequired) {
@@ -96,27 +96,6 @@ public class AddHandler extends CommandHandler {
         } else {
             log.info("Formatting row NOT added. rowCount={}", fileController.getRowCount());
         }
-    }
-
-    /**
-     * Method read target file via accessFile and add new rows to file in case new text should be added beyond existing rows.
-     *
-     * @param fileController FileAccessController
-     * @param startRow       int
-     * @throws IOException
-     */
-    private void addAdditionalRows(FileAccessController fileController, int startRow) throws IOException {
-        for (int i = 0; i < startRow; i++) {
-            if (fileController.readLine() == null) {
-                fileController.writeBytes("\n");
-                log.info("new row added to reach row number={}, i={}", startRow, i);
-            }
-            fileController.incrementRowCount();
-
-            log.info("active file pointer = {}", fileController.getFilePointer());
-            log.info("row count = {}", fileController.getRowCount());
-        }
-        log.info("blank rows adding operation finished");
     }
 
     /**

@@ -1,8 +1,6 @@
 package liadov.mypackage.lesson5;
 
-import liadov.mypackage.lesson5.exceptions.ExceptionHandler;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -14,10 +12,31 @@ import java.util.List;
 @Slf4j
 public class FileAccessController extends RandomAccessFile {
     private int rowCount;
+    private long filePointerBeforeLastRow;
 
     public FileAccessController(File file) throws FileNotFoundException {
         super(file, "rws");
         rowCount = 0;
+    }
+
+    /**
+     * Method read target file via accessFile and add new rows to file in case new text should be added beyond existing rows.
+     *
+     * @param startRow int
+     * @throws IOException exception for file operations
+     */
+    public void skipRows(int startRow, boolean canAddRows) throws IOException {
+        for (int i = 0; i < startRow; i++) {
+            if ((this.readLine() == null) && canAddRows) {
+                this.writeBytes("\n");
+                log.info("new row added to reach row number={}, i={}", startRow, i);
+            }
+            this.incrementRowCount();
+
+            log.info("active file pointer = {}", this.getFilePointer());
+            log.info("row count = {}", this.getRowCount());
+        }
+        log.info("blank rows adding operation finished");
     }
 
     /**
@@ -26,16 +45,17 @@ public class FileAccessController extends RandomAccessFile {
      * @param rowNumberProvided           boolean
      * @param isTargetFileOriginallyEmpty boolean
      * @return List<String> existing text
-     * @throws IOException
+     * @throws IOException exception for file operations
      */
     public List<String> getExistingTextFromFile(boolean rowNumberProvided, boolean isTargetFileOriginallyEmpty) throws IOException {
-        String tempString = "";
+
         long filePointer = this.getFilePointer();
         log.info("file pointer = {}", filePointer);
         List<String> existingText = new ArrayList<>();
 
-        while (tempString != null) {
-            tempString = this.readLine();
+        while (true) {
+            filePointerBeforeLastRow = getFilePointer();
+            String tempString = this.readLine();
             log.info("row received from FILE: \"{}\"", tempString);
             if (tempString == null) {
                 log.info("no existing rows found");
@@ -43,11 +63,11 @@ public class FileAccessController extends RandomAccessFile {
             }
             if (rowNumberProvided) {
                 existingText.add(tempString);
-                log.info("row received from file: {}", existingText.get(existingText.size() - 1));
+                log.info("row added to collection: {}", existingText.get(existingText.size() - 1));
             } else {
                 log.info("row skipped");
             }
-            rowCount++;
+            incrementRowCount();
             log.info("row count = {}", rowCount);
         }
         if (rowNumberProvided) {
@@ -62,20 +82,22 @@ public class FileAccessController extends RandomAccessFile {
         return existingText;
     }
 
-
     /**
      * Method restore existing text to File if required condition met
      *
      * @param isDataAvailableForRestoration boolean
      * @param existingText                  List<String> text to be added to file
-     * @throws IOException
+     * @throws IOException exception for file operations
      */
-    public void restoreOldText(boolean isDataAvailableForRestoration, List<String> existingText) throws IOException {
+    public void restoreOldText(boolean isDataAvailableForRestoration, List<String> existingText, int restorationStartPoint) throws IOException {
+        log.info("is Data available for restoration={}, restoration point={}", isDataAvailableForRestoration, restorationStartPoint);
         if (isDataAvailableForRestoration) {
-            for (String existingString : existingText) {
-                this.writeBytes("\n");
-                this.writeBytes(existingString);
-                log.info("old text restoration process: \"{}\"", existingString);
+            for (int i = restorationStartPoint; i < existingText.size(); i++) {
+                if (getFilePointer() > 0) {
+                    this.writeBytes("\n");
+                }
+                this.writeBytes(existingText.get(i));
+                log.info("old text restoration process: \"{}\"", existingText.get(i));
             }
             log.info("Old text restored successfully");
         } else {
@@ -83,15 +105,20 @@ public class FileAccessController extends RandomAccessFile {
         }
     }
 
+    /**
+     * Method return value of file pointer to last existing row witch is set during execution of getExistingTextFromFile()
+     *
+     * @return long file point to last row
+     */
+    public long getFilePointerBeforeLastRow() {
+        return filePointerBeforeLastRow;
+    }
+
     public int getRowCount() {
         return rowCount;
     }
 
-    public void setRowCount(int rowCount) {
-        this.rowCount = rowCount;
-    }
-
-    public void incrementRowCount(){
+    public void incrementRowCount() {
         rowCount++;
     }
 }
