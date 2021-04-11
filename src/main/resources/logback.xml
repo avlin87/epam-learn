@@ -1,0 +1,135 @@
+<configuration>
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} &lt;%M&gt; - %msg%n</Pattern>
+        </encoder>
+    </appender>
+
+    <appender name="FILE-MAIN" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>LOG/debugMain.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} &lt;%M&gt; - %msg%n</Pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"><!-- rollover daily -->
+            <fileNamePattern>LOG/archived/debugMain.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>10MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="FILE-CommandFilter" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>LOG/debugCommandFilter.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} &lt;%M&gt; - %msg%n</Pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"><!-- rollover daily -->
+            <fileNamePattern>LOG/archived/debugCommandFilter.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>10MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="FILE-CommandHandler" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>LOG/debugCommandHandler.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} &lt;%M&gt; - %msg%n</Pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"><!-- rollover daily -->
+            <fileNamePattern>LOG/archived/debugCommandHandler.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>10MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="FILE-ADDHANDLER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>LOG/debugAddHandler.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} &lt;%M&gt; - %msg%n</Pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"><!-- rollover daily -->
+            <fileNamePattern>LOG/archived/debugAddHandler.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>10MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="FILE-DELETEHANDLER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>LOG/debugDeleteHandler.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} &lt;%M&gt; - %msg%n</Pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"><!-- rollover daily -->
+            <fileNamePattern>LOG/archived/debugDeleteHandler.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>10MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="FILE-PRINTHANDLER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>LOG/debugPrintHandler.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} &lt;%M&gt; - %msg%n</Pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"><!-- rollover daily -->
+            <fileNamePattern>LOG/archived/debugPrintHandler.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>10MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="FILE-FILEACCESS" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>LOG/debugFileAccess.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} &lt;%M&gt; - %msg%n</Pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"><!-- rollover daily -->
+            <fileNamePattern>LOG/archived/debugFileAccess.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>10MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+    </appender>
+
+
+    <logger name="liadov.mypackage.Main" level="debug" additivity="false">
+<!--        <appender-ref ref="CONSOLE"/>-->
+        <appender-ref ref="FILE-MAIN"/>
+    </logger>
+
+    <logger name="liadov.mypackage.lesson5.controller.CommandFilter" level="debug" additivity="false">
+<!--        <appender-ref ref="CONSOLE"/>-->
+        <appender-ref ref="FILE-CommandFilter"/>
+    </logger>
+
+    <logger name="liadov.mypackage.lesson5.controller.CommandHandler" level="debug" additivity="false">
+<!--        <appender-ref ref="CONSOLE"/>-->
+        <appender-ref ref="FILE-CommandHandler"/>
+    </logger>
+
+    <logger name="liadov.mypackage.lesson5.controller.AddCommandHandler" level="debug" additivity="false">
+<!--        <appender-ref ref="CONSOLE"/>-->
+        <appender-ref ref="FILE-ADDHANDLER"/>
+    </logger>
+
+    <logger name="liadov.mypackage.lesson5.controller.DeleteCommandHandler" level="debug" additivity="false">
+<!--        <appender-ref ref="CONSOLE"/>-->
+        <appender-ref ref="FILE-DELETEHANDLER"/>
+    </logger>
+
+    <logger name="liadov.mypackage.lesson5.controller.PrintCommandHandler" level="debug" additivity="false">
+<!--        <appender-ref ref="CONSOLE"/>-->
+        <appender-ref ref="FILE-PRINTHANDLER"/>
+    </logger>
+
+    <logger name="liadov.mypackage.lesson5.mode.FileAccessModel" level="debug" additivity="false">
+<!--        <appender-ref ref="CONSOLE"/>-->
+        <appender-ref ref="FILE-FILEACCESS"/>
+    </logger>
+
+</configuration>

@@ -1,0 +1,185 @@
+package liadov.mypackage.lesson5.mode;
+
+import lombok.extern.slf4j.Slf4j;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.util.ArrayList;
+import java.util.List;
+
+@Slf4j
+public class FileAccessModel {
+    private int rowCount;
+    private long filePointerBeforeLastRow;
+    private final File file;
+    private final String accessType = "rw";
+    private long currentFilePointer;
+
+    public FileAccessModel(File file) throws FileNotFoundException {
+        this.file = file;
+        rowCount = 0;
+    }
+
+    /**
+     * Method read line from file
+     *
+     * @return String value of received line
+     * @throws IOException in case interruption of file operation
+     */
+    public String readLine() throws IOException {
+        try (RandomAccessFile randomAccessFile = new RandomAccessFile(file, accessType)) {
+            randomAccessFile.seek(getCurrentFilePointer());
+            String tempString = randomAccessFile.readLine();
+            setCurrentFilePointer(randomAccessFile.getFilePointer());
+            return tempString;
+        }
+    }
+
+    /**
+     * Method write string to file
+     *
+     * @param inputString String to be written in file
+     * @throws IOException in case interruption of file operation
+     */
+    public void writeString(String inputString) throws IOException {
+        try (RandomAccessFile randomAccessFile = new RandomAccessFile(file, accessType)) {
+            randomAccessFile.seek(getCurrentFilePointer());
+            randomAccessFile.writeBytes(inputString);
+            setCurrentFilePointer(randomAccessFile.getFilePointer());
+        }
+    }
+
+    /**
+     * Method change Length of file to requited size
+     *
+     * @param l target size of file
+     * @throws IOException in case interruption of file operation
+     */
+    public void setLength(long l) throws IOException {
+        try (RandomAccessFile randomAccessFile = new RandomAccessFile(file, accessType)) {
+            randomAccessFile.setLength(l);
+            setCurrentFilePointer(l);
+        }
+    }
+
+    /**
+     * Method read target file via accessFile and add new rows to file in case new text should be added beyond existing rows.
+     *
+     * @param startRow int
+     * @throws IOException exception for file operations
+     */
+    public void skipRows(int startRow, boolean canAddRows) throws IOException {
+        for (int i = 0; i < startRow; i++) {
+            if ((this.readLine() == null) && canAddRows) {
+                this.writeString("\n");
+                log.info("new row added to reach row number={}, i={}", startRow, i);
+            }
+            this.incrementRowCount();
+
+            log.info("active file pointer = {}", this.getCurrentFilePointer());
+            log.info("row count = {}", this.getRowCount());
+        }
+        log.info("blank rows adding operation finished");
+    }
+
+
+    /**
+     * Method read existing text form file and return List<String> as a result
+     *
+     * @param rowNumberProvided           boolean
+     * @param isTargetFileOriginallyEmpty boolean
+     * @return List<String> existing text
+     * @throws IOException exception for file operations
+     */
+    public List<String> getExistingTextFromFile(boolean rowNumberProvided, boolean isTargetFileOriginallyEmpty) throws IOException {
+
+        long filePointer = this.getCurrentFilePointer();
+        log.info("file pointer = {}", filePointer);
+        List<String> existingText = new ArrayList<>();
+        long tempFilePointer = 0;
+
+        while (true) {
+            filePointerBeforeLastRow = tempFilePointer;
+            tempFilePointer = this.getCurrentFilePointer();
+            String tempString = this.readLine();
+            log.info("row received from FILE: \"{}\"", tempString);
+            if (tempString == null) {
+                log.info("no existing rows found");
+                break;
+            }
+            if (rowNumberProvided) {
+                existingText.add(tempString);
+                log.info("row added to collection: {}", existingText.get(existingText.size() - 1));
+            } else {
+                log.info("row skipped");
+            }
+            incrementRowCount();
+            log.info("row count = {}", rowCount);
+        }
+        if (rowNumberProvided) {
+            log.info("file Pointer changed from {} to {}", this.getCurrentFilePointer(), filePointer);
+            setCurrentFilePointer(filePointer);
+        } else if (!isTargetFileOriginallyEmpty) {
+            log.info("new line added");
+            this.writeString("\n");
+            rowCount++;
+            log.info("row count = {}", rowCount);
+        }
+        return existingText;
+    }
+
+    /**
+     * Method restore existing text to File if required condition met
+     *
+     * @param isDataAvailableForRestoration boolean
+     * @param existingText                  List<String> text to be added to file
+     * @throws IOException exception for file operations
+     */
+    public void restoreOldText(boolean isDataAvailableForRestoration, List<String> existingText, int restorationStartPoint) throws IOException {
+        log.info("is Data available for restoration={}, restoration point={}", isDataAvailableForRestoration, restorationStartPoint);
+        if (isDataAvailableForRestoration) {
+            for (int i = restorationStartPoint; i < existingText.size(); i++) {
+                if (getCurrentFilePointer() > 0) {
+                    this.writeString("\n");
+                }
+                this.writeString(existingText.get(i));
+                log.info("old text restoration process: \"{}\"", existingText.get(i));
+            }
+
+            log.info("Old text restored successfully");
+        } else {
+            log.info("restoration was not executed");
+        }
+    }
+
+    /**
+     * Method return value of file pointer to last existing row witch is set during execution of getExistingTextFromFile()
+     *
+     * @return long file point to last row
+     */
+    public long getFilePointerBeforeLastRow() {
+        log.info("File pointer before last row returned as: {}", currentFilePointer);
+        return filePointerBeforeLastRow;
+    }
+
+    public int getRowCount() {
+        return rowCount;
+    }
+
+    public void incrementRowCount() {
+        rowCount++;
+    }
+
+    public long getCurrentFilePointer() {
+        log.info("File pointer returned as: {}", currentFilePointer);
+        return currentFilePointer;
+    }
+
+    public void setCurrentFilePointer(long currentFilePointer) {
+        log.info("File pointer set to: {}", currentFilePointer);
+        this.currentFilePointer = currentFilePointer;
+    }
+
+}
