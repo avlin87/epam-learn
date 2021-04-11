@@ -24,21 +24,26 @@ public class CommandHandler {
      * @param minWithNumber    minimum number of validates in case number was populated
      * @return true in case validation passed, false in case validation met problems
      */
-    public boolean validateCommand(int minWithoutNumber, int minWithNumber) {
+    /**
+     *
+     * @param inputText
+     * @return
+     */
+    public boolean validateCommand(String[] inputText) {
         boolean rowNumberProvided;
         boolean isEnoughValuesProvided;
         try {
-            setRowNumber(this.validateRowNumber(getInputText()[1]));
+            setRowNumber(this.validateRowNumber(inputText[1]));
             rowNumberProvided = getRowNumber() > 0;
             log.info("row number specified in command: {}", rowNumberProvided);
-            isEnoughValuesProvided = (rowNumberProvided && (getRowNumber() >= 1) && (getInputText().length > minWithNumber)) || (!rowNumberProvided && (getInputText().length > minWithoutNumber));
+            isEnoughValuesProvided = (rowNumberProvided && (getRowNumber() >= 1) && (inputText.length > 2)) || (!rowNumberProvided && (inputText.length > 1));
             log.info("EnoughValuesProvided: {}", isEnoughValuesProvided);
             if (isEnoughValuesProvided) {
                 setFileNamePosition(1);
                 if (rowNumberProvided) {
                     setFileNamePosition(2);
                 }
-                setFileName(this.parseFileName(getInputText()[getFileNamePosition()]));
+                setFileName(this.parseFileName(inputText[getFileNamePosition()]));
                 return true;
             } else {
                 String rowNumberValidation = "";
@@ -47,11 +52,11 @@ public class CommandHandler {
                     rowNumberValidation = " row number=" + getRowNumber() + ", expected value >=1";
                 }
                 consolePrinter.printProvideFullCommand();
-                log.info("Provided ADD command is not valid: length={}, expected length>={};{}", getInputText().length, rowNumberProvided ? (minWithNumber + 1) : (minWithoutNumber + 1), rowNumberValidation);
+                log.info("Provided ADD command is not valid: length={}, expected length>={};{}", inputText.length, rowNumberProvided ? (3) : (1), rowNumberValidation);
             }
         } catch (ArrayIndexOutOfBoundsException e) {
             consolePrinter.printProvideFullCommand();
-            log.info("add command has empty details [{}], \n{}", Arrays.toString(getInputText()), ExceptionHandler.getStackTrace(e));
+            log.info("add command has empty details [{}], \n{}", Arrays.toString(inputText), ExceptionHandler.getStackTrace(e));
         } catch (FileNotFoundException e) {
             consolePrinter.printFileNotFound();
             log.info("File name is not valid, \n{}", ExceptionHandler.getStackTrace(e));

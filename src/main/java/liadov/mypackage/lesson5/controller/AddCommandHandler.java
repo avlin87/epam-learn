@@ -16,28 +16,62 @@ public class AddCommandHandler extends CommandHandler {
     private String text;
 
     /**
-     * Constructor that receives full text of ADD command
-     *
-     * @param inputText - full text of ADD command
-     */
-    public AddCommandHandler(String inputText) {
-        setInputText(inputText.split(" "));
-        log.info(this.toString());
-    }
-
-    /**
      * Method validate whether it is possible to use provided command for ADD operation
      * validation message appears in case command is incorrect
+     *
+     * @param commandText
      */
-    public void proceedAddScenario() {
-        if (validateCommand(2, 3)) {
-            parseText(getInputText(), getFileNamePosition());
+    public void proceedAddScenario(String commandText) {
+        String[] inputText = commandText.split(" ");
+        if (validateAddCommand(inputText)) {
+            parseText(inputText, getFileNamePosition());
             if (getRowNumber() > 0) {
                 addTextToFile(getFileName(), text, getRowNumber());
             } else {
                 addTextToFile(getFileName(), text);
             }
         }
+    }
+
+    /**
+     * Method validate provided add command
+     *
+     * @param inputText String validate provided add command
+     * @return boolean
+     */
+    public boolean validateAddCommand(String[] inputText) {
+        boolean rowNumberProvided;
+        boolean isEnoughValuesProvided;
+        try {
+            setRowNumber(this.validateRowNumber(inputText[1]));
+            rowNumberProvided = getRowNumber() > 0;
+            log.info("row number specified in command: {}", rowNumberProvided);
+            isEnoughValuesProvided = (rowNumberProvided && (getRowNumber() >= 1) && (inputText.length > 3)) || (!rowNumberProvided && (inputText.length > 2));
+            log.info("EnoughValuesProvided: {}", isEnoughValuesProvided);
+            if (isEnoughValuesProvided) {
+                setFileNamePosition(1);
+                if (rowNumberProvided) {
+                    setFileNamePosition(2);
+                }
+                setFileName(this.parseFileName(inputText[getFileNamePosition()]));
+                return true;
+            } else {
+                String rowNumberValidation = "";
+                if (rowNumberProvided && !(getRowNumber() >= 1)) {
+                    consolePrinter.printRowNumberValidation();
+                    rowNumberValidation = " row number=" + getRowNumber() + ", expected value >=1";
+                }
+                consolePrinter.printProvideFullCommand();
+                log.info("Provided ADD command is not valid: length={}, expected length>={};{}", inputText.length, rowNumberProvided ? (4) : (3), rowNumberValidation);
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            consolePrinter.printProvideFullCommand();
+            log.info("add command has empty details [{}], \n{}", Arrays.toString(inputText), ExceptionHandler.getStackTrace(e));
+        } catch (FileNotFoundException e) {
+            consolePrinter.printFileNotFound();
+            log.info("File name is not valid, \n{}", ExceptionHandler.getStackTrace(e));
+        }
+        return false;
     }
 
     /**
@@ -129,7 +163,6 @@ public class AddCommandHandler extends CommandHandler {
                 "rowNumber=" + getRowNumber() +
                 ", fileName='" + getFileName() + '\'' +
                 ", text='" + text + '\'' +
-                ", inputText=" + Arrays.toString(getInputText()) +
                 '}';
     }
 }

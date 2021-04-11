@@ -15,14 +15,10 @@ import java.util.List;
 public class PrintCommandHandler extends CommandHandler {
     private ConsolePrinter consolePrinter = ConsolePrinter.getInstance();
 
-    public PrintCommandHandler(String commandText) {
-        setInputText(commandText.split(" "));
-        log.info("print command initiated");
-    }
-
-    public void proceedPrintScenario() throws UnreachableRequestedRow {
+    public void proceedPrintScenario(String commandText) throws UnreachableRequestedRow {
+        String inputText[] = commandText.split(" ");
         try {
-            if (validateCommand(1, 2)) {
+            if (validateCommand(inputText)) {
                 if (getRowNumber() > 0) {
                     printTextFromFile(getFileName(), getRowNumber());
                 } else {

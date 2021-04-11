@@ -40,20 +40,20 @@ public class CommandFilter {
             switch (command) {
                 case ADD: {
                     log.info("ADD command identified");
-                    AddCommandHandler addCommandHandler = new AddCommandHandler(commandText);
-                    addCommandHandler.proceedAddScenario();
+                    AddCommandHandler addCommandHandler = new AddCommandHandler();
+                    addCommandHandler.proceedAddScenario(commandText);
                     break;
                 }
                 case DELETE: {
                     log.info("DELETE command identified");
-                    DeleteCommandHandler deleteCommandHandler = new DeleteCommandHandler(commandText);
-                    deleteCommandHandler.proceedDeleteScenario();
+                    DeleteCommandHandler deleteCommandHandler = new DeleteCommandHandler();
+                    deleteCommandHandler.proceedDeleteScenario(commandText);
                     break;
                 }
                 case PRINT: {
                     log.info("PRINT command identified");
-                    PrintCommandHandler printCommandHandler = new PrintCommandHandler(commandText);
-                    printCommandHandler.proceedPrintScenario();
+                    PrintCommandHandler printCommandHandler = new PrintCommandHandler();
+                    printCommandHandler.proceedPrintScenario(commandText);
                     break;
                 }
                 case HELP: {

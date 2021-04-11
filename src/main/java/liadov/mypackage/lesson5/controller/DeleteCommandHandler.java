@@ -15,14 +15,12 @@ import java.util.List;
 public class DeleteCommandHandler extends CommandHandler {
     ConsolePrinter consolePrinter = ConsolePrinter.getInstance();
 
-    public DeleteCommandHandler(String commandText) {
-        setInputText(commandText.split(" "));
+    public void proceedDeleteScenario(String commandText) throws UnreachableRequestedRow {
+        String[] inputText = commandText.split(" ");
+        //setInputText(commandText.split(" "));
         log.info("delete command initiated");
-    }
-
-    public void proceedDeleteScenario() throws UnreachableRequestedRow {
         try {
-            if (validateCommand(1, 2)) {
+            if (validateCommand(inputText)) {
                 if (getRowNumber() > 0) {
                     deleteTextFromFile(getFileName(), getRowNumber());
                 } else {
