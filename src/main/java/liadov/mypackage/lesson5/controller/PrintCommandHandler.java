@@ -1,7 +1,7 @@
 package liadov.mypackage.lesson5.controller;
 
 import liadov.mypackage.lesson5.view.ConsolePrinter;
-import liadov.mypackage.lesson5.mode.FileAccessController;
+import liadov.mypackage.lesson5.mode.FileAccessModel;
 import liadov.mypackage.lesson5.exceptions.ExceptionHandler;
 import liadov.mypackage.lesson5.exceptions.UnreachableRequestedRow;
 import lombok.extern.slf4j.Slf4j;
@@ -13,11 +13,18 @@ import java.util.List;
 
 @Slf4j
 public class PrintCommandHandler extends CommandHandler {
-    private ConsolePrinter consolePrinter = ConsolePrinter.getInstance();
+    private final ConsolePrinter consolePrinter = ConsolePrinter.getInstance();
 
+    /**
+     * Method handle print operation
+     *
+     * @param commandText String text of received command
+     * @return true
+     * @throws UnreachableRequestedRow in case requested row is not present in target file
+     */
     @Override
     public boolean handle(String commandText) throws UnreachableRequestedRow {
-        String inputText[] = commandText.split(" ");
+        String[] inputText = commandText.split(" ");
         try {
             if (validateCommand(inputText)) {
                 if (getRowNumber() > 0) {
@@ -30,19 +37,23 @@ public class PrintCommandHandler extends CommandHandler {
             consolePrinter.printFileNotFound();
             log.warn("Source file was not found\n{}", ExceptionHandler.getStackTrace(e));
         }
-        return false;
+        return true;
     }
 
+    /**
+     * Method print requested text from file
+     *
+     * @param fileName  target file
+     * @param rowNumber number of row to be printed in case it is specified
+     * @throws FileNotFoundException in case target file is absent
+     */
     private void printTextFromFile(String fileName, int... rowNumber) throws FileNotFoundException {
         File targetFile = new File(fileName);
-        validateFile(targetFile);
         boolean rowNumberProvided = rowNumber.length > 0;
-        boolean isTargetFileOriginallyEmpty = (targetFile.length() == 0);
         List<String> existingText;
         log.info("row number provided: {}", rowNumberProvided);
-
         try {
-            FileAccessController fileController = new FileAccessController(targetFile);
+            FileAccessModel fileController = new FileAccessModel(targetFile);
             existingText = fileController.getExistingTextFromFile(true, true);
             validateRequestedRowIsPresent(rowNumberProvided, existingText.size(), rowNumberProvided ? rowNumber[0] : 0);
             if (rowNumberProvided) {
@@ -58,10 +69,8 @@ public class PrintCommandHandler extends CommandHandler {
                 }
                 consolePrinter.printText(stringBuilder.toString());
             }
-
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
 }

@@ -83,13 +83,13 @@
         </rollingPolicy>
     </appender>
 
-    <appender name="FILE-FILEACCESSCONTROLLER" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>LOG/debugFileAccessController.log</file>
+    <appender name="FILE-FILEACCESS" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>LOG/debugFileAccess.log</file>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} &lt;%M&gt; - %msg%n</Pattern>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"><!-- rollover daily -->
-            <fileNamePattern>LOG/archived/debugFileAccessController.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <fileNamePattern>LOG/archived/debugFileAccess.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <maxFileSize>10MB</maxFileSize>
             </timeBasedFileNamingAndTriggeringPolicy>
@@ -98,38 +98,38 @@
 
 
     <logger name="liadov.mypackage.Main" level="debug" additivity="false">
-        <!--<appender-ref ref="CONSOLE"/>-->
+<!--        <appender-ref ref="CONSOLE"/>-->
         <appender-ref ref="FILE-MAIN"/>
     </logger>
 
     <logger name="liadov.mypackage.lesson5.controller.CommandFilter" level="debug" additivity="false">
-        <!--<appender-ref ref="CONSOLE"/>-->
+<!--        <appender-ref ref="CONSOLE"/>-->
         <appender-ref ref="FILE-CommandFilter"/>
     </logger>
 
     <logger name="liadov.mypackage.lesson5.controller.CommandHandler" level="debug" additivity="false">
-        <!--<appender-ref ref="CONSOLE"/>-->
+<!--        <appender-ref ref="CONSOLE"/>-->
         <appender-ref ref="FILE-CommandHandler"/>
     </logger>
 
     <logger name="liadov.mypackage.lesson5.controller.AddCommandHandler" level="debug" additivity="false">
-        <!--<appender-ref ref="CONSOLE"/>-->
+<!--        <appender-ref ref="CONSOLE"/>-->
         <appender-ref ref="FILE-ADDHANDLER"/>
     </logger>
 
     <logger name="liadov.mypackage.lesson5.controller.DeleteCommandHandler" level="debug" additivity="false">
-        <!--<appender-ref ref="CONSOLE"/>-->
+<!--        <appender-ref ref="CONSOLE"/>-->
         <appender-ref ref="FILE-DELETEHANDLER"/>
     </logger>
 
     <logger name="liadov.mypackage.lesson5.controller.PrintCommandHandler" level="debug" additivity="false">
-        <!--<appender-ref ref="CONSOLE"/>-->
+<!--        <appender-ref ref="CONSOLE"/>-->
         <appender-ref ref="FILE-PRINTHANDLER"/>
     </logger>
 
-    <logger name="liadov.mypackage.lesson5.mode.FileAccessController" level="debug" additivity="false">
-        <!--<appender-ref ref="CONSOLE"/>-->
-        <appender-ref ref="FILE-FILEACCESSCONTROLLER"/>
+    <logger name="liadov.mypackage.lesson5.mode.FileAccessModel" level="debug" additivity="false">
+<!--        <appender-ref ref="CONSOLE"/>-->
+        <appender-ref ref="FILE-FILEACCESS"/>
     </logger>
 
 </configuration>

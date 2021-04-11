@@ -1,7 +1,7 @@
 package liadov.mypackage.lesson5.controller;
 
 import liadov.mypackage.lesson5.view.ConsolePrinter;
-import liadov.mypackage.lesson5.mode.FileAccessController;
+import liadov.mypackage.lesson5.mode.FileAccessModel;
 import liadov.mypackage.lesson5.exceptions.ExceptionHandler;
 import lombok.extern.slf4j.Slf4j;
 
@@ -11,21 +11,20 @@ import java.util.List;
 
 @Slf4j
 public class AddCommandHandler extends CommandHandler {
-    ConsolePrinter consolePrinter = ConsolePrinter.getInstance();
-
+    private final ConsolePrinter consolePrinter = ConsolePrinter.getInstance();
     private String text;
 
     /**
      * Method validate whether it is possible to use provided command for ADD operation
      * validation message appears in case command is incorrect
      *
-     * @param commandText
-     * @return
+     * @param commandText String text of command
+     * @return boolean. Program finish execution in case of false
      */
     @Override
     public boolean handle(String commandText) {
         String[] inputText = commandText.split(" ");
-        if (validateAddCommand(inputText)) {
+        if (validateCommand(inputText)) {
             parseText(inputText, getFileNamePosition());
             if (getRowNumber() > 0) {
                 addTextToFile(getFileName(), text, getRowNumber());
@@ -33,7 +32,7 @@ public class AddCommandHandler extends CommandHandler {
                 addTextToFile(getFileName(), text);
             }
         }
-        return false;
+        return true;
     }
 
     /**
@@ -42,12 +41,12 @@ public class AddCommandHandler extends CommandHandler {
      * @param inputText String validate provided add command
      * @return boolean
      */
-    public boolean validateAddCommand(String[] inputText) {
+    @Override
+    protected boolean validateCommand(String[] inputText) {
         boolean rowNumberProvided;
         boolean isEnoughValuesProvided;
         try {
-            setRowNumber(this.validateRowNumber(inputText[1]));
-            rowNumberProvided = getRowNumber() > 0;
+            rowNumberProvided = setRowNumberIfValid(inputText[1]);
             log.info("row number specified in command: {}", rowNumberProvided);
             isEnoughValuesProvided = (rowNumberProvided && (getRowNumber() >= 1) && (inputText.length > 3)) || (!rowNumberProvided && (inputText.length > 2));
             log.info("EnoughValuesProvided: {}", isEnoughValuesProvided);
@@ -57,6 +56,7 @@ public class AddCommandHandler extends CommandHandler {
                     setFileNamePosition(2);
                 }
                 setFileName(this.parseFileName(inputText[getFileNamePosition()]));
+                log.info("file parsed as {}", getFileName());
                 return true;
             } else {
                 String rowNumberValidation = "";
@@ -98,7 +98,7 @@ public class AddCommandHandler extends CommandHandler {
         log.info("row number provided: {}", rowNumberProvided);
 
         try {
-            FileAccessController fileController = new FileAccessController(targetFile);
+            FileAccessModel fileController = new FileAccessModel(targetFile);
             if (rowNumberProvided) {
                 int startRow = rowNumber[0] - 1;
                 fileController.skipRows(startRow, true);
@@ -108,7 +108,7 @@ public class AddCommandHandler extends CommandHandler {
             }
             isFormattingLineRequired = isFileExist && rowNumberProvided && (rowNumber[0] > fileController.getRowCount()) && (!isTargetFileOriginallyEmpty);
             addFormattingLine(fileController, isFormattingLineRequired);
-            fileController.writeBytes(text);
+            fileController.writeString(text);
             log.info("new text added successfully");
 
             IsDataAvailableForRestoration = rowNumberProvided && isFileExist && (existingText.size() > 0);
@@ -128,9 +128,9 @@ public class AddCommandHandler extends CommandHandler {
      * @param isFormattingLineRequired boolean
      * @throws IOException exception for file operations
      */
-    private void addFormattingLine(FileAccessController fileController, boolean isFormattingLineRequired) throws IOException {
+    private void addFormattingLine(FileAccessModel fileController, boolean isFormattingLineRequired) throws IOException {
         if (isFormattingLineRequired) {
-            fileController.writeBytes("\n");
+            fileController.writeString("\n");
             fileController.incrementRowCount();
             log.info("Formatting row added. rowCount={}", fileController.getRowCount());
         } else {

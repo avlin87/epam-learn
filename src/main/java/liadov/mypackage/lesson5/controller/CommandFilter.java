@@ -10,7 +10,7 @@ import java.util.Map;
 
 @Slf4j
 public class CommandFilter {
-    private ConsolePrinter consolePrinter = ConsolePrinter.getInstance();
+    private final ConsolePrinter consolePrinter = ConsolePrinter.getInstance();
     /**
      * Method parsing first word of command
      *
@@ -42,8 +42,12 @@ public class CommandFilter {
         Map<Commands, Handler> handlerMap = new HashMap<>();
         handlerMap.put(Commands.ADD, new AddCommandHandler());
         handlerMap.put(Commands.DELETE, new DeleteCommandHandler());
-        handlerMap.put(Commands.PRINT, new DeleteCommandHandler());
+        handlerMap.put(Commands.PRINT, new PrintCommandHandler());
+        handlerMap.put(Commands.HELP, new CommandHandler());
+        handlerMap.put(Commands.EXIT, new CommandHandler());
+
         try {
+            log.info("Command handle requested: {}, Command text {}",command, commandText);
             return handlerMap.get(command).handle(commandText);
         } catch (UnreachableRequestedRow e) {
             consolePrinter.printRowNumberNotReached();

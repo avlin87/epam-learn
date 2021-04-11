@@ -52,7 +52,7 @@ public class ConsolePrinter {
     }
 
     public void printText(String s) {
-        System.out.println("Requested content: \n\""+s+"\"");
+        System.out.println("Requested content: \n\"" + s + "\"");
     }
 
     public void printRowAddedSuccessfully() {

@@ -10,45 +10,57 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-public class FileAccessController {
+public class FileAccessModel {
     private int rowCount;
     private long filePointerBeforeLastRow;
-    private File file;
-    private String accessType = "rws";
+    private final File file;
+    private final String accessType = "rw";
+    private long currentFilePointer;
 
-    public FileAccessController(File file) throws FileNotFoundException {
+    public FileAccessModel(File file) throws FileNotFoundException {
         this.file = file;
         rowCount = 0;
     }
 
-
+    /**
+     * Method read line from file
+     *
+     * @return String value of received line
+     * @throws IOException in case interruption of file operation
+     */
     public String readLine() throws IOException {
         try (RandomAccessFile randomAccessFile = new RandomAccessFile(file, accessType)) {
-            return randomAccessFile.readLine();
+            randomAccessFile.seek(getCurrentFilePointer());
+            String tempString = randomAccessFile.readLine();
+            setCurrentFilePointer(randomAccessFile.getFilePointer());
+            return tempString;
         }
     }
 
-    public void writeBytes(String s) throws IOException {
+    /**
+     * Method write string to file
+     *
+     * @param inputString String to be written in file
+     * @throws IOException in case interruption of file operation
+     */
+    public void writeString(String inputString) throws IOException {
         try (RandomAccessFile randomAccessFile = new RandomAccessFile(file, accessType)) {
-            randomAccessFile.writeBytes(s);
+            randomAccessFile.seek(getCurrentFilePointer());
+            randomAccessFile.writeBytes(inputString);
+            setCurrentFilePointer(randomAccessFile.getFilePointer());
         }
     }
 
-    public long getFilePointer() throws IOException {
-        try (RandomAccessFile randomAccessFile = new RandomAccessFile(file, accessType)) {
-            return randomAccessFile.getFilePointer();
-        }
-    }
-
-    public void seek(long filePointer) throws IOException {
-        try (RandomAccessFile randomAccessFile = new RandomAccessFile(file, accessType)) {
-            randomAccessFile.seek(filePointer);
-        }
-    }
-
+    /**
+     * Method change Length of file to requited size
+     *
+     * @param l target size of file
+     * @throws IOException in case interruption of file operation
+     */
     public void setLength(long l) throws IOException {
         try (RandomAccessFile randomAccessFile = new RandomAccessFile(file, accessType)) {
             randomAccessFile.setLength(l);
+            setCurrentFilePointer(l);
         }
     }
 
@@ -61,12 +73,12 @@ public class FileAccessController {
     public void skipRows(int startRow, boolean canAddRows) throws IOException {
         for (int i = 0; i < startRow; i++) {
             if ((this.readLine() == null) && canAddRows) {
-                this.writeBytes("\n");
+                this.writeString("\n");
                 log.info("new row added to reach row number={}, i={}", startRow, i);
             }
             this.incrementRowCount();
 
-            log.info("active file pointer = {}", this.getFilePointer());
+            log.info("active file pointer = {}", this.getCurrentFilePointer());
             log.info("row count = {}", this.getRowCount());
         }
         log.info("blank rows adding operation finished");
@@ -83,14 +95,14 @@ public class FileAccessController {
      */
     public List<String> getExistingTextFromFile(boolean rowNumberProvided, boolean isTargetFileOriginallyEmpty) throws IOException {
 
-        long filePointer = this.getFilePointer();
+        long filePointer = this.getCurrentFilePointer();
         log.info("file pointer = {}", filePointer);
         List<String> existingText = new ArrayList<>();
         long tempFilePointer = 0;
 
         while (true) {
             filePointerBeforeLastRow = tempFilePointer;
-            tempFilePointer = this.getFilePointer();
+            tempFilePointer = this.getCurrentFilePointer();
             String tempString = this.readLine();
             log.info("row received from FILE: \"{}\"", tempString);
             if (tempString == null) {
@@ -107,11 +119,11 @@ public class FileAccessController {
             log.info("row count = {}", rowCount);
         }
         if (rowNumberProvided) {
-            log.info("file Pointer changed from {} to {}", this.getFilePointer(), filePointer);
-            this.seek(filePointer);
+            log.info("file Pointer changed from {} to {}", this.getCurrentFilePointer(), filePointer);
+            setCurrentFilePointer(filePointer);
         } else if (!isTargetFileOriginallyEmpty) {
             log.info("new line added");
-            this.writeBytes("\n");
+            this.writeString("\n");
             rowCount++;
             log.info("row count = {}", rowCount);
         }
@@ -129,12 +141,13 @@ public class FileAccessController {
         log.info("is Data available for restoration={}, restoration point={}", isDataAvailableForRestoration, restorationStartPoint);
         if (isDataAvailableForRestoration) {
             for (int i = restorationStartPoint; i < existingText.size(); i++) {
-                if (getFilePointer() > 0) {
-                    this.writeBytes("\n");
+                if (getCurrentFilePointer() > 0) {
+                    this.writeString("\n");
                 }
-                this.writeBytes(existingText.get(i));
+                this.writeString(existingText.get(i));
                 log.info("old text restoration process: \"{}\"", existingText.get(i));
             }
+
             log.info("Old text restored successfully");
         } else {
             log.info("restoration was not executed");
@@ -147,6 +160,7 @@ public class FileAccessController {
      * @return long file point to last row
      */
     public long getFilePointerBeforeLastRow() {
+        log.info("File pointer before last row returned as: {}", currentFilePointer);
         return filePointerBeforeLastRow;
     }
 
@@ -156,6 +170,16 @@ public class FileAccessController {
 
     public void incrementRowCount() {
         rowCount++;
+    }
+
+    public long getCurrentFilePointer() {
+        log.info("File pointer returned as: {}", currentFilePointer);
+        return currentFilePointer;
+    }
+
+    public void setCurrentFilePointer(long currentFilePointer) {
+        log.info("File pointer set to: {}", currentFilePointer);
+        this.currentFilePointer = currentFilePointer;
     }
 
 }

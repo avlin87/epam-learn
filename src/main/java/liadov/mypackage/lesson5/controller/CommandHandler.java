@@ -14,39 +14,42 @@ public class CommandHandler implements Handler {
     private int rowNumber;
     private String fileName;
     private int fileNamePosition;
-    private String[] inputText;
-    private ConsolePrinter consolePrinter = ConsolePrinter.getInstance();
+    private final ConsolePrinter consolePrinter = ConsolePrinter.getInstance();
 
+    /**
+     * Method execute common operation for "help" and "exit" operations
+     *
+     * @param commandText String text of received command
+     * @return boolean false in case of 'exit' command
+     */
     @Override
     public boolean handle(String commandText) {
-        if (commandText.toUpperCase() == "HELP"){
+        log.info("received: {}", commandText);
+        if (commandText.equalsIgnoreCase("HELP")) {
+            log.info("HELP command executed");
             consolePrinter.printAllAvailableCommands();
-        }else if (commandText.toUpperCase() == "EXIT"){
+        } else if (commandText.equalsIgnoreCase("EXIT")) {
+            log.info("EXIT command executed");
             consolePrinter.printFinishProgram();
             return false;
         }
+        log.info("handle() finished");
         return true;
     }
 
     /**
      * Method validate correctness of received command
      *
-     * @param minWithoutNumber minimum number of validates in case number was not populated
-     * @param minWithNumber    minimum number of validates in case number was populated
+     * @param inputText String[] command text
      * @return true in case validation passed, false in case validation met problems
      */
-    /**
-     * @param inputText
-     * @return
-     */
-    public boolean validateCommand(String[] inputText) {
+    protected boolean validateCommand(String[] inputText) {
         boolean rowNumberProvided;
         boolean isEnoughValuesProvided;
         try {
-            setRowNumber(this.validateRowNumber(inputText[1]));
-            rowNumberProvided = getRowNumber() > 0;
+            rowNumberProvided = setRowNumberIfValid(inputText[1]);
             log.info("row number specified in command: {}", rowNumberProvided);
-            isEnoughValuesProvided = (rowNumberProvided && (getRowNumber() >= 1) && (inputText.length > 2)) || (!rowNumberProvided && (inputText.length > 1));
+            isEnoughValuesProvided = !rowNumberProvided || getRowNumber() >= 1 && inputText.length > 2;
             log.info("EnoughValuesProvided: {}", isEnoughValuesProvided);
             if (isEnoughValuesProvided) {
                 setFileNamePosition(1);
@@ -54,19 +57,20 @@ public class CommandHandler implements Handler {
                     setFileNamePosition(2);
                 }
                 setFileName(this.parseFileName(inputText[getFileNamePosition()]));
+                validateFile(new File(getFileName()));
                 return true;
             } else {
                 String rowNumberValidation = "";
-                if (rowNumberProvided && !(getRowNumber() >= 1)) {
+                if ((getRowNumber() < 1)) {
                     consolePrinter.printRowNumberValidation();
                     rowNumberValidation = " row number=" + getRowNumber() + ", expected value >=1";
                 }
                 consolePrinter.printProvideFullCommand();
-                log.info("Provided ADD command is not valid: length={}, expected length>={};{}", inputText.length, rowNumberProvided ? (3) : (1), rowNumberValidation);
+                log.info("Provided command is not valid: length={}, expected length>={};{}", inputText.length, 3, rowNumberValidation);
             }
         } catch (ArrayIndexOutOfBoundsException e) {
             consolePrinter.printProvideFullCommand();
-            log.info("add command has empty details [{}], \n{}", Arrays.toString(inputText), ExceptionHandler.getStackTrace(e));
+            log.info("command has empty details {}, \n{}", Arrays.toString(inputText), ExceptionHandler.getStackTrace(e));
         } catch (FileNotFoundException e) {
             consolePrinter.printFileNotFound();
             log.info("File name is not valid, \n{}", ExceptionHandler.getStackTrace(e));
@@ -80,16 +84,17 @@ public class CommandHandler implements Handler {
      * @param rowNumberString string from witch rowNumber parsing should be executed
      * @return true/false based on rowNumber parsing result
      */
-    public int validateRowNumber(String rowNumberString) {
+    protected boolean setRowNumberIfValid(String rowNumberString) {
         int rowNumber;
         try {
             rowNumber = Integer.parseInt(rowNumberString);
+            setRowNumber(rowNumber);
             log.info("rowNumber parsed as {}", rowNumber);
-            return rowNumber;
+            return true;
         } catch (NumberFormatException e) {
             log.info("non Integer value provided as second word in command add [{}]", rowNumberString);
+            return false;
         }
-        return -1;
     }
 
     /**
@@ -97,7 +102,7 @@ public class CommandHandler implements Handler {
      *
      * @param fileName String text value
      */
-    public String parseFileName(String fileName) throws FileNotFoundException {
+    protected String parseFileName(String fileName) throws FileNotFoundException {
         if (fileName.length() > 0) {
             log.info("fileName parsed as {}", fileName);
             return fileName;
@@ -108,7 +113,13 @@ public class CommandHandler implements Handler {
         }
     }
 
-    public void validateFile(File targetFile) throws FileNotFoundException {
+    /**
+     * Method Validate file if presented
+     *
+     * @param targetFile File to be checked
+     * @throws FileNotFoundException in case expected file is absent
+     */
+    protected void validateFile(File targetFile) throws FileNotFoundException {
         if (!targetFile.exists()) {
             consolePrinter.printFileNotFound();
             log.info("target file was not found: {}", fileName);
@@ -116,7 +127,15 @@ public class CommandHandler implements Handler {
         }
     }
 
-    public void validateRequestedRowIsPresent(boolean rowNumberProvided, int size, int rowNumber) throws UnreachableRequestedRow {
+    /**
+     * Method validates if requested row is present in file.
+     *
+     * @param rowNumberProvided boolean row number is present in command
+     * @param size              int number of rows present in target file
+     * @param rowNumber         int number of row to be found
+     * @throws UnreachableRequestedRow thrown in case requested row is out of file range
+     */
+    protected void validateRequestedRowIsPresent(boolean rowNumberProvided, int size, int rowNumber) throws UnreachableRequestedRow {
         if (rowNumberProvided && (size < rowNumber)) {
             log.warn("requested row is not present in existing text. Existing text size {}, requested row {}", size, rowNumber);
             throw new UnreachableRequestedRow();
@@ -124,35 +143,27 @@ public class CommandHandler implements Handler {
         log.info("requested row number present in file");
     }
 
-    public int getRowNumber() {
+    protected int getRowNumber() {
         return rowNumber;
     }
 
-    public void setRowNumber(int rowNumber) {
+    protected void setRowNumber(int rowNumber) {
         this.rowNumber = rowNumber;
     }
 
-    public String getFileName() {
+    protected String getFileName() {
         return fileName;
     }
 
-    public void setFileName(String fileName) {
+    protected void setFileName(String fileName) {
         this.fileName = fileName;
     }
 
-    public String[] getInputText() {
-        return inputText;
-    }
-
-    public void setInputText(String[] inputText) {
-        this.inputText = inputText;
-    }
-
-    public int getFileNamePosition() {
+    protected int getFileNamePosition() {
         return fileNamePosition;
     }
 
-    public void setFileNamePosition(int fileNamePosition) {
+    protected void setFileNamePosition(int fileNamePosition) {
         this.fileNamePosition = fileNamePosition;
     }
 
