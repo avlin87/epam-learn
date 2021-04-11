@@ -34,7 +34,7 @@ class CacheTest {
     void testIsPresentByIndexShouldReturnFalse() {
         Cache<String> cache = new Cache<>(10);
         cache.add("testElement",18);
-        assertTrue(cache.isPresent(2));
+        assertFalse(cache.isPresent(2));
     }
 
 
