@@ -1,7 +1,8 @@
-package liadov.mypackage.lesson5;
+package liadov.mypackage.lesson5.controller;
 
 import liadov.mypackage.lesson5.exceptions.ExceptionHandler;
 import liadov.mypackage.lesson5.exceptions.UnreachableRequestedRow;
+import liadov.mypackage.lesson5.view.ConsolePrinter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -39,20 +40,20 @@ public class CommandFilter {
             switch (command) {
                 case ADD: {
                     log.info("ADD command identified");
-                    AddHandler addHandler = new AddHandler(commandText);
-                    addHandler.proceedAddScenario();
+                    AddCommandHandler addCommandHandler = new AddCommandHandler(commandText);
+                    addCommandHandler.proceedAddScenario();
                     break;
                 }
                 case DELETE: {
                     log.info("DELETE command identified");
-                    DeleteHandler deleteHandler = new DeleteHandler(commandText);
-                    deleteHandler.proceedDeleteScenario();
+                    DeleteCommandHandler deleteCommandHandler = new DeleteCommandHandler(commandText);
+                    deleteCommandHandler.proceedDeleteScenario();
                     break;
                 }
                 case PRINT: {
                     log.info("PRINT command identified");
-                    PrintHandler printHandler = new PrintHandler(commandText);
-                    printHandler.proceedPrintScenario();
+                    PrintCommandHandler printCommandHandler = new PrintCommandHandler(commandText);
+                    printCommandHandler.proceedPrintScenario();
                     break;
                 }
                 case HELP: {

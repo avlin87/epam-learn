@@ -1,5 +1,7 @@
-package liadov.mypackage.lesson5;
+package liadov.mypackage.lesson5.controller;
 
+import liadov.mypackage.lesson5.view.ConsolePrinter;
+import liadov.mypackage.lesson5.mode.FileAccessController;
 import liadov.mypackage.lesson5.exceptions.ExceptionHandler;
 import liadov.mypackage.lesson5.exceptions.UnreachableRequestedRow;
 import lombok.extern.slf4j.Slf4j;
@@ -10,10 +12,10 @@ import java.io.IOException;
 import java.util.List;
 
 @Slf4j
-public class PrintHandler extends CommandHandler {
+public class PrintCommandHandler extends CommandHandler {
     private ConsolePrinter consolePrinter = ConsolePrinter.getInstance();
 
-    public PrintHandler(String commandText) {
+    public PrintCommandHandler(String commandText) {
         setInputText(commandText.split(" "));
         log.info("print command initiated");
     }

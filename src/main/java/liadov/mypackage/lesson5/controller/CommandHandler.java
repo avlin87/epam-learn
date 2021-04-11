@@ -1,5 +1,6 @@
-package liadov.mypackage.lesson5;
+package liadov.mypackage.lesson5.controller;
 
+import liadov.mypackage.lesson5.view.ConsolePrinter;
 import liadov.mypackage.lesson5.exceptions.ExceptionHandler;
 import liadov.mypackage.lesson5.exceptions.UnreachableRequestedRow;
 import lombok.extern.slf4j.Slf4j;

@@ -1,5 +1,7 @@
-package liadov.mypackage.lesson5;
+package liadov.mypackage.lesson5.controller;
 
+import liadov.mypackage.lesson5.view.ConsolePrinter;
+import liadov.mypackage.lesson5.mode.FileAccessController;
 import liadov.mypackage.lesson5.exceptions.ExceptionHandler;
 import lombok.extern.slf4j.Slf4j;
 
@@ -8,7 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
-public class AddHandler extends CommandHandler {
+public class AddCommandHandler extends CommandHandler {
     ConsolePrinter consolePrinter = ConsolePrinter.getInstance();
 
     private String text;
@@ -18,7 +20,7 @@ public class AddHandler extends CommandHandler {
      *
      * @param inputText - full text of ADD command
      */
-    public AddHandler(String inputText) {
+    public AddCommandHandler(String inputText) {
         setInputText(inputText.split(" "));
         log.info(this.toString());
     }

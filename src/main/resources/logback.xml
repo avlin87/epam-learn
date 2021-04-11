@@ -102,32 +102,32 @@
         <appender-ref ref="FILE-MAIN"/>
     </logger>
 
-    <logger name="liadov.mypackage.lesson5.CommandFilter" level="debug" additivity="false">
+    <logger name="liadov.mypackage.lesson5.controller.CommandFilter" level="debug" additivity="false">
         <!--<appender-ref ref="CONSOLE"/>-->
         <appender-ref ref="FILE-CommandFilter"/>
     </logger>
 
-    <logger name="liadov.mypackage.lesson5.CommandHandler" level="debug" additivity="false">
+    <logger name="liadov.mypackage.lesson5.controller.CommandHandler" level="debug" additivity="false">
         <!--<appender-ref ref="CONSOLE"/>-->
         <appender-ref ref="FILE-CommandHandler"/>
     </logger>
 
-    <logger name="liadov.mypackage.lesson5.AddHandler" level="debug" additivity="false">
+    <logger name="liadov.mypackage.lesson5.controller.AddCommandHandler" level="debug" additivity="false">
         <!--<appender-ref ref="CONSOLE"/>-->
         <appender-ref ref="FILE-ADDHANDLER"/>
     </logger>
 
-    <logger name="liadov.mypackage.lesson5.DeleteHandler" level="debug" additivity="false">
+    <logger name="liadov.mypackage.lesson5.controller.DeleteCommandHandler" level="debug" additivity="false">
         <!--<appender-ref ref="CONSOLE"/>-->
         <appender-ref ref="FILE-DELETEHANDLER"/>
     </logger>
 
-    <logger name="liadov.mypackage.lesson5.PrintHandler" level="debug" additivity="false">
+    <logger name="liadov.mypackage.lesson5.controller.PrintCommandHandler" level="debug" additivity="false">
         <!--<appender-ref ref="CONSOLE"/>-->
         <appender-ref ref="FILE-PRINTHANDLER"/>
     </logger>
 
-    <logger name="liadov.mypackage.lesson5.FileAccessController" level="debug" additivity="false">
+    <logger name="liadov.mypackage.lesson5.mode.FileAccessController" level="debug" additivity="false">
         <!--<appender-ref ref="CONSOLE"/>-->
         <appender-ref ref="FILE-FILEACCESSCONTROLLER"/>
     </logger>

@@ -1,6 +1,6 @@
 package liadov.mypackage;
 
-import liadov.mypackage.lesson5.CommandFilter;
+import liadov.mypackage.lesson5.controller.CommandFilter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Scanner;

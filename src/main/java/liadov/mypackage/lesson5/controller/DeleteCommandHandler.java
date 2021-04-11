@@ -1,5 +1,7 @@
-package liadov.mypackage.lesson5;
+package liadov.mypackage.lesson5.controller;
 
+import liadov.mypackage.lesson5.view.ConsolePrinter;
+import liadov.mypackage.lesson5.mode.FileAccessController;
 import liadov.mypackage.lesson5.exceptions.ExceptionHandler;
 import liadov.mypackage.lesson5.exceptions.UnreachableRequestedRow;
 import lombok.extern.slf4j.Slf4j;
@@ -10,10 +12,10 @@ import java.io.IOException;
 import java.util.List;
 
 @Slf4j
-public class DeleteHandler extends CommandHandler {
+public class DeleteCommandHandler extends CommandHandler {
     ConsolePrinter consolePrinter = ConsolePrinter.getInstance();
 
-    public DeleteHandler(String commandText) {
+    public DeleteCommandHandler(String commandText) {
         setInputText(commandText.split(" "));
         log.info("delete command initiated");
     }

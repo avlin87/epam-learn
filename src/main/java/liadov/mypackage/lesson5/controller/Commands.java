@@ -1,4 +1,4 @@
-package liadov.mypackage.lesson5;
+package liadov.mypackage.lesson5.controller;
 
 public enum Commands {
     ADD("example: add 5 fileName.txt \"text\""),

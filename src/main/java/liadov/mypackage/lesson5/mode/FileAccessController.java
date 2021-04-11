@@ -1,4 +1,4 @@
-package liadov.mypackage.lesson5;
+package liadov.mypackage.lesson5.mode;
 
 import lombok.extern.slf4j.Slf4j;
 

@@ -1,4 +1,6 @@
-package liadov.mypackage.lesson5;
+package liadov.mypackage.lesson5.view;
+
+import liadov.mypackage.lesson5.controller.Commands;
 
 public class ConsolePrinter {
     private static ConsolePrinter consolePrinter;
