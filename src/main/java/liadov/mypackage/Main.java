@@ -21,7 +21,6 @@ public class Main {
         try (Scanner scanner = new Scanner(System.in);) {
             while (true) {
                 commandText = scanner.nextLine();
-                scanner.reset();
                 log.info("Command received from console: {}", commandText);
 
                 if (!commandFilter.parseCommand(commandText)) {
