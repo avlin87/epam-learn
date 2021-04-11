@@ -18,9 +18,9 @@ public class Main {
 
     private static void readConsoleCommand(CommandFilter commandFilter) {
         String commandText = "";
-        boolean continueRun = true;
         try (Scanner scanner = new Scanner(System.in);) {
-            while (continueRun && scanner.hasNext()) {
+            while (true) {
+                boolean continueRun = true;
                 if (scanner.hasNext()) {
                     commandText = scanner.nextLine();
                     scanner.reset();
@@ -28,8 +28,11 @@ public class Main {
                     continueRun = commandFilter.parseCommand(commandText);
                     log.info("Variable continueRun = {}", continueRun);
                 }
+                if (!continueRun){
+                    log.info("Program stopped. Variable continueRun = {}",continueRun);
+                    break;
+                }
             }
         }
-        log.info("Program stopped. Variable continueRun = {}",continueRun);
     }
 }
