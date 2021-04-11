@@ -20,16 +20,12 @@ public class Main {
         String commandText = "";
         try (Scanner scanner = new Scanner(System.in);) {
             while (true) {
-                boolean continueRun = true;
-                if (scanner.hasNext()) {
-                    commandText = scanner.nextLine();
-                    scanner.reset();
-                    log.info("Command received from console: {}", commandText);
-                    continueRun = commandFilter.parseCommand(commandText);
-                    log.info("Variable continueRun = {}", continueRun);
-                }
-                if (!continueRun){
-                    log.info("Program stopped. Variable continueRun = {}",continueRun);
+                commandText = scanner.nextLine();
+                scanner.reset();
+                log.info("Command received from console: {}", commandText);
+
+                if (!commandFilter.parseCommand(commandText)) {
+                    log.info("Program stopped.");
                     break;
                 }
             }
