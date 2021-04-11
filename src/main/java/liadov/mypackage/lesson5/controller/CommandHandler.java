@@ -18,7 +18,7 @@ public class CommandHandler implements Handler {
     private ConsolePrinter consolePrinter = ConsolePrinter.getInstance();
 
     @Override
-    public boolean proceedScenario(String commandText) {
+    public boolean handle(String commandText) {
         if (commandText.toUpperCase() == "HELP"){
             consolePrinter.printAllAvailableCommands();
         }else if (commandText.toUpperCase() == "EXIT"){

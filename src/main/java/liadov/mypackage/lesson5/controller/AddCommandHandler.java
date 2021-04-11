@@ -23,7 +23,7 @@ public class AddCommandHandler extends CommandHandler {
      * @return
      */
     @Override
-    public boolean proceedScenario(String commandText) {
+    public boolean handle(String commandText) {
         String[] inputText = commandText.split(" ");
         if (validateAddCommand(inputText)) {
             parseText(inputText, getFileNamePosition());

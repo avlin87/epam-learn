@@ -16,7 +16,7 @@ public class PrintCommandHandler extends CommandHandler {
     private ConsolePrinter consolePrinter = ConsolePrinter.getInstance();
 
     @Override
-    public boolean proceedScenario(String commandText) throws UnreachableRequestedRow {
+    public boolean handle(String commandText) throws UnreachableRequestedRow {
         String inputText[] = commandText.split(" ");
         try {
             if (validateCommand(inputText)) {

@@ -44,7 +44,7 @@ public class CommandFilter {
         handlerMap.put(Commands.DELETE, new DeleteCommandHandler());
         handlerMap.put(Commands.PRINT, new DeleteCommandHandler());
         try {
-            return handlerMap.get(command).proceedScenario(commandText);
+            return handlerMap.get(command).handle(commandText);
         } catch (UnreachableRequestedRow e) {
             consolePrinter.printRowNumberNotReached();
             log.warn("Requested row can not be reached\n{}", ExceptionHandler.getStackTrace(e));
