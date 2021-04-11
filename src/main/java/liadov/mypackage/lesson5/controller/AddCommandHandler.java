@@ -20,8 +20,10 @@ public class AddCommandHandler extends CommandHandler {
      * validation message appears in case command is incorrect
      *
      * @param commandText
+     * @return
      */
-    public void proceedAddScenario(String commandText) {
+    @Override
+    public boolean proceedScenario(String commandText) {
         String[] inputText = commandText.split(" ");
         if (validateAddCommand(inputText)) {
             parseText(inputText, getFileNamePosition());
@@ -31,6 +33,7 @@ public class AddCommandHandler extends CommandHandler {
                 addTextToFile(getFileName(), text);
             }
         }
+        return false;
     }
 
     /**
@@ -94,7 +97,8 @@ public class AddCommandHandler extends CommandHandler {
         log.info("target file originally empty: {}", isTargetFileOriginallyEmpty);
         log.info("row number provided: {}", rowNumberProvided);
 
-        try (FileAccessController fileController = new FileAccessController(targetFile)) {
+        try {
+            FileAccessController fileController = new FileAccessController(targetFile);
             if (rowNumberProvided) {
                 int startRow = rowNumber[0] - 1;
                 fileController.skipRows(startRow, true);

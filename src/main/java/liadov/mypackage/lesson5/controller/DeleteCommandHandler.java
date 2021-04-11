@@ -15,7 +15,8 @@ import java.util.List;
 public class DeleteCommandHandler extends CommandHandler {
     ConsolePrinter consolePrinter = ConsolePrinter.getInstance();
 
-    public void proceedDeleteScenario(String commandText) throws UnreachableRequestedRow {
+    @Override
+    public boolean proceedScenario(String commandText) throws UnreachableRequestedRow {
         String[] inputText = commandText.split(" ");
         //setInputText(commandText.split(" "));
         log.info("delete command initiated");
@@ -30,6 +31,7 @@ public class DeleteCommandHandler extends CommandHandler {
         } catch (FileNotFoundException e) {
             log.warn(ExceptionHandler.getStackTrace(e));
         }
+        return false;
     }
 
     private void deleteTextFromFile(String fileName, int... rowNumber) throws FileNotFoundException, UnreachableRequestedRow {
@@ -44,7 +46,8 @@ public class DeleteCommandHandler extends CommandHandler {
         log.info("target file originally empty: {}", isTargetFileOriginallyEmpty);
         log.info("row number provided: {}", rowNumberProvided);
 
-        try (FileAccessController fileController = new FileAccessController(targetFile)) {
+        try {
+            FileAccessController fileController = new FileAccessController(targetFile);
             existingText = fileController.getExistingTextFromFile(rowNumberProvided, isTargetFileOriginallyEmpty);
             log.info("row number provided {}, existing text size {}, row number {}", rowNumberProvided, existingText.size(), rowNumberProvided ? rowNumber[0] : "N/A");
             validateRequestedRowIsPresent(rowNumberProvided, existingText.size(), rowNumberProvided ? rowNumber[0] : 0);

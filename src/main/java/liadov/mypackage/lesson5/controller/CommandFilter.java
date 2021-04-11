@@ -5,6 +5,9 @@ import liadov.mypackage.lesson5.exceptions.UnreachableRequestedRow;
 import liadov.mypackage.lesson5.view.ConsolePrinter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Slf4j
 public class CommandFilter {
     private ConsolePrinter consolePrinter = ConsolePrinter.getInstance();
@@ -36,37 +39,12 @@ public class CommandFilter {
      * @return boolean; false - Exit command received, true - not exit command
      */
     private boolean chooseHandler(Commands command, String commandText) {
+        Map<Commands, Handler> handlerMap = new HashMap<>();
+        handlerMap.put(Commands.ADD, new AddCommandHandler());
+        handlerMap.put(Commands.DELETE, new DeleteCommandHandler());
+        handlerMap.put(Commands.PRINT, new DeleteCommandHandler());
         try {
-            switch (command) {
-                case ADD: {
-                    log.info("ADD command identified");
-                    AddCommandHandler addCommandHandler = new AddCommandHandler();
-                    addCommandHandler.proceedAddScenario(commandText);
-                    break;
-                }
-                case DELETE: {
-                    log.info("DELETE command identified");
-                    DeleteCommandHandler deleteCommandHandler = new DeleteCommandHandler();
-                    deleteCommandHandler.proceedDeleteScenario(commandText);
-                    break;
-                }
-                case PRINT: {
-                    log.info("PRINT command identified");
-                    PrintCommandHandler printCommandHandler = new PrintCommandHandler();
-                    printCommandHandler.proceedPrintScenario(commandText);
-                    break;
-                }
-                case HELP: {
-                    log.info("HELP command identified");
-                    consolePrinter.printAllAvailableCommands();
-                    break;
-                }
-                case EXIT: {
-                    log.info("EXIT command identified");
-                    consolePrinter.printFinishProgram();
-                    return false;
-                }
-            }
+            return handlerMap.get(command).proceedScenario(commandText);
         } catch (UnreachableRequestedRow e) {
             consolePrinter.printRowNumberNotReached();
             log.warn("Requested row can not be reached\n{}", ExceptionHandler.getStackTrace(e));

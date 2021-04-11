@@ -15,7 +15,8 @@ import java.util.List;
 public class PrintCommandHandler extends CommandHandler {
     private ConsolePrinter consolePrinter = ConsolePrinter.getInstance();
 
-    public void proceedPrintScenario(String commandText) throws UnreachableRequestedRow {
+    @Override
+    public boolean proceedScenario(String commandText) throws UnreachableRequestedRow {
         String inputText[] = commandText.split(" ");
         try {
             if (validateCommand(inputText)) {
@@ -29,6 +30,7 @@ public class PrintCommandHandler extends CommandHandler {
             consolePrinter.printFileNotFound();
             log.warn("Source file was not found\n{}", ExceptionHandler.getStackTrace(e));
         }
+        return false;
     }
 
     private void printTextFromFile(String fileName, int... rowNumber) throws FileNotFoundException {
@@ -39,7 +41,8 @@ public class PrintCommandHandler extends CommandHandler {
         List<String> existingText;
         log.info("row number provided: {}", rowNumberProvided);
 
-        try (FileAccessController fileController = new FileAccessController(targetFile)) {
+        try {
+            FileAccessController fileController = new FileAccessController(targetFile);
             existingText = fileController.getExistingTextFromFile(true, true);
             validateRequestedRowIsPresent(rowNumberProvided, existingText.size(), rowNumberProvided ? rowNumber[0] : 0);
             if (rowNumberProvided) {

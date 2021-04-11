@@ -10,12 +10,23 @@ import java.io.FileNotFoundException;
 import java.util.Arrays;
 
 @Slf4j
-public class CommandHandler {
+public class CommandHandler implements Handler {
     private int rowNumber;
     private String fileName;
     private int fileNamePosition;
     private String[] inputText;
     private ConsolePrinter consolePrinter = ConsolePrinter.getInstance();
+
+    @Override
+    public boolean proceedScenario(String commandText) {
+        if (commandText.toUpperCase() == "HELP"){
+            consolePrinter.printAllAvailableCommands();
+        }else if (commandText.toUpperCase() == "EXIT"){
+            consolePrinter.printFinishProgram();
+            return false;
+        }
+        return true;
+    }
 
     /**
      * Method validate correctness of received command
@@ -25,7 +36,6 @@ public class CommandHandler {
      * @return true in case validation passed, false in case validation met problems
      */
     /**
-     *
      * @param inputText
      * @return
      */
@@ -145,4 +155,5 @@ public class CommandHandler {
     public void setFileNamePosition(int fileNamePosition) {
         this.fileNamePosition = fileNamePosition;
     }
+
 }

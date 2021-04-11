@@ -10,13 +10,46 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-public class FileAccessController extends RandomAccessFile {
+public class FileAccessController {
     private int rowCount;
     private long filePointerBeforeLastRow;
+    private File file;
+    private String accessType = "rws";
 
     public FileAccessController(File file) throws FileNotFoundException {
-        super(file, "rws");
+        this.file = file;
         rowCount = 0;
+    }
+
+
+    public String readLine() throws IOException {
+        try (RandomAccessFile randomAccessFile = new RandomAccessFile(file, accessType)) {
+            return randomAccessFile.readLine();
+        }
+    }
+
+    public void writeBytes(String s) throws IOException {
+        try (RandomAccessFile randomAccessFile = new RandomAccessFile(file, accessType)) {
+            randomAccessFile.writeBytes(s);
+        }
+    }
+
+    public long getFilePointer() throws IOException {
+        try (RandomAccessFile randomAccessFile = new RandomAccessFile(file, accessType)) {
+            return randomAccessFile.getFilePointer();
+        }
+    }
+
+    public void seek(long filePointer) throws IOException {
+        try (RandomAccessFile randomAccessFile = new RandomAccessFile(file, accessType)) {
+            randomAccessFile.seek(filePointer);
+        }
+    }
+
+    public void setLength(long l) throws IOException {
+        try (RandomAccessFile randomAccessFile = new RandomAccessFile(file, accessType)) {
+            randomAccessFile.setLength(l);
+        }
     }
 
     /**
@@ -38,6 +71,7 @@ public class FileAccessController extends RandomAccessFile {
         }
         log.info("blank rows adding operation finished");
     }
+
 
     /**
      * Method read existing text form file and return List<String> as a result
@@ -123,4 +157,5 @@ public class FileAccessController extends RandomAccessFile {
     public void incrementRowCount() {
         rowCount++;
     }
+
 }
