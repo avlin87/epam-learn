@@ -49,6 +49,12 @@ class StorageTest {
     }
 
     @Test
-    void testToString() {
+    void testToStringShouldRepresentStateOfStorage() {
+        Storage<String> storage = new Storage<>(new String[]{"testElement 1","testElement 2","testElement 3"});
+        storage.get(1);
+        storage.get(0);
+        storage.get(2);
+        assertTrue(storage.toString().startsWith("Storage{storage=[testElement 1, testElement 2, testElement 3], countStorageElements=3, storageCapacity=3, CACHE=[Cache-"));
+        assertTrue(storage.toString().endsWith("]: {cacheCapacity=10, countCacheElements=3, cache=[CE{e=testElement 2, i=1}, CE{e=testElement 1, i=0}, CE{e=testElement 3, i=2}, null, null, null, null, null, null, null]}}"));
     }
 }
