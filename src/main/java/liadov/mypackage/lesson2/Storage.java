@@ -129,8 +129,8 @@ public class Storage<T> {
             return (T) storage[index];
         } catch (ElementDoesNotExistException e) {
             log.error(e.toString());
+            throw e;
         }
-        return null;
     }
 
     /**

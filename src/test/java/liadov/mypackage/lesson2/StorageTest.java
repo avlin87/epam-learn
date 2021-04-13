@@ -24,7 +24,7 @@ class StorageTest {
 
     @Test
     void clearShouldRemoveAllFromStorage() {
-        Storage<String> storage = new Storage<>(new String[]{"testElement 1","testElement 2","testElement 3"});
+        Storage<String> storage = new Storage<>(new String[]{"testElement 1", "testElement 2", "testElement 3"});
         assertNotNull(storage.get(0));
         storage.clear();
         assertNull(storage.get(0));
@@ -32,25 +32,41 @@ class StorageTest {
 
     @Test
     void getLastShouldReturnLastElement() {
-        Storage<String> storage = new Storage<>(new String[]{"testElement 1","testElement 2","testElement 3"});
+        Storage<String> storage = new Storage<>(new String[]{"testElement 1", "testElement 2", "testElement 3"});
         assertEquals(storage.getLast(), "testElement 3");
     }
 
     @Test
     void getElementByIndex() {
-        Storage<String> storage = new Storage<>(new String[]{"testElement 1","testElement 2","testElement 3"});
+        Storage<String> storage = new Storage<>(new String[]{"testElement 1", "testElement 2", "testElement 3"});
         assertEquals(storage.get(1), "testElement 2");
     }
 
     @Test
+    void getElementByIndexThrowsElementDoesNotExistException() {
+        Storage<String> storage = new Storage<>(new String[]{"testElement 1", "testElement 2", "testElement 3"});
+        assertThrows(ElementDoesNotExistException.class, () -> storage.get(80));
+    }
+
+    @Test
     void getReturnNull() {
-        Storage<String> storage = new Storage<>(new String[]{"testElement 1","testElement 2","testElement 3"});
-        assertNull(storage.get(50));
+        Storage<String> storage = new Storage<>();
+        storage.add("testElement 1");
+        storage.add("testElement 2");
+        storage.add("testElement 3");
+        assertNull(storage.get(4));
+    }
+
+
+    @Test
+    void testIncreaseCapacityOfStorage() {
+        Storage<String> storage = new Storage<>(new String[]{"testElement 1", "testElement 2", "testElement 3"});
+        System.out.println(storage.toString());
     }
 
     @Test
     void testToStringShouldRepresentStateOfStorage() {
-        Storage<String> storage = new Storage<>(new String[]{"testElement 1","testElement 2","testElement 3"});
+        Storage<String> storage = new Storage<>(new String[]{"testElement 1", "testElement 2", "testElement 3"});
         storage.get(1);
         storage.get(0);
         storage.get(2);
