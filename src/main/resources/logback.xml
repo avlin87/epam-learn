@@ -5,39 +5,58 @@
         </encoder>
     </appender>
 
-    <appender name="FILE-CACHE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>LOG/debugCache.log</file>
+    <appender name="FILE-Main" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>LOG/debugMain.log</file>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} &lt;%M&gt; - %msg%n</Pattern>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"><!-- rollover daily -->
-            <fileNamePattern>LOG/archived/debugCache.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <fileNamePattern>LOG/archived/debugMain.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <maxFileSize>10MB</maxFileSize>
             </timeBasedFileNamingAndTriggeringPolicy>
         </rollingPolicy>
     </appender>
 
-    <appender name="FILE-STORAGE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>LOG/debugStorage.log</file>
+    <appender name="FILE-MemoryConsumer" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>LOG/debugMemoryConsumer.log</file>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} &lt;%M&gt; - %msg%n</Pattern>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"><!-- rollover daily -->
-            <fileNamePattern>LOG/archived/debugStorage.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <fileNamePattern>LOG/archived/debugMemoryConsumer.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <maxFileSize>10MB</maxFileSize>
             </timeBasedFileNamingAndTriggeringPolicy>
         </rollingPolicy>
     </appender>
 
-    <logger name="liadov.mypackage.lesson2.Cache" level="debug" additivity="false">
-        <appender-ref ref="FILE-CACHE"/>
+    <appender name="FILE-StackOverflowErrorProvider" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>LOG/debugStackOverflowErrorProvider.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} &lt;%M&gt; - %msg%n</Pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"><!-- rollover daily -->
+            <fileNamePattern>LOG/archived/debugStackOverflowErrorProvider.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>10MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+    </appender>
+
+    <logger name="liadov.mypackage.Main" level="debug" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE-Main"/>
     </logger>
 
-    <logger name="liadov.mypackage.lesson2.Storage" level="debug" additivity="false">
+    <logger name="liadov.mypackage.lesson7.MemoryConsumer" level="debug" additivity="false">
         <appender-ref ref="CONSOLE"/>
-        <appender-ref ref="FILE-STORAGE"/>
+        <appender-ref ref="FILE-MemoryConsumer"/>
+    </logger>
+
+    <logger name="liadov.mypackage.lesson7.StackOverflowErrorProvider" level="debug" additivity="false">
+        <!--<appender-ref ref="CONSOLE"/>-->
+        <appender-ref ref="FILE-StackOverflowErrorProvider"/>
     </logger>
 
 </configuration>
