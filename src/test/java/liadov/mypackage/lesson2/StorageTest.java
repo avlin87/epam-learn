@@ -49,7 +49,7 @@ class StorageTest {
     }
 
     @Test
-    void getReturnNull() {
+    void getReturnNullIfElementAbsentForIdInStorageSize() {
         Storage<String> storage = new Storage<>();
         storage.add("testElement 1");
         storage.add("testElement 2");
