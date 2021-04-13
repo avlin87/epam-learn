@@ -57,11 +57,24 @@ class StorageTest {
         assertNull(storage.get(4));
     }
 
-
     @Test
     void testIncreaseCapacityOfStorage() {
         Storage<String> storage = new Storage<>(new String[]{"testElement 1", "testElement 2", "testElement 3"});
-        System.out.println(storage.toString());
+        int oldStorageCapacity = 3;
+        int newStorageCapacity = storage.getStorageCapacity();
+        assertEquals(oldStorageCapacity, newStorageCapacity);
+        storage.add("testElement 4");
+        newStorageCapacity = storage.getStorageCapacity();
+        assertEquals((int) (1.5 * oldStorageCapacity), newStorageCapacity);
+        storage.add("testElement 5");
+        oldStorageCapacity = newStorageCapacity;
+        newStorageCapacity = storage.getStorageCapacity();
+        assertEquals((int) (1.5 * oldStorageCapacity), newStorageCapacity);
+        storage.add("testElement 6");
+        storage.add("testElement 7");
+        oldStorageCapacity = newStorageCapacity;
+        newStorageCapacity = storage.getStorageCapacity();
+        assertEquals((int) (1.5 * oldStorageCapacity), newStorageCapacity);
     }
 
     @Test
