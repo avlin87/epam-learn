@@ -12,6 +12,7 @@ public class Storage<T> {
     private Object[] storage;
     private Cache<T> cache;
     private int countStorageElements = 0;
+
     private int storageCapacity;
     private final String UNIQ_ID;
 
@@ -129,8 +130,8 @@ public class Storage<T> {
             return (T) storage[index];
         } catch (ElementDoesNotExistException e) {
             log.error(e.toString());
+            throw e;
         }
-        return null;
     }
 
     /**
@@ -151,6 +152,14 @@ public class Storage<T> {
         }
         storage = tempStorage;
         log.debug("[{}]: capacity increased TO {}", this.UNIQ_ID, storageCapacity);
+    }
+
+    /**
+     * Method return current Storage size
+     * @return int
+     */
+    public int getStorageCapacity() {
+        return storageCapacity;
     }
 
     @Override
