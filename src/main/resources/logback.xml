@@ -18,6 +18,19 @@
         </rollingPolicy>
     </appender>
 
+    <appender name="FILE-CustomClassLoader" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>LOG/debugCustomClassLoader.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} &lt;%M&gt; - %msg%n</Pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"><!-- rollover daily -->
+            <fileNamePattern>LOG/archived/debugCustomClassLoader.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>10MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+    </appender>
+
     <appender name="FILE-MemoryConsumer" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>LOG/debugMemoryConsumer.log</file>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
@@ -47,6 +60,11 @@
     <logger name="liadov.mypackage.Main" level="debug" additivity="false">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE-Main"/>
+    </logger>
+
+    <logger name="liadov.mypackage.lesson7.CustomClassLoader" level="debug" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE-CustomClassLoader"/>
     </logger>
 
     <logger name="liadov.mypackage.lesson7.MemoryConsumer" level="debug" additivity="false">

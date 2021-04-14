@@ -11,6 +11,7 @@ public class MemoryConsumer {
 
     /**
      * Method create many objects to overuse memory
+     *
      * @throws OutOfMemoryError when no available memory left
      */
     public void consume() throws OutOfMemoryError {
