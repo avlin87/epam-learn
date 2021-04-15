@@ -6,6 +6,8 @@ import liadov.mypackage.lesson7.StackOverflowErrorProvider;
 import liadov.mypackage.lesson7.exception.ExceptionHandler;
 import lombok.extern.slf4j.Slf4j;
 
+import java.lang.reflect.InvocationTargetException;
+
 @Slf4j
 public class Main {
 
@@ -26,15 +28,19 @@ public class Main {
             classLoader.setMyClasses("D:/java/myClasses/");
 
             Class clazz = classLoader.loadClass("TestClass");
-            Object obj = clazz.newInstance();
+            Object obj = clazz.getDeclaredConstructor().newInstance();
             System.out.println(obj);
-            log.info("message received successfully as \"{}\"",obj.toString());
+            log.info("message received successfully as \"{}\"", obj.toString());
         } catch (IllegalAccessException e) {
-            log.warn("method does not have access to the definition of the specified class\n{}",ExceptionHandler.getFullStackTrace(e));
+            log.warn("method does not have access to the definition of the specified class\n{}", ExceptionHandler.getFullStackTrace(e));
         } catch (InstantiationException e) {
-            log.warn("specified class object cannot be instantiated\n{}",ExceptionHandler.getFullStackTrace(e));
+            log.warn("specified class object cannot be instantiated\n{}", ExceptionHandler.getFullStackTrace(e));
         } catch (ClassNotFoundException e) {
-            log.warn("requested Class was not found\n{}",ExceptionHandler.getFullStackTrace(e,5));
+            log.warn("requested Class was not found\n{}", ExceptionHandler.getFullStackTrace(e, 5));
+        } catch (NoSuchMethodException e) {
+            log.warn("requested Method was not found\n{}", ExceptionHandler.getFullStackTrace(e, 5));
+        } catch (InvocationTargetException e) {
+            log.warn("requested Method or Constructor trows exception\n{}", ExceptionHandler.getFullStackTrace(e, 5));
         }
     }
 
@@ -50,7 +56,7 @@ public class Main {
             provider.recursiveCall(1);
         } catch (StackOverflowError e) {
             log.info("catch: recursiveCall process Finished in {} seconds", ((System.currentTimeMillis() - start) / 1000.0));
-            log.error(ExceptionHandler.getFullStackTrace(e,5));
+            log.error(ExceptionHandler.getFullStackTrace(e, 5));
         } finally {
             log.info("finally: recursiveCall process Finished in {} seconds", ((System.currentTimeMillis() - start) / 1000.0));
         }
