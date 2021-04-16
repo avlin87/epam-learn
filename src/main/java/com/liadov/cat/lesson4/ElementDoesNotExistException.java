@@ -1,4 +1,4 @@
-package liadov.mypackage.lesson4;
+package com.liadov.cat.lesson4;
 
 /**
  * Thrown to indicate that an array has been accessed with an illegal index.

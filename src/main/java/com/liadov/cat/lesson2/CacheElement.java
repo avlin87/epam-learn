@@ -1,4 +1,4 @@
-package liadov.mypackage.lesson2;
+package com.liadov.cat.lesson2;
 
 import java.util.Objects;
 

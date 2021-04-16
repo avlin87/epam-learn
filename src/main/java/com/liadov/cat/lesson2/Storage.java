@@ -1,7 +1,7 @@
-package liadov.mypackage.lesson2;
+package com.liadov.cat.lesson2;
 
-import liadov.mypackage.lesson4.IllegalStateOfCacheElement;
-import liadov.mypackage.lesson4.ElementDoesNotExistException;
+import com.liadov.cat.lesson4.IllegalStateOfCacheElement;
+import com.liadov.cat.lesson4.ElementDoesNotExistException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Arrays;

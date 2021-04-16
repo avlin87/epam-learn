@@ -1,7 +1,7 @@
-package liadov.mypackage.lesson2;
+package com.liadov.cat.lesson2;
 
-import liadov.mypackage.lesson4.IllegalStateOfCacheElement;
-import liadov.mypackage.lesson4.ElementDoesNotExistException;
+import com.liadov.cat.lesson4.IllegalStateOfCacheElement;
+import com.liadov.cat.lesson4.ElementDoesNotExistException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Arrays;
@@ -9,10 +9,11 @@ import java.util.UUID;
 
 @Slf4j
 public class Cache<T> {
+
+    private final String UNIQ_ID;
     private CacheElement<T>[] cache;
     private int capacity;
     private int countElements = 0;
-    private final String UNIQ_ID;
 
     /**
      * Cache constructor with initialization of cache according to received capacity
@@ -26,11 +27,6 @@ public class Cache<T> {
         log.info(toString());
     }
 
-    /**
-     * Method generate unique identifier based on java.util.UUID
-     *
-     * @return String
-     */
     private String generateUniqId() {
         return "Cache-" + UUID.randomUUID().toString();
     }
@@ -38,8 +34,8 @@ public class Cache<T> {
     /**
      * Method for adding element to Cache if element is not null.
      *
-     * @param element This element will be added to Cache if element is not null.
-     * @param index   index of element that this element has in storage
+     * @param element element to be added to Cache.
+     * @param index   index of to be added to Cache.
      */
     public void add(T element, int index) {
         if (element != null) {
@@ -122,13 +118,6 @@ public class Cache<T> {
         return null;
     }
 
-    /**
-     * Method returns existing CacheElement from Cache by index
-     *
-     * @param index index of element that this element has in storage
-     * @return if found return requested CacheElement
-     * @throws IllegalStateOfCacheElement in case CacheElement was not found
-     */
     private CacheElement<T> getExistingCacheElementByIndex(int index) throws IllegalStateOfCacheElement {
         for (int i = 0; i < cache.length; i++) {
             if (cache[i].index == index) {
@@ -152,13 +141,6 @@ public class Cache<T> {
         log.info("[{}]: was cleared", this.UNIQ_ID);
     }
 
-    /**
-     * Method moves to the left Cache elements
-     * Elements move to the left starts from first value of idBeginMove if Method receives idBeginMove
-     * else move to the left all of elements if Method receives blank idBeginMove
-     *
-     * @param idBeginMove can be specified with starting index to start move. All element will be moved to the left in case of blank value
-     */
     private void moveLeftCacheElements(int... idBeginMove) {
         int startingIndex = 0;
         if (idBeginMove.length > 0) {
@@ -170,13 +152,6 @@ public class Cache<T> {
         }
     }
 
-    /**
-     * Method finds id of element in Cache by element
-     *
-     * @param element this element id will be found
-     * @return int
-     * @throws ElementDoesNotExistException in case element was not found
-     */
     private int getElementID(T element) throws ElementDoesNotExistException {
         for (int i = 0; i < cache.length; i++) {
             if (cache[i].element.equals(element)) {
@@ -189,13 +164,6 @@ public class Cache<T> {
         throw elementDoesNotExistException;
     }
 
-    /**
-     * Method finds id of element in Cache by index
-     *
-     * @param index index of element that this element has in storage
-     * @return int
-     * @throws ElementDoesNotExistException in case element was not found
-     */
     private int getElementID(int index) throws ElementDoesNotExistException {
         for (int i = 0; i < cache.length; i++) {
             if (cache[i].index == index) {

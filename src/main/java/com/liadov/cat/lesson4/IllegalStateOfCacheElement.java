@@ -1,4 +1,4 @@
-package liadov.mypackage.lesson4;
+package com.liadov.cat.lesson4;
 
 /**
  * Signals that an attempt to access existing CacheElement failed

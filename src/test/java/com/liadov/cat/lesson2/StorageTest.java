@@ -1,21 +1,21 @@
-package liadov.mypackage.lesson2;
+package com.liadov.cat.lesson2;
 
 import org.junit.jupiter.api.Test;
-import liadov.mypackage.lesson4.ElementDoesNotExistException;
+import com.liadov.cat.lesson4.ElementDoesNotExistException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class StorageTest {
 
     @Test
-    void addShouldPutElementToStorage() {
+    public void addShouldPutElementToStorage() {
         Storage<String> storage = new Storage<>();
         storage.add("testElement");
         assertEquals(storage.getLast(), "testElement");
     }
 
     @Test
-    void deleteShouldRemoveLastElement() {
+    public void deleteShouldRemoveLastElement() {
         Storage<String> storage = new Storage<>(new String[]{"testElement 3"});
         assertNotNull(storage.get(0));
         storage.delete();
@@ -23,7 +23,7 @@ class StorageTest {
     }
 
     @Test
-    void clearShouldRemoveAllFromStorage() {
+    public void clearShouldRemoveAllFromStorage() {
         Storage<String> storage = new Storage<>(new String[]{"testElement 1", "testElement 2", "testElement 3"});
         assertNotNull(storage.get(0));
         storage.clear();
@@ -31,25 +31,25 @@ class StorageTest {
     }
 
     @Test
-    void getLastShouldReturnLastElement() {
+    public void getLastShouldReturnLastElement() {
         Storage<String> storage = new Storage<>(new String[]{"testElement 1", "testElement 2", "testElement 3"});
         assertEquals(storage.getLast(), "testElement 3");
     }
 
     @Test
-    void getElementByIndex() {
+    public void getElementByIndex() {
         Storage<String> storage = new Storage<>(new String[]{"testElement 1", "testElement 2", "testElement 3"});
         assertEquals(storage.get(1), "testElement 2");
     }
 
     @Test
-    void getElementByIndexThrowsElementDoesNotExistException() {
+    public void getElementByIndexThrowsElementDoesNotExistException() {
         Storage<String> storage = new Storage<>(new String[]{"testElement 1", "testElement 2", "testElement 3"});
         assertThrows(ElementDoesNotExistException.class, () -> storage.get(80));
     }
 
     @Test
-    void getReturnNullIfElementAbsentForIdInStorageSize() {
+    public void getReturnNullIfElementAbsentForIdInStorageSize() {
         Storage<String> storage = new Storage<>();
         storage.add("testElement 1");
         storage.add("testElement 2");
@@ -58,7 +58,7 @@ class StorageTest {
     }
 
     @Test
-    void testIncreaseCapacityOfStorage() {
+    public void testIncreaseCapacityOfStorage() {
         Storage<String> storage = new Storage<>(new String[]{"testElement 1", "testElement 2", "testElement 3"});
         int oldStorageCapacity = 3;
         int newStorageCapacity = storage.getStorageCapacity();
@@ -78,7 +78,7 @@ class StorageTest {
     }
 
     @Test
-    void testToStringShouldRepresentStateOfStorage() {
+    public void testToStringShouldRepresentStateOfStorage() {
         Storage<String> storage = new Storage<>(new String[]{"testElement 1", "testElement 2", "testElement 3"});
         storage.get(1);
         storage.get(0);
