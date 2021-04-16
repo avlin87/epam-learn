@@ -1,4 +1,4 @@
-package com.liadov;
+package com.liadov.cat;
 
 public class MainTest {
 }

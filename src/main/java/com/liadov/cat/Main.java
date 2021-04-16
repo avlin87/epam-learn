@@ -1,4 +1,4 @@
-package com.liadov;
+package com.liadov.cat;
 
 import lombok.extern.slf4j.Slf4j;
 
