@@ -4,9 +4,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.test</groupId>
+    <groupId>com.liadov</groupId>
     <artifactId>liadov</artifactId>
     <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <jacoco-maven-plugin.haltOnFailure>true</jacoco-maven-plugin.haltOnFailure>
+    </properties>
+
     <dependencies>
         <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
         <dependency>
@@ -30,22 +35,18 @@
             <artifactId>junit-jupiter-api</artifactId>
             <version>5.7.1</version>
         </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-junit-jupiter</artifactId>
-            <version>3.9.0</version>
-        </dependency>
         <!-- https://mvnrepository.com/artifact/org.junit.platform/junit-platform-runner -->
         <dependency>
             <groupId>org.junit.platform</groupId>
             <artifactId>junit-platform-runner</artifactId>
             <version>1.7.1</version>
         </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <version>3.9.0</version>
+        </dependency>
     </dependencies>
-
-    <properties>
-        <jacoco-maven-plugin.haltOnFailure>true</jacoco-maven-plugin.haltOnFailure>
-    </properties>
 
     <build>
         <plugins>
