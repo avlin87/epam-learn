@@ -1,6 +1,6 @@
 package com.liadov.cat.lesson2;
 
-import com.liadov.cat.lesson4.IllegalStateOfCacheElement;
+import com.liadov.cat.lesson4.ElementNotFoundByIndex;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -53,14 +53,14 @@ class CacheTest {
     }
 
     @Test
-    public void getShouldReturnNull() throws IllegalStateOfCacheElement {
+    public void getTrowsElementNotFoundByIndexException() {
         Cache<String> cache = new Cache<>(1);
         cache.add("testElement", 0);
-        assertNull(cache.get(1));
+        assertThrows(ElementNotFoundByIndex.class, () -> cache.get(1));
     }
 
     @Test
-    public void getShouldReturnElement() throws IllegalStateOfCacheElement {
+    public void getShouldReturnElement() {
         Cache<String> cache = new Cache<>(1);
         cache.add("testElement", 0);
         assertEquals(cache.get(0), "testElement");
@@ -89,7 +89,6 @@ class CacheTest {
         cache.add("testElement1", 1);
         cache.add("testElement2", 2);
         cache.add("testElement3", 3);
-        System.out.println(cache);
         assertTrue(cache.toString().endsWith("]: {cacheCapacity=3, countCacheElements=3, cache=[CE{e=testElement1, i=1}, CE{e=testElement2, i=2}, CE{e=testElement3, i=3}]}"));
         cache.add("testElement4", 4);
         assertTrue(cache.toString().endsWith("]: {cacheCapacity=3, countCacheElements=3, cache=[CE{e=testElement2, i=2}, CE{e=testElement3, i=3}, CE{e=testElement4, i=4}]}"));

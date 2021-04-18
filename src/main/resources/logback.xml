@@ -31,11 +31,12 @@
         </rollingPolicy>
     </appender>
 
-    <logger name="liadov.mypackage.lesson2.Cache" level="debug" additivity="false">
+    <logger name="com.liadov.cat.lesson2.Cache" level="debug" additivity="false">
+        <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE-CACHE"/>
     </logger>
 
-    <logger name="liadov.mypackage.lesson2.Storage" level="debug" additivity="false">
+    <logger name="com.liadov.cat.lesson2.Storage" level="debug" additivity="false">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE-STORAGE"/>
     </logger>

@@ -1,5 +1,6 @@
 package com.liadov.cat;
 
+import com.liadov.cat.lesson2.Storage;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

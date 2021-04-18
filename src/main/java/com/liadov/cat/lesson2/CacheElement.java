@@ -2,13 +2,30 @@ package com.liadov.cat.lesson2;
 
 import java.util.Objects;
 
-public class CacheElement <T>{
-    T element;
-    int index;
 
-    public CacheElement(T element, int index){
-        this.element = element;
-        this.index = index;
+/**
+ * Container for cache element and index values.
+ *
+ * @param <T> type of element value to be stored in cache.
+ * @author Aleksandr Liadov
+ * @version 1.10 17 April 2020
+ */
+public class CacheElement<T> {
+
+    private final T ELEMENT;
+    private final int INDEX;
+
+    public CacheElement(T element, int index) {
+        this.ELEMENT = element;
+        this.INDEX = index;
+    }
+
+    public T getELEMENT() {
+        return ELEMENT;
+    }
+
+    public int getINDEX() {
+        return INDEX;
     }
 
     @Override
@@ -16,20 +33,20 @@ public class CacheElement <T>{
         if (this == o) return true;
         if (!(o instanceof CacheElement)) return false;
         CacheElement<?> that = (CacheElement<?>) o;
-        if (index != that.index) return false;
-        return element != null ? element.equals(that.element) : that.element == null;
+        if (INDEX != that.getINDEX()) return false;
+        return ELEMENT != null ? ELEMENT.equals(that.getELEMENT()) : that.getELEMENT() == null;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(element, index);
+        return Objects.hash(ELEMENT, INDEX);
     }
 
     @Override
     public String toString() {
         return "CE{" +
-                "e=" + element +
-                ", i=" + index +
+                "e=" + ELEMENT +
+                ", i=" + INDEX +
                 '}';
     }
 }

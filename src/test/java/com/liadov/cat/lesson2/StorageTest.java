@@ -1,11 +1,18 @@
 package com.liadov.cat.lesson2;
 
+import com.liadov.cat.lesson4.IllegalStateOfElement;
 import org.junit.jupiter.api.Test;
-import com.liadov.cat.lesson4.ElementDoesNotExistException;
+import com.liadov.cat.lesson4.ElementNotFoundByIndex;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class StorageTest {
+
+    @Test
+    public void storageReceiveNullElementsThrowIllegalStateOfElementException() {
+        assertThrows(IllegalStateOfElement.class, () -> new Storage<String>(null));
+    }
 
     @Test
     public void addShouldPutElementToStorage() {
@@ -16,18 +23,19 @@ class StorageTest {
 
     @Test
     public void deleteShouldRemoveLastElement() {
-        Storage<String> storage = new Storage<>(new String[]{"testElement 3"});
-        assertNotNull(storage.get(0));
+        Storage<String> storage = new Storage<>(new String[]{"testElement 1", "testElement 2", "testElement 3"});
+        assertNotNull(storage.get(2));
         storage.delete();
-        assertNull(storage.get(0));
+        assertEquals(2, storage.getCountStorageElements());
+        assertThrows(ElementNotFoundByIndex.class, () -> storage.get(2));
     }
 
     @Test
     public void clearShouldRemoveAllFromStorage() {
         Storage<String> storage = new Storage<>(new String[]{"testElement 1", "testElement 2", "testElement 3"});
-        assertNotNull(storage.get(0));
+        assertEquals(3, storage.getStorageCapacity());
         storage.clear();
-        assertNull(storage.get(0));
+        assertEquals(0, storage.getCountStorageElements());
     }
 
     @Test
@@ -43,18 +51,9 @@ class StorageTest {
     }
 
     @Test
-    public void getElementByIndexThrowsElementDoesNotExistException() {
+    public void getElementByIndexThrowsElementNotFoundByIndexException() {
         Storage<String> storage = new Storage<>(new String[]{"testElement 1", "testElement 2", "testElement 3"});
-        assertThrows(ElementDoesNotExistException.class, () -> storage.get(80));
-    }
-
-    @Test
-    public void getReturnNullIfElementAbsentForIdInStorageSize() {
-        Storage<String> storage = new Storage<>();
-        storage.add("testElement 1");
-        storage.add("testElement 2");
-        storage.add("testElement 3");
-        assertNull(storage.get(4));
+        assertThrows(ElementNotFoundByIndex.class, () -> storage.get(80));
     }
 
     @Test
