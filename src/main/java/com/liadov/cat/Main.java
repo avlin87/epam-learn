@@ -1,7 +1,7 @@
 package com.liadov.cat;
 
 import com.liadov.cat.lesson2.Storage;
-import com.liadov.cat.lesson4.ElementNotFoundByIndex;
+import com.liadov.cat.exceptions.ElementNotFoundByIndex;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

@@ -1,7 +1,9 @@
-package com.liadov.cat.lesson4;
+package com.liadov.cat.exceptions;
 
 /**
  * Thrown to indicate that an array has been accessed with an illegal index.
+ *
+ * @author Aleksandr Liadov
  */
 public class ElementNotFoundByIndex extends ArrayIndexOutOfBoundsException {
 
