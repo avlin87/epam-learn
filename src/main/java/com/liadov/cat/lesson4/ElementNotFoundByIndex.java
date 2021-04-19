@@ -14,18 +14,4 @@ public class ElementNotFoundByIndex extends ArrayIndexOutOfBoundsException {
         super(index);
     }
 
-    /**
-     * Method return String message formed from StackTraceElements of Exception
-     *
-     * @return String
-     */
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(super.toString());
-        for (StackTraceElement element : super.getStackTrace()) {
-            sb.append("\n\t").append(element.toString());
-        }
-        return sb.toString();
-    }
 }

@@ -2,6 +2,7 @@ package com.liadov.cat.lesson2;
 
 import com.liadov.cat.lesson4.IllegalStateOfElement;
 import com.liadov.cat.lesson4.ElementNotFoundByIndex;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Arrays;
@@ -14,14 +15,13 @@ import java.util.UUID;
  *
  * @param <T> type of values to be stored in Cache
  * @author Aleksandr Liadov
- * @version 1.10 17 April 2020
  */
 @Slf4j
 public class Cache<T> {
 
-    private final String UNIQ_ID;
-    private final CacheElement<T>[] CACHE_ELEMENTS;
-    private final int CAPACITY;
+    private final String uniq_id;
+    private final CacheElement<T>[] cacheElements;
+    private final int capacity;
 
     private int countElements = 0;
 
@@ -32,9 +32,9 @@ public class Cache<T> {
      */
     @SuppressWarnings("unchecked")
     public Cache(int capacity) {
-        this.UNIQ_ID = generateUniqId();
-        this.CAPACITY = capacity;
-        this.CACHE_ELEMENTS = new CacheElement[capacity];
+        this.uniq_id = generateUniqId();
+        this.capacity = capacity;
+        this.cacheElements = new CacheElement[capacity];
         log.debug(toString());
     }
 
@@ -46,19 +46,19 @@ public class Cache<T> {
      */
     public void add(T element, int index) {
         if (element == null) {
-            log.error("[{}}]: provided element is NULL", this.UNIQ_ID);
+            log.error("[{}}]: provided element is NULL", this.uniq_id);
             throw new IllegalStateOfElement("Element is null");
         }
 
         int cacheIndex;
-        if (countElements < CAPACITY) {
+        if (countElements < capacity) {
             cacheIndex = countElements++;
         } else {
             moveLeftCacheElements();
-            cacheIndex = CAPACITY - 1;
+            cacheIndex = capacity - 1;
         }
-        CACHE_ELEMENTS[cacheIndex] = new CacheElement<>(element, index);
-        log.info("[{}]: element [{}]<{}> with [{}] index added", this.UNIQ_ID, element, element.getClass().getName(), index);
+        cacheElements[cacheIndex] = new CacheElement<>(element, index);
+        log.info("[{}]: element [{}]<{}> with [{}] index added", this.uniq_id, element, element.getClass().getName(), index);
     }
 
     /**
@@ -66,14 +66,14 @@ public class Cache<T> {
      *
      * @param element This element to be removed from Cache if present
      */
-    public void delete(T element) {
+    public void delete(@NonNull T element) {
         if (!isPresent(element)) {
-            log.error("[{}]: element [{}]<{}> was not found for removal", this.UNIQ_ID, element, element.getClass().getName());
+            log.error("[{}]: element [{}]<{}> was not found for removal", this.uniq_id, element, element.getClass().getName());
             throw new IllegalStateOfElement("Element not present in cache");
         }
-        log.info("[{}]: element [{}]<{}> to [{}] index will be removed", this.UNIQ_ID, element, element.getClass().getName(), getElementPositionByElement(element));
+        log.info("[{}]: element [{}]<{}> to [{}] index will be removed", this.uniq_id, element, element.getClass().getName(), getElementPositionByElement(element));
         moveLeftCacheElements(getElementPositionByElement(element));
-        CACHE_ELEMENTS[--countElements] = null;
+        cacheElements[--countElements] = null;
     }
 
     /**
@@ -82,14 +82,14 @@ public class Cache<T> {
      * @param element presence of this element is checked
      * @return boolean
      */
-    public boolean isPresent(T element) {
-        for (CacheElement<T> cacheElement : CACHE_ELEMENTS) {
-            if (cacheElement != null && cacheElement.getELEMENT().equals(element)) {
-                log.debug("[{}]: element [{}]<{}> is found", this.UNIQ_ID, element, element.getClass().getName());
+    public boolean isPresent(@NonNull T element) {
+        for (CacheElement<T> cacheElement : cacheElements) {
+            if (cacheElement != null && cacheElement.getElement().equals(element)) {
+                log.debug("[{}]: element [{}]<{}> is found", this.uniq_id, element, element.getClass().getName());
                 return true;
             }
         }
-        log.debug("[{}]: element [{}]<{}> NOT found", this.UNIQ_ID, element, element.getClass().getName());
+        log.debug("[{}]: element [{}]<{}> NOT found", this.uniq_id, element, element.getClass().getName());
         return false;
     }
 
@@ -100,13 +100,13 @@ public class Cache<T> {
      * @return boolean
      */
     public boolean isPresent(int index) {
-        for (CacheElement<T> cacheElement : CACHE_ELEMENTS) {
-            if (cacheElement != null && cacheElement.getINDEX() == index) {
-                log.debug("[{}]: element [{}]<{}> with index [{}] is found", this.UNIQ_ID, cacheElement.getELEMENT(), cacheElement.getELEMENT().getClass().getName(), index);
+        for (CacheElement<T> cacheElement : cacheElements) {
+            if (cacheElement != null && cacheElement.getIndex() == index) {
+                log.debug("[{}]: element [{}]<{}> with index [{}] is found", this.uniq_id, cacheElement.getElement(), cacheElement.getElement().getClass().getName(), index);
                 return true;
             }
         }
-        log.debug("[{}]: element with index [{}] NOT found", this.UNIQ_ID, index);
+        log.debug("[{}]: element with index [{}] NOT found", this.uniq_id, index);
         return false;
     }
 
@@ -123,25 +123,25 @@ public class Cache<T> {
         }
         int lastCachePosition = countElements - 1;
         moveCacheElementToLastPosition(index, lastCachePosition);
-        log.debug("[{}]: element [{}] returned", this.UNIQ_ID, CACHE_ELEMENTS[lastCachePosition].getELEMENT());
-        return CACHE_ELEMENTS[lastCachePosition].getELEMENT();
+        log.debug("[{}]: element [{}] returned", this.uniq_id, cacheElements[lastCachePosition].getElement());
+        return cacheElements[lastCachePosition].getElement();
     }
 
     /**
      * Method set all Cache elements to null
      */
     public void clear() {
-        Arrays.fill(CACHE_ELEMENTS, null);
+        Arrays.fill(cacheElements, null);
         countElements = 0;
-        log.info("[{}]: was cleared", this.UNIQ_ID);
+        log.info("[{}]: cleared", this.uniq_id);
     }
 
     @Override
     public String toString() {
-        return "[" + this.UNIQ_ID + "]: {" +
-                "cacheCapacity=" + CAPACITY +
+        return "[" + this.uniq_id + "]: {" +
+                "cacheCapacity=" + capacity +
                 ", countCacheElements=" + countElements +
-                ", cache=" + Arrays.toString(CACHE_ELEMENTS) +
+                ", cache=" + Arrays.toString(cacheElements) +
                 '}';
     }
 
@@ -154,16 +154,16 @@ public class Cache<T> {
         if (proposedStartMovePosition.length > 0) {
             startMovePosition = proposedStartMovePosition[0];
         }
-        log.debug("[{}]: elements moved LEFT starting with [{}] index", this.UNIQ_ID, startMovePosition);
-        for (int position = startMovePosition; position < CACHE_ELEMENTS.length - 1; position++) {
-            CACHE_ELEMENTS[position] = CACHE_ELEMENTS[position + 1];
+        log.debug("[{}]: elements moved LEFT starting with [{}] index", this.uniq_id, startMovePosition);
+        for (int position = startMovePosition; position < cacheElements.length - 1; position++) {
+            cacheElements[position] = cacheElements[position + 1];
         }
     }
 
     private int getElementPositionByElement(T element) throws ElementNotFoundByIndex {
-        for (int position = 0; position < CACHE_ELEMENTS.length; position++) {
-            if (CACHE_ELEMENTS[position].getELEMENT().equals(element)) {
-                log.debug("[{}]: element [{}] identified with position = [{}] in cache", this.UNIQ_ID, element, position);
+        for (int position = 0; position < cacheElements.length; position++) {
+            if (cacheElements[position].getElement().equals(element)) {
+                log.debug("[{}]: element [{}] identified with position = [{}] in cache", this.uniq_id, element, position);
                 return position;
             }
         }
@@ -174,14 +174,14 @@ public class Cache<T> {
     private void moveCacheElementToLastPosition(int index, int lastCachePosition) {
         CacheElement<T> tempElement = getCacheElementByIndex(index);
         moveLeftCacheElements(getElementPositionByIndex(index));
-        CACHE_ELEMENTS[lastCachePosition] = tempElement;
-        log.debug("[{}]: element [{}] moved to last position = [{}]", this.UNIQ_ID, tempElement.getELEMENT(), lastCachePosition);
+        cacheElements[lastCachePosition] = tempElement;
+        log.debug("[{}]: element [{}] moved to last position = [{}]", this.uniq_id, tempElement.getElement(), lastCachePosition);
     }
 
     private CacheElement<T> getCacheElementByIndex(int index) throws ElementNotFoundByIndex {
-        for (CacheElement<T> cacheElement : CACHE_ELEMENTS) {
-            if (cacheElement.getINDEX() == index) {
-                log.debug("[{}]: method returned CacheElement {}", this.UNIQ_ID, cacheElement);
+        for (CacheElement<T> cacheElement : cacheElements) {
+            if (cacheElement.getIndex() == index) {
+                log.debug("[{}]: method returned CacheElement {}", this.uniq_id, cacheElement);
                 return cacheElement;
             }
         }
@@ -190,9 +190,9 @@ public class Cache<T> {
     }
 
     private int getElementPositionByIndex(int index) throws ElementNotFoundByIndex {
-        for (int position = 0; position < CACHE_ELEMENTS.length; position++) {
-            if (CACHE_ELEMENTS[position].getINDEX() == index) {
-                log.debug("[{}]: element [{}] identified with position = [{}] in cache", this.UNIQ_ID, CACHE_ELEMENTS[position].getELEMENT(), position);
+        for (int position = 0; position < cacheElements.length; position++) {
+            if (cacheElements[position].getIndex() == index) {
+                log.debug("[{}]: element [{}] identified with position = [{}] in cache", this.uniq_id, cacheElements[position].getElement(), position);
                 return position;
             }
         }
