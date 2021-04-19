@@ -19,9 +19,99 @@
         </rollingPolicy>
     </appender>
 
-    <logger name="com.liadov.cat.Main" level="debug" additivity="false">
+    <appender name="FILE-ReflectionHandler" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>LOG/debugReflectionHandler.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} &lt;%M&gt; - %msg%n</Pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"><!-- rollover daily -->
+            <fileNamePattern>LOG/archived/debugReflectionHandler.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>10MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="FILE-Address" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>LOG/debugAddress.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} &lt;%M&gt; - %msg%n</Pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"><!-- rollover daily -->
+            <fileNamePattern>LOG/archived/debugAddress.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>10MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="FILE-Human" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>LOG/debugHuman.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} &lt;%M&gt; - %msg%n</Pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"><!-- rollover daily -->
+            <fileNamePattern>LOG/archived/debugHuman.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>10MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="FILE-Book" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>LOG/debugBook.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} &lt;%M&gt; - %msg%n</Pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"><!-- rollover daily -->
+            <fileNamePattern>LOG/archived/debugBook.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>10MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="FILE-Bridge" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>LOG/debugBridge.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} &lt;%M&gt; - %msg%n</Pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"><!-- rollover daily -->
+            <fileNamePattern>LOG/archived/debugBridge.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>10MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+    </appender>
+
+    <logger name="com.liadov.cat.Main" level="trace" additivity="false">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE-Main"/>
+    </logger>
+
+    <logger name="com.liadov.cat.lesson9.ReflectionHandler" level="trace" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE-ReflectionHandler"/>
+    </logger>
+
+    <logger name="com.liadov.cat.lesson9.pojo.Address" level="trace" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE-Address"/>
+    </logger>
+
+    <logger name="com.liadov.cat.lesson9.pojo.Human" level="trace" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE-Human"/>
+    </logger>
+
+    <logger name="com.liadov.cat.lesson9.pojo.Book" level="trace" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE-Book"/>
+    </logger>
+
+    <logger name="com.liadov.cat.lesson9.pojo.Bridge" level="trace" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE-Bridge"/>
     </logger>
 
 </configuration>
