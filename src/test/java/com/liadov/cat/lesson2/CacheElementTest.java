@@ -8,24 +8,33 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 class CacheElementTest {
 
     @Test
-    public void testEqualsShouldReturnTrue() {
+    public void equalsShouldReturnTrue() {
         CacheElement<String> cacheElement1 = new CacheElement<>("testElement", 1);
         CacheElement<String> cacheElement2 = new CacheElement<>("testElement", 1);
-        assertEquals(cacheElement1, cacheElement2);
+
+        boolean actualResult = cacheElement1.equals(cacheElement2);
+
+        assertTrue(actualResult);
     }
 
     @Test
-    public void testEqualsShouldReturnFalse() {
+    public void equalsShouldReturnFalse() {
         CacheElement<String> cacheElement1 = new CacheElement<>("testElement", 0);
         CacheElement<String> cacheElement2 = new CacheElement<>("testElement", 1);
-        assertNotEquals(cacheElement1, cacheElement2);
+
+        boolean actualResult = cacheElement1.equals(cacheElement2);
+
+        assertFalse(actualResult);
     }
 
     @Test
-    public void testEqualsWithNull() {
+    public void equalsWithNullReturnFalse() {
         CacheElement<String> cacheElement1 = new CacheElement<>("testElement", 0);
         CacheElement<String> cacheElement2 = new CacheElement<>(null, 0);
-        assertNotEquals(cacheElement1, cacheElement2);
+
+        boolean actualResult = cacheElement1.equals(cacheElement2);
+
+        assertFalse(actualResult);
     }
 
 }

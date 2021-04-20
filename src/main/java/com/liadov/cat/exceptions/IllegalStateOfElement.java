@@ -1,7 +1,9 @@
-package com.liadov.cat.lesson4;
+package com.liadov.cat.exceptions;
 
 /**
  * Signals that an attempt to access Element failed
+ *
+ * @author Aleksandr Liadov
  */
 public class IllegalStateOfElement extends RuntimeException {
 

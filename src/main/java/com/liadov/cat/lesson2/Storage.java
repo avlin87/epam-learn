@@ -1,7 +1,7 @@
 package com.liadov.cat.lesson2;
 
-import com.liadov.cat.lesson4.IllegalStateOfElement;
-import com.liadov.cat.lesson4.ElementNotFoundByIndex;
+import com.liadov.cat.exceptions.IllegalStateOfElement;
+import com.liadov.cat.exceptions.ElementNotFoundByIndex;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
@@ -17,7 +17,7 @@ import java.util.UUID;
 @Slf4j
 public class Storage<T> {
 
-    private final String uniq_id;
+    private final String uniqId;
     private final Cache<T> cache;
 
     private Object[] storage;
@@ -25,11 +25,11 @@ public class Storage<T> {
     private int storageCapacity;
 
     public Storage() {
-        uniq_id = generateUniqId();
+        uniqId = generateUniqId();
         storageCapacity = 10;
         storage = new Object[storageCapacity];
         cache = new Cache<>(storageCapacity);
-        log.info("[{}] with default parameters created", this.uniq_id);
+        log.info("[{}] with default parameters created", this.uniqId);
     }
 
     /**
@@ -38,7 +38,7 @@ public class Storage<T> {
      * @param elements Those elements will be stored in storage.
      */
     public Storage(T[] elements) {
-        uniq_id = generateUniqId();
+        uniqId = generateUniqId();
         try {
             fillStorageWithElements(elements);
         } catch (IllegalStateOfElement e) {
@@ -46,7 +46,7 @@ public class Storage<T> {
             throw e;
         }
         cache = new Cache<>(10);
-        log.info("[{}]: created with received elements.\nType of elements: [{}]", this.uniq_id, elements[0].getClass().getName());
+        log.info("[{}]: created with received elements.\nType of elements: [{}]", this.uniqId, elements[0].getClass().getName());
     }
 
     /**
@@ -56,14 +56,14 @@ public class Storage<T> {
      */
     public void add(@NonNull T element) {
         if (element == null) {
-            log.error("[{}]:element is null", this.uniq_id);
+            log.error("[{}]:element is null", this.uniqId);
             throw new IllegalStateOfElement("Element is null");
         }
         if (countStorageElements >= storage.length) {
             increaseCapacityOfStorage();
         }
         storage[countStorageElements++] = element;
-        log.info("[{}]: element [{}] <{}> added with index [{}]", this.uniq_id, element, element.getClass().getName(), (countStorageElements + 1));
+        log.info("[{}]: element [{}] <{}> added with index [{}]", this.uniqId, element, element.getClass().getName(), (countStorageElements + 1));
     }
 
     /**
@@ -72,11 +72,11 @@ public class Storage<T> {
     @SuppressWarnings("unchecked")
     public void delete() {
         if (countStorageElements < 1) {
-            log.error("[{}]: No elements present in storage", this.uniq_id);
+            log.error("[{}]: No elements present in storage", this.uniqId);
             throw new ElementNotFoundByIndex(countStorageElements);
         }
 
-        log.info("[{}]: element [{}] with index [{}]: will be deleted", this.uniq_id, storage[countStorageElements - 1], (countStorageElements - 1));
+        log.info("[{}]: element [{}] with index [{}]: will be deleted", this.uniqId, storage[countStorageElements - 1], (countStorageElements - 1));
 
         if (cache.isPresent((T) storage[countStorageElements - 1])) {
             cache.delete((T) storage[countStorageElements - 1]);
@@ -89,12 +89,12 @@ public class Storage<T> {
      */
     public void clear() {
         for (int i = 0; i < storage.length; i++) {
-            log.debug("[{}]:Element removed [{}]", this.uniq_id, storage[i]);
+            log.debug("[{}]:Element removed [{}]", this.uniqId, storage[i]);
             storage[i] = null;
         }
         countStorageElements = 0;
         cache.clear();
-        log.info("[{}]: cleared successfully", this.uniq_id);
+        log.info("[{}]: cleared successfully", this.uniqId);
     }
 
     /**
@@ -105,11 +105,11 @@ public class Storage<T> {
     @SuppressWarnings("unchecked")
     public T getLast() {
         if (countStorageElements < 1) {
-            log.error("[{}]: No elements present in storage", this.uniq_id);
+            log.error("[{}]: No elements present in storage", this.uniqId);
             throw new ElementNotFoundByIndex(countStorageElements);
         }
 
-        log.info("[{}]: returns element [{}] with index [{}] from storage", this.uniq_id, storage[countStorageElements - 1], (countStorageElements - 1));
+        log.info("[{}]: returns element [{}] with index [{}] from storage", this.uniqId, storage[countStorageElements - 1], (countStorageElements - 1));
         return (T) storage[countStorageElements - 1];
     }
 
@@ -123,15 +123,15 @@ public class Storage<T> {
     @SuppressWarnings("unchecked")
     public T get(int index) throws ElementNotFoundByIndex {
         if (index >= countStorageElements) {
-            log.error("[{}]: count of elements in storage = {}. requested index = {}", this.uniq_id, index, countStorageElements);
+            log.error("[{}]: count of elements in storage = {}. requested index = {}", this.uniqId, index, countStorageElements);
             throw new ElementNotFoundByIndex(index);
         }
         if (cache.isPresent(index)) {
-            log.info("[{}]: returns element [{}] with index [{}] from cache", this.uniq_id, cache.get(index), index);
+            log.info("[{}]: returns element [{}] with index [{}] from cache", this.uniqId, cache.get(index), index);
             return cache.get(index);
         }
         cache.add((T) storage[index], index);
-        log.info("[{}]: returns element [{}] with index [{}] from storage", this.uniq_id, storage[index], index);
+        log.info("[{}]: returns element [{}] with index [{}] from storage", this.uniqId, storage[index], index);
         return (T) storage[index];
     }
 
@@ -171,7 +171,7 @@ public class Storage<T> {
     }
 
     private void increaseCapacityOfStorage() {
-        log.debug("[{}]: capacity before increase {}", this.uniq_id, storageCapacity);
+        log.debug("[{}]: capacity before increase {}", this.uniqId, storageCapacity);
         if (storageCapacity < 1) {
             storageCapacity = 1;
         } else if (storageCapacity < 2) {
@@ -184,6 +184,6 @@ public class Storage<T> {
             tempStorage[i] = storage[i];
         }
         storage = tempStorage;
-        log.debug("[{}]: capacity increased TO {}", this.uniq_id, storageCapacity);
+        log.debug("[{}]: capacity increased TO {}", this.uniqId, storageCapacity);
     }
 }
