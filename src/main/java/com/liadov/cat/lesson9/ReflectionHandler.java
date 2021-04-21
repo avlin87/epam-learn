@@ -21,6 +21,11 @@ import java.util.Objects;
 public class ReflectionHandler {
     private final Logger log = LoggerFactory.getLogger(ReflectionHandler.class);
 
+    /**
+     * Method populate object fields according to @Value annotation on Fields and Methods
+     *
+     * @param object - to be populated with @Value
+     */
     public void populateFieldsWithValues(Object object) {
         boolean annotatedWithEntity = false;
 
@@ -41,6 +46,12 @@ public class ReflectionHandler {
         executeValuePopulation(object);
     }
 
+    /**
+     * Method checking if class of object has @Entity annotation
+     *
+     * @param object target object
+     * @return boolean
+     */
     public boolean isAnnotatedWithEntity(Object object) {
         Class<?> clazz = object.getClass();
 
@@ -86,31 +97,6 @@ public class ReflectionHandler {
         }
     }
 
-    private void populateValue(AccessibleObject[] accessibleObjects, Object object) {
-        for (AccessibleObject accessibleObject : accessibleObjects) {
-            Value valueAnnotation = accessibleObject.getAnnotation(Value.class);
-            if (Objects.nonNull(valueAnnotation)) {
-                String value = String.valueOf(valueAnnotation.value());
-                log.info("Value from annotation: {}", value);
-                accessibleObject.setAccessible(true);
-                Field field;
-                Method method;
-                try {
-                    if (accessibleObject instanceof Field) {
-                        field = (Field) accessibleObject;
-                        field.set(object, valueAnnotation.value());
-                    }
-                    if (accessibleObject instanceof Method) {
-                        method = (Method) accessibleObject;
-                        method.invoke(object, valueAnnotation.value());
-                    }
-                } catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
-                    log.error("error", e);
-                }
-            }
-        }
-    }
-
     private boolean checkEntity(Class<?> clazz) {
         Entity[] declaredAnnotationsByType = clazz.getDeclaredAnnotationsByType(Entity.class);
         log.trace("declaredAnnotationsByType = {}", Arrays.toString(declaredAnnotationsByType));
@@ -148,6 +134,62 @@ public class ReflectionHandler {
         }
         log.info("There is no @Value Annotation");
         return false;
+    }
+
+    private void populateValue(AccessibleObject[] accessibleObjects, Object object) {
+        for (AccessibleObject accessibleObject : accessibleObjects) {
+            Value valueAnnotation = accessibleObject.getAnnotation(Value.class);
+
+            if (Objects.nonNull(valueAnnotation)) {
+                log.info("Value from annotation: {}", valueAnnotation.value());
+                accessibleObject.setAccessible(true);
+                try {
+                    selectInstanceToPopulate(object, accessibleObject, valueAnnotation.value());
+                } catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
+                    log.error("error. Value was not populated: ", e);
+                }
+            } else {
+                log.debug("Value from annotation: is null");
+            }
+        }
+    }
+
+    private void selectInstanceToPopulate(Object object, AccessibleObject accessibleObject, Object valueAnnotation) throws IllegalAccessException, InvocationTargetException {
+        if (accessibleObject instanceof Field) {
+            log.debug("Instance identified as: {}", accessibleObject.getClass().getSimpleName());
+            setFiledValue(object, accessibleObject, valueAnnotation);
+        } else if (accessibleObject instanceof Method) {
+            log.debug("Instance identified as: {}", accessibleObject.getClass().getSimpleName());
+            invokeMethodValue(object, accessibleObject, valueAnnotation);
+        } else {
+            log.info("Instance Type Unidentified {}", accessibleObject.getClass());
+        }
+    }
+
+    private void setFiledValue(Object object, AccessibleObject accessibleObject, Object valueAnnotation) throws IllegalAccessException {
+        Field field = (Field) accessibleObject;
+        try {
+            log.debug("Field value population started for object: {}, and value: {}",object, valueAnnotation);
+            field.set(object, valueAnnotation);
+            log.debug("value successfully populated");
+        } catch (IllegalArgumentException e) {
+            log.warn("Provided value {} is uncompilable. System trying to populate default value", valueAnnotation);
+            field.set(object, Value.class.getDeclaredMethods()[0].getDefaultValue());
+            log.info("Default Value populated successfully");
+        }
+    }
+
+    private void invokeMethodValue(Object object, AccessibleObject accessibleObject, Object valueAnnotation) throws InvocationTargetException, IllegalAccessException {
+        Method method = (Method) accessibleObject;
+        try {
+            log.debug("Method value population started for object: {}, and value: {}",object, valueAnnotation);
+            method.invoke(object, valueAnnotation);
+            log.debug("value successfully populated");
+        } catch (IllegalArgumentException e) {
+            log.warn("Provided value {} is uncompilable. System trying to populate default value", valueAnnotation);
+            method.invoke(object, Value.class.getDeclaredMethods()[0].getDefaultValue());
+            log.info("Default Value populated successfully");
+        }
     }
 
 }

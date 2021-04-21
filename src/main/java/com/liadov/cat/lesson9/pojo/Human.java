@@ -6,7 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Human
+ * Human - pojo class for test.
+ * Class has @Entity and @Value annotations
  *
  * @author Alexandr Liadov on 4/19/2021
  */
@@ -14,7 +15,7 @@ import org.slf4j.LoggerFactory;
 public class Human {
     private static final Logger log = LoggerFactory.getLogger(Human.class);
 
-    @Value("One")
+    @Value("Test")
     private int age;
     private String firstName;
     private String lastName;

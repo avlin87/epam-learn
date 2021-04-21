@@ -4,7 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Address
+ * Address - pojo class for test
+ * No expected annotation used. (@Entity, @Value)
  *
  * @author Aleksandr Liadov on 4/20/2021
  */
@@ -18,7 +19,6 @@ public class Address {
         log.info("Address object initialization");
     }
 
-    
     @Override
     public String toString() {
         return "Address{" +

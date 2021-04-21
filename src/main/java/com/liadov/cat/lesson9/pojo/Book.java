@@ -5,7 +5,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Book
+ * Book - pojo class for test.
+ * Has @Entity annotation but missing @Value annotation.
+ * NoValueAnnotationException expected to be thrown during ReflectionHandler().isAnnotatedWithEntity()
  *
  * @author Aleksandr Liadov on 4/20/2021
  */

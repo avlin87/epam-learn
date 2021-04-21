@@ -5,7 +5,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Bridge
+ * Bridge - pojo class for test.
+ * Has @Value annotation but missing @Entity annotation
+ * IllegalStateException expected to be thrown during ReflectionHandler().isAnnotatedWithEntity()
  *
  * @author Aleksandr Liadov on 4/20/2021
  */
@@ -18,19 +20,6 @@ public class Bridge {
 
     public Bridge() {
         log.info("Bridge object initialization");
-    }
-
-    public int getLength() {
-        return length;
-    }
-
-    public void setLength(int length) {
-        this.length = length;
-    }
-
-
-    public int getWidth() {
-        return width;
     }
 
     @Value
