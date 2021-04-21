@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 public class Human {
     private static final Logger log = LoggerFactory.getLogger(Human.class);
 
-    @Value("Test")
+    @Value("44")
     private int age;
     private String firstName;
     private String lastName;
@@ -29,7 +29,7 @@ public class Human {
         return firstName;
     }
 
-    @Value("Test First Name")
+    @Value(value = "Test First Name")
     public void setFirstName(String firstName) {
         log.trace("setFirstName() method invoked with value = {}", firstName);
         this.firstName = firstName;

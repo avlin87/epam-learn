@@ -51,7 +51,7 @@ public class ReflectionHandlerTest {
     }
 
     @Test
-    public void populateFieldsWithValuesFromAnnotation(){
+    public void populateFieldsWithValuesFromAnnotation() {
         Human human = new Human();
         new ReflectionHandler().populateFieldsWithValues(human);
 

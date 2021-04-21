@@ -6,6 +6,7 @@ import com.liadov.cat.lesson9.exceptions.NoValueAnnotationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -81,7 +82,6 @@ public class ReflectionHandler {
         return false;
     }
 
-
     private void executeValuePopulation(Object object) {
         Class<?> clazz = object.getClass();
         Field[] declaredFields = clazz.getDeclaredFields();
@@ -139,12 +139,23 @@ public class ReflectionHandler {
     private void populateValue(AccessibleObject[] accessibleObjects, Object object) {
         for (AccessibleObject accessibleObject : accessibleObjects) {
             Value valueAnnotation = accessibleObject.getAnnotation(Value.class);
-
             if (Objects.nonNull(valueAnnotation)) {
-                log.info("Value from annotation: {}", valueAnnotation.value());
+                Object plannedValue = valueAnnotation.value();
+                log.info("Value from annotation: {}", plannedValue);
+
+                if (isFileNameProvided(valueAnnotation)) {
+                    File file = new File(valueAnnotation.fileName());
+                    FileOperations fileOperations = new FileOperations();
+                    String temp = fileOperations.getValueFromFile(file, accessibleObject);
+                    if (temp.length() > 0) {
+                        plannedValue = temp;
+                    }
+                    log.info("Value from file = {}", plannedValue);
+                }
+
                 accessibleObject.setAccessible(true);
                 try {
-                    selectInstanceToPopulate(object, accessibleObject, valueAnnotation.value());
+                    selectInstanceToPopulate(object, accessibleObject, plannedValue);
                 } catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
                     log.error("error. Value was not populated: ", e);
                 }
@@ -153,6 +164,19 @@ public class ReflectionHandler {
             }
         }
     }
+
+    private boolean isFileNameProvided(Value valueAnnotation) {
+        String fileName = valueAnnotation.fileName();
+        if (fileName.length() > 0) {
+            File file = new File(fileName);
+            boolean isFileExist = file.exists();
+            log.debug("File identified: {}", isFileExist);
+            return isFileExist;
+        }
+        log.debug("file name is not specified");
+        return false;
+    }
+
 
     private void selectInstanceToPopulate(Object object, AccessibleObject accessibleObject, Object valueAnnotation) throws IllegalAccessException, InvocationTargetException {
         if (accessibleObject instanceof Field) {
@@ -169,11 +193,12 @@ public class ReflectionHandler {
     private void setFiledValue(Object object, AccessibleObject accessibleObject, Object valueAnnotation) throws IllegalAccessException {
         Field field = (Field) accessibleObject;
         try {
-            log.debug("Field value population started for object: {}, and value: {}",object, valueAnnotation);
+            log.debug("Field value population started for object: {}, and value: {}", object, valueAnnotation);
+            valueAnnotation = tryToParseInt(valueAnnotation);
             field.set(object, valueAnnotation);
             log.debug("value successfully populated");
         } catch (IllegalArgumentException e) {
-            log.warn("Provided value {} is uncompilable. System trying to populate default value", valueAnnotation);
+            log.warn("Provided value {} is uncompilable. System trying to populate default value", valueAnnotation, e);
             field.set(object, Value.class.getDeclaredMethods()[0].getDefaultValue());
             log.info("Default Value populated successfully");
         }
@@ -182,14 +207,24 @@ public class ReflectionHandler {
     private void invokeMethodValue(Object object, AccessibleObject accessibleObject, Object valueAnnotation) throws InvocationTargetException, IllegalAccessException {
         Method method = (Method) accessibleObject;
         try {
-            log.debug("Method value population started for object: {}, and value: {}",object, valueAnnotation);
+            log.debug("Method {} value population started for object: {}, and value: {}", method.getName(), object, valueAnnotation);
+            valueAnnotation = tryToParseInt(valueAnnotation);
             method.invoke(object, valueAnnotation);
             log.debug("value successfully populated");
         } catch (IllegalArgumentException e) {
-            log.warn("Provided value {} is uncompilable. System trying to populate default value", valueAnnotation);
+            log.warn("Provided value {} is uncompilable. System trying to populate default value", valueAnnotation, e);
             method.invoke(object, Value.class.getDeclaredMethods()[0].getDefaultValue());
             log.info("Default Value populated successfully");
         }
+    }
+
+    private Object tryToParseInt(Object valueAnnotation) {
+        try {
+            valueAnnotation = Integer.parseInt(String.valueOf(valueAnnotation));
+        } catch (NumberFormatException e) {
+            log.trace("parseInt Failed");
+        }
+        return valueAnnotation;
     }
 
 }

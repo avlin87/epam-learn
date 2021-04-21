@@ -11,4 +11,6 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Value {
     String value() default "Tomas";
+    String fileName() default "";
+    int intValue() default 0;
 }

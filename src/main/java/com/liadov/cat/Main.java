@@ -1,10 +1,7 @@
 package com.liadov.cat;
 
 import com.liadov.cat.lesson9.ReflectionHandler;
-import com.liadov.cat.lesson9.pojo.Address;
-import com.liadov.cat.lesson9.pojo.Book;
-import com.liadov.cat.lesson9.pojo.Bridge;
-import com.liadov.cat.lesson9.pojo.Human;
+import com.liadov.cat.lesson9.pojo.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,16 +20,18 @@ public class Main {
     }
 
     private static void reflectionExample() {
+        Dog dog = new Dog();
         Human human = new Human();
         Address address = new Address();
         Book book = new Book();
         Bridge bridge = new Bridge();
 
+        reflectionHandler.populateFieldsWithValues(dog);
         reflectionHandler.populateFieldsWithValues(human);
         reflectionHandler.populateFieldsWithValues(address);
         reflectionHandler.populateFieldsWithValues(book);
         reflectionHandler.populateFieldsWithValues(bridge);
 
-        log.info("\nvalues are populated as \n{}\n{}\n{}\n{}", human, address, book, bridge);
+        log.info("\n\nvalues are populated:\n \n{} - from file\n{} - from annotations\n{} - no annotations\n{} - NoValueAnnotationException \n{} - IllegalStateException", dog, human, address, book, bridge);
     }
 }
