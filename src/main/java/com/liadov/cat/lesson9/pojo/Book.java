@@ -21,7 +21,6 @@ public class Book {
         log.info("Book object initialization");
     }
 
-
     @Override
     public String toString() {
         return "Book{" +
