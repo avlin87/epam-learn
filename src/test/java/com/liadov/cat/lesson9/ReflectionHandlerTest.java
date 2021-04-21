@@ -1,10 +1,7 @@
 package com.liadov.cat.lesson9;
 
 import com.liadov.cat.lesson9.exceptions.NoValueAnnotationException;
-import com.liadov.cat.lesson9.pojo.Address;
-import com.liadov.cat.lesson9.pojo.Book;
-import com.liadov.cat.lesson9.pojo.Bridge;
-import com.liadov.cat.lesson9.pojo.Human;
+import com.liadov.cat.lesson9.pojo.*;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -58,5 +55,17 @@ public class ReflectionHandlerTest {
         String actualResult = human.getFirstName();
 
         assertEquals("Test First Name", actualResult);
+    }
+
+    @Test
+    public void populateFieldsWithValuesFromFile() {
+        Dog dog = new Dog();
+        new ReflectionHandler().populateFieldsWithValues(dog);
+
+        String actualResult = dog.getName();
+        int intActualResult = dog.getAge();
+
+        assertEquals("2name", actualResult);
+        assertEquals(20, intActualResult);
     }
 }
