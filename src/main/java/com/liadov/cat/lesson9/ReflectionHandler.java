@@ -6,12 +6,13 @@ import com.liadov.cat.lesson9.exceptions.NoValueAnnotationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -21,13 +22,15 @@ import java.util.Objects;
  */
 public class ReflectionHandler {
     private final Logger log = LoggerFactory.getLogger(ReflectionHandler.class);
+    private final FileOperations fileOperations = new FileOperations();
 
     /**
      * Method populate object fields according to @Value annotation on Fields and Methods
      *
-     * @param object - to be populated with @Value
+     * @param object           - to be populated with @Value
+     * @param multipleFromFile - optional boolean
      */
-    public void populateFieldsWithValues(Object object) {
+    public void populateFieldsWithValues(Object object, boolean multipleFromFile) {
         boolean annotatedWithEntity = false;
 
         try {
@@ -44,7 +47,7 @@ public class ReflectionHandler {
             return;
         }
 
-        executeValuePopulation(object);
+        executeValuePopulation(object, multipleFromFile);
     }
 
     /**
@@ -82,18 +85,43 @@ public class ReflectionHandler {
         return false;
     }
 
-    private void executeValuePopulation(Object object) {
+    /**
+     * Method initiate creation of objects from multiple entities File
+     *
+     * @param clazz Class of target objects
+     * @return List<Object> of created objects
+     */
+    public List<Object> getMultipleObjectsFromFile(Class<?> clazz) {
+        List<Object> objectList = new ArrayList<>();
+        if (fileOperations.isFileAvailable(true)) {
+            int amountOfObjectsToBeCreated = fileOperations.getAmountOfObjectsToBeCreated();
+            log.debug("Amount of objects received from File = {}", amountOfObjectsToBeCreated);
+            for (int i = 0; i < amountOfObjectsToBeCreated; i++) {
+                try {
+                    Object objectCreatedFromFile = clazz.getDeclaredConstructor().newInstance();
+                    this.populateFieldsWithValues(objectCreatedFromFile, true);
+                    objectList.add(objectCreatedFromFile);
+                    log.info("Object #{} created from file: {}", i, objectCreatedFromFile);
+                } catch (InstantiationException | InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
+                    log.error("creation of objects from file failed", e);
+                }
+            }
+        }
+        return objectList;
+    }
+
+    private void executeValuePopulation(Object object, boolean multipleFromFile) {
         Class<?> clazz = object.getClass();
         Field[] declaredFields = clazz.getDeclaredFields();
         log.trace("Declared fields: {}", Arrays.toString(declaredFields));
         if (checkValueAnnotation(declaredFields)) {
-            populateValue(declaredFields, object);
+            populateValue(declaredFields, object, multipleFromFile);
         }
 
         Method[] declaredMethods = clazz.getDeclaredMethods();
         log.trace("Declared methods: {}", Arrays.toString(declaredMethods));
         if (checkValueAnnotation(declaredMethods)) {
-            populateValue(declaredMethods, object);
+            populateValue(declaredMethods, object, multipleFromFile);
         }
     }
 
@@ -136,17 +164,15 @@ public class ReflectionHandler {
         return false;
     }
 
-    private void populateValue(AccessibleObject[] accessibleObjects, Object object) {
+    private void populateValue(AccessibleObject[] accessibleObjects, Object object, boolean multipleFromFile) {
         for (AccessibleObject accessibleObject : accessibleObjects) {
             Value valueAnnotation = accessibleObject.getAnnotation(Value.class);
             if (Objects.nonNull(valueAnnotation)) {
                 Object plannedValue = valueAnnotation.value();
                 log.info("Value from annotation: {}", plannedValue);
 
-                if (isFileNameProvided(valueAnnotation)) {
-                    File file = new File(valueAnnotation.fileName());
-                    FileOperations fileOperations = new FileOperations();
-                    String temp = fileOperations.getValueFromFile(file, accessibleObject);
+                if (fileOperations.isFileAvailable(multipleFromFile)) {
+                    String temp = fileOperations.getValueFromFile(accessibleObject, object, multipleFromFile);
                     if (temp.length() > 0) {
                         plannedValue = temp;
                     }
@@ -165,19 +191,6 @@ public class ReflectionHandler {
         }
     }
 
-    private boolean isFileNameProvided(Value valueAnnotation) {
-        String fileName = valueAnnotation.fileName();
-        if (fileName.length() > 0) {
-            File file = new File(fileName);
-            boolean isFileExist = file.exists();
-            log.debug("File identified: {}", isFileExist);
-            return isFileExist;
-        }
-        log.debug("file name is not specified");
-        return false;
-    }
-
-
     private void selectInstanceToPopulate(Object object, AccessibleObject accessibleObject, Object valueAnnotation) throws IllegalAccessException, InvocationTargetException {
         if (accessibleObject instanceof Field) {
             log.debug("Instance identified as: {}", accessibleObject.getClass().getSimpleName());
@@ -194,7 +207,9 @@ public class ReflectionHandler {
         Field field = (Field) accessibleObject;
         try {
             log.debug("Field value population started for object: {}, and value: {}", object, valueAnnotation);
-            valueAnnotation = tryToParseInt(valueAnnotation);
+            Class<?> expectedType = field.getType();
+            log.trace("Filed expecting type = {}", expectedType);
+            valueAnnotation = tryToParseValue(expectedType, valueAnnotation);
             field.set(object, valueAnnotation);
             log.debug("value successfully populated");
         } catch (IllegalArgumentException e) {
@@ -208,7 +223,9 @@ public class ReflectionHandler {
         Method method = (Method) accessibleObject;
         try {
             log.debug("Method {} value population started for object: {}, and value: {}", method.getName(), object, valueAnnotation);
-            valueAnnotation = tryToParseInt(valueAnnotation);
+            Class<?> expectedType = method.getParameterTypes()[0];
+            log.trace("Method expecting type = {}", expectedType);
+            valueAnnotation = tryToParseValue(expectedType, valueAnnotation);
             method.invoke(object, valueAnnotation);
             log.debug("value successfully populated");
         } catch (IllegalArgumentException e) {
@@ -218,13 +235,16 @@ public class ReflectionHandler {
         }
     }
 
-    private Object tryToParseInt(Object valueAnnotation) {
-        try {
-            valueAnnotation = Integer.parseInt(String.valueOf(valueAnnotation));
-        } catch (NumberFormatException e) {
-            log.trace("parseInt Failed");
+
+    private Object tryToParseValue(Class<?> expectedType, Object valueAnnotation) {
+        ValueConverter converter = new ValueConverter();
+        if (converter.isSupportedType(expectedType)) {
+            try {
+                valueAnnotation = converter.getConvertedValue(expectedType, valueAnnotation);
+            } catch (NumberFormatException e) {
+                log.trace("parseInt Failed");
+            }
         }
         return valueAnnotation;
     }
-
 }

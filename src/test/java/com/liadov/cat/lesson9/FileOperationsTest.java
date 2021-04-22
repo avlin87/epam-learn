@@ -1,11 +1,13 @@
 package com.liadov.cat.lesson9;
 
-import com.liadov.cat.lesson9.pojo.Human;
+import com.liadov.cat.lesson9.exceptions.NoValueAnnotationException;
+import com.liadov.cat.lesson9.pojo.Dog;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Queue;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -24,16 +26,16 @@ public class FileOperationsTest {
         expectedResult.put("AGE", "20");
         expectedResult.put("NAME", "2name");
 
-        Map<String, String> actualResult = fileOperations.readValuesFromFile(reader);
+        Map<String, String> actualResult = fileOperations.readValuesFromFile(reader).poll();
 
         assertTrue(expectedResult.equals(actualResult));
     }
 
     @Test
-    public void readValuesFromFileNotReturningNull() throws IOException {
+    public void readValuesFromFileNotReturningNull() {
         FileOperations fileOperations = new FileOperations();
 
-        Map<String, String> actualResult = fileOperations.readValuesFromFile(null);
+        Queue<Map<String, String>> actualResult = fileOperations.readValuesFromFile(null);
 
         assertNotNull(actualResult);
     }
@@ -41,18 +43,43 @@ public class FileOperationsTest {
     @Test
     public void getValueFromFileTest() throws IOException, NoSuchFieldException {
         FileOperations fileOperations = new FileOperations();
-        Human human = new Human();
-        File file = new File("test.txt");
-        file.createNewFile();
-        String expectedResult = "19";
-        try (FileWriter myWriter = new FileWriter(file)) {
-            myWriter.write("age=" + expectedResult + "\nname=2name");
-        }
+        Dog dog = new Dog();
+        String expectedResult = "40";
 
-        String actualResult = fileOperations.getValueFromFile(file, human.getClass().getDeclaredField("age"));
-        file.deleteOnExit();
+        String actualResult = fileOperations.getValueFromFile(dog.getClass().getDeclaredField("age"), dog, false);
 
         assertEquals(expectedResult, actualResult);
     }
 
+    @Test
+    public void isFileAvailableReturnTrue() throws IOException {
+        FileOperations fileOperations = new FileOperations();
+        File file = new File("text.txt");
+        file.createNewFile();
+
+        boolean actualResult = fileOperations.isFileAvailable(false, file);
+
+        assertTrue(actualResult);
+        file.deleteOnExit();
+    }
+
+    @Test
+    public void isFileAvailableReturnFalse() throws IOException {
+        FileOperations fileOperations = new FileOperations();
+        File file = new File("text.txt");
+        file.deleteOnExit();
+
+        boolean actualResult = fileOperations.isFileAvailable(false, file);
+
+        assertFalse(actualResult);
+    }
+
+    @Test
+    public void getAmountOfObjectsToBeCreatedReturnFive(){
+        FileOperations fileOperations = new FileOperations();
+
+        int actualResult = fileOperations.getAmountOfObjectsToBeCreated();
+
+        assertEquals(5,actualResult);
+    }
 }

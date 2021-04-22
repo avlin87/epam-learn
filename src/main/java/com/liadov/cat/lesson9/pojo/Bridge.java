@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
  * @author Aleksandr Liadov on 4/20/2021
  */
 public class Bridge {
-    private static final Logger log = LoggerFactory.getLogger(Book.class);
+    private static final Logger log = LoggerFactory.getLogger(Bridge.class);
 
     @Value
     private int length;

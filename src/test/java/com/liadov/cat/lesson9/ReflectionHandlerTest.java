@@ -50,7 +50,7 @@ public class ReflectionHandlerTest {
     @Test
     public void populateFieldsWithValuesFromAnnotation() {
         Human human = new Human();
-        new ReflectionHandler().populateFieldsWithValues(human);
+        new ReflectionHandler().populateFieldsWithValues(human, false);
 
         String actualResult = human.getFirstName();
 
@@ -60,12 +60,24 @@ public class ReflectionHandlerTest {
     @Test
     public void populateFieldsWithValuesFromFile() {
         Dog dog = new Dog();
-        new ReflectionHandler().populateFieldsWithValues(dog);
+        new ReflectionHandler().populateFieldsWithValues(dog, false);
 
         String actualResult = dog.getName();
         int intActualResult = dog.getAge();
 
         assertEquals("2name", actualResult);
-        assertEquals(20, intActualResult);
+        assertEquals(40, intActualResult);
+    }
+
+    @Test
+    public void getMultipleObjectsFromFileNotThrowException() {
+        ReflectionHandler handler = new ReflectionHandler();
+
+        handler.getMultipleObjectsFromFile(NoConstructor.class);
+    }
+
+    private class NoConstructor {
+        private NoConstructor() {
+        }
     }
 }
