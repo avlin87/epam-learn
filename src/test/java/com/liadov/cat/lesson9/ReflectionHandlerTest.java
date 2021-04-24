@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * ReflectionHandlerTest
+ * ReflectionHandlerTest test for {@link ReflectionHandler}
  *
  * @author Aleksandr Liadov on 4/20/2021
  */

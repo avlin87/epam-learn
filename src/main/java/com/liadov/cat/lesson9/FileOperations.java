@@ -10,7 +10,7 @@ import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
- * FileOperations
+ * FileOperations - class extracts information from file.
  *
  * @author Aleksandr Liadov on 4/21/2021
  */

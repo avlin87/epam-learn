@@ -16,7 +16,8 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * ReflectionHandler
+ * ReflectionHandler - class populates fields that have @Value annotation
+ * on objects of Classes that have @Entity annotation
  *
  * @author Alexandr Liadov on 4/20/2021
  */

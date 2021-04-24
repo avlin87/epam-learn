@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * ValueConverterTest
+ * ValueConverterTest test for {@link ValueConverter}
  *
  * @author Aleksandr Liadov on 4/22/2021
  */

@@ -12,7 +12,7 @@ import java.util.Queue;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * FileOperationsTest
+ * FileOperationsTest test for {@link FileOperations}
  *
  * @author Aleksandr Liadov on 4/21/2021
  */
