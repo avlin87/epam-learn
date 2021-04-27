@@ -19,6 +19,7 @@
         </rollingPolicy>
     </appender>
 
+
     <logger name="com.liadov.cat" level="trace" additivity="false">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE-Main"/>
