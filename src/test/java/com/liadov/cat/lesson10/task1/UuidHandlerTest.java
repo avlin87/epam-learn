@@ -47,7 +47,7 @@ public class UuidHandlerTest {
 
         handler.writeCollectionToFile(path, stringList);
 
-        int actualResult = handler.countElementsInFileWithSumOfDigitsGraterHundred(path);
+        int actualResult = handler.countElementsInFileWithSumOfDigitsGreaterHundred(path);
         assertEquals(expectedResult, actualResult);
     }
 
@@ -62,7 +62,7 @@ public class UuidHandlerTest {
     public void countElementsInFileWithSumOfDigitsGraterHundredNotThrowingNullPointer() {
         UuidHandler handler = new UuidHandler();
 
-        assertDoesNotThrow(() -> handler.countElementsInFileWithSumOfDigitsGraterHundred(null));
+        assertDoesNotThrow(() -> handler.countElementsInFileWithSumOfDigitsGreaterHundred(null));
     }
 
     @Test

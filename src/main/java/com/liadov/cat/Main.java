@@ -29,7 +29,7 @@ public class Main {
         List<String> list = uuidHandler.generateCollection(amountOfObjects);
 
         uuidHandler.writeCollectionToFile(path, list);
-        int count = uuidHandler.countElementsInFileWithSumOfDigitsGraterHundred(path);
+        int count = uuidHandler.countElementsInFileWithSumOfDigitsGreaterHundred(path);
         log.info("count of elements from file with sum of all digits grater than hundred = {}", count);
 
         LocalDate localDoomsDayDate = uuidHandler.doomsDay(count);
@@ -38,13 +38,12 @@ public class Main {
 
     private static void task01ExampleWithFor() {
         UuidHandlerWithFor uuidHandlerWithFor = new UuidHandlerWithFor();
-        Path path = Paths.get("src/main/resources/uuidFileWithFor.txt");
+        Path path = Paths.get("src/main/resources/uuidFile.txt");
         int amountOfObjects = 10000;
         List<String> list = uuidHandlerWithFor.generateCollection(amountOfObjects);
 
-
         uuidHandlerWithFor.writeCollectionToFile(path, list);
-        int count = uuidHandlerWithFor.countElementsInFileWithSumOfDigitsGraterHundred(path);
+        int count = uuidHandlerWithFor.countElementsInFileWithSumOfDigitsGreaterHundred(path);
         log.info("count of elements from file with sum of all digits grater than hundred = {}", count);
 
         LocalDate localDoomsDayDate = uuidHandlerWithFor.doomsDay(count);
@@ -65,7 +64,7 @@ public class Main {
 
     private static void task02ExampleWithFor() {
         SausageControllerWithFor sausageControllerWithFor = new SausageControllerWithFor();
-        Path path = Paths.get("src/main/resources/sausageFileWithFor.txt");
+        Path path = Paths.get("src/main/resources/sausageFile.txt");
         List<Sausage> sausageList = List.of(new Sausage("one", 11, 301), new Sausage("two", 12, 302), new Sausage("three", 13, 303));
 
         sausageControllerWithFor.writeListToFile(path, sausageList);

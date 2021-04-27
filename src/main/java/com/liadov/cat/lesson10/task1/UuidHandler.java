@@ -31,13 +31,14 @@ public class UuidHandler {
      */
     public List<String> generateCollection(int amountOfObjects) {
         log.debug("initiated generation with amount of elements = {}", amountOfObjects);
-        Optional<List<String>> optionalStringList = Optional.of(Stream.generate((UUID::randomUUID))
+        List<String> uuidCollection = Stream.generate((UUID::randomUUID))
                 .map(UUID::toString)
                 .limit(amountOfObjects)
-                .collect(Collectors.toList())
-        );
-        log.trace("amount of generated objects = {}", optionalStringList.orElse(List.of()).size());
-        return optionalStringList.orElse(List.of());
+                .collect(Collectors.toList());
+        Optional<List<String>> optionalStringList = Optional.ofNullable(uuidCollection);
+        List<String> resultUuidCollection = optionalStringList.orElse(List.of());
+        log.trace("amount of generated objects = {}", resultUuidCollection.size());
+        return resultUuidCollection;
     }
 
     /**
@@ -61,29 +62,26 @@ public class UuidHandler {
     }
 
     /**
-     * Method reads target file and return number of rows with sum of digit symbols grater that 100
+     * Method reads target file and return number of rows with sum of digit symbols greater that 100
      *
      * @param path Path target file
-     * @return int number of rows with sum of digit symbols grater that 100
+     * @return int number of rows with sum of digit symbols greater that 100
      */
-    public int countElementsInFileWithSumOfDigitsGraterHundred(Path path) {
-        List<String> elementsWithSumOfDigitsGraterHundred = List.of();
+    public int countElementsInFileWithSumOfDigitsGreaterHundred(Path path) {
+        List<String> elementsWithSumOfDigitsGreaterHundred = List.of();
         Optional<Path> optionalPath = Optional.ofNullable(path);
-        log.trace("initiated count of elements that have sum of all digits grater than 100. Path = {}", optionalPath);
+        log.trace("initiated count of elements that have sum of all digits greater than 100. Path = {}", optionalPath);
         if (optionalPath.isPresent()) {
             try {
-                elementsWithSumOfDigitsGraterHundred = Files.lines(path)
-                        .filter((str) -> Arrays.stream(str.split(""))
-                                .filter(s -> s.matches("\\d+"))
-                                .mapToInt(Integer::valueOf)
-                                .sum() > 100)
+                elementsWithSumOfDigitsGreaterHundred = Files.lines(path)
+                        .filter((str) -> checkSumOfDigitsGreaterThanHundred(str))
                         .collect(Collectors.toList());
             } catch (IOException e) {
                 log.error("Error", e);
             }
         }
-        log.debug("count elements with sum of digits grater then 100 = {}", elementsWithSumOfDigitsGraterHundred.size());
-        return elementsWithSumOfDigitsGraterHundred.size();
+        log.debug("count elements with sum of digits greater then 100 = {}", elementsWithSumOfDigitsGreaterHundred.size());
+        return elementsWithSumOfDigitsGreaterHundred.size();
     }
 
     /**
@@ -97,5 +95,14 @@ public class UuidHandler {
         int days = count - months * 100;
         log.debug("input = {}. dooms day calculation: now = {}, + months = {}, + days = {}", count, LocalDate.now(), months, days);
         return LocalDate.now().plusMonths(months).plusDays(days);
+    }
+
+    private boolean checkSumOfDigitsGreaterThanHundred(String str) {
+        String[] symbols = str.split("");
+        boolean checkResult = Arrays.stream(symbols)
+                .filter(s -> s.matches("\\d+"))
+                .mapToInt(Integer::valueOf)
+                .sum() > 100;
+        return checkResult;
     }
 }

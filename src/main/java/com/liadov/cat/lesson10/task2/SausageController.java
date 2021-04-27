@@ -32,8 +32,7 @@ public class SausageController {
         Optional<Path> optionalPath = Optional.ofNullable(path);
         Optional<List<Sausage>> optionalSausageList = Optional.ofNullable(sausageList);
         log.trace("write Sausages to file initiated. Path = {}, List = {}", optionalPath, sausageList);
-        optionalSausageList.ifPresent((x) ->
-        {
+        optionalSausageList.ifPresent((x) -> {
             try {
                 Files.write(optionalPath.orElse(defaultFilePath), sausageList.stream()
                         .map((sausage -> new String(Base64.getEncoder().encode(sausage.toString().getBytes()))))

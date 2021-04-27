@@ -30,7 +30,9 @@ public class UuidHandlerWithFor {
      */
     public List<String> generateCollection(int amountOfObjects) {
         log.debug("initiated generation with amount of elements = {}", amountOfObjects);
-        List<String> stringList = Stream.empty().map(String::valueOf).collect(Collectors.toList());
+        List<String> stringList = Stream.empty()
+                .map(String::valueOf)
+                .collect(Collectors.toList());
 
         for (int i = 0; i < amountOfObjects; i++) {
             stringList.add(UUID.randomUUID().toString());
@@ -49,7 +51,8 @@ public class UuidHandlerWithFor {
     public void writeCollectionToFile(Path path, List<String> list) {
         Optional<Path> optionalPath = Optional.ofNullable(path);
         Optional<List<String>> optionalStringList = Optional.ofNullable(list);
-        log.trace("Path = {}, list size = {}", optionalPath, optionalStringList.orElse(List.of()).size());
+        List<String> targetList = optionalStringList.orElse(List.of());
+        log.trace("Path = {}, list size = {}", optionalPath, targetList.size());
         if (optionalStringList.isPresent()) {
             try {
                 Files.write(optionalPath.orElse(defaultFilePath), list);
@@ -61,15 +64,15 @@ public class UuidHandlerWithFor {
     }
 
     /**
-     * Method reads target file and return number of rows with sum of digit symbols grater that 100
+     * Method reads target file and return number of rows with sum of digit symbols greater that 100
      *
      * @param path Path target file
-     * @return int number of rows with sum of digit symbols grater that 100
+     * @return int number of rows with sum of digit symbols greater that 100
      */
-    public int countElementsInFileWithSumOfDigitsGraterHundred(Path path) {
-        List<String> elementsWithSumOfDigitsGraterHundred = Stream.empty().map(String::valueOf).collect(Collectors.toList());
+    public int countElementsInFileWithSumOfDigitsGreaterHundred(Path path) {
+        List<String> elementsWithSumOfDigitsGreaterHundred = Stream.empty().map(String::valueOf).collect(Collectors.toList());
         Optional<Path> optionalPath = Optional.ofNullable(path);
-        log.trace("initiated count of elements that have sum of all digits grater than 100. Path = {}", optionalPath);
+        log.trace("initiated count of elements that have sum of all digits greater than 100. Path = {}", optionalPath);
         if (optionalPath.isPresent()) {
             List<String> tempElements = List.of();
             try {
@@ -90,13 +93,13 @@ public class UuidHandlerWithFor {
                     }
                 }
                 if (sum > 100) {
-                    elementsWithSumOfDigitsGraterHundred.add(element);
+                    elementsWithSumOfDigitsGreaterHundred.add(element);
                 }
             }
 
         }
-        log.debug("count elements with sum of digits grater then 100 = {}", elementsWithSumOfDigitsGraterHundred.size());
-        return elementsWithSumOfDigitsGraterHundred.size();
+        log.debug("count elements with sum of digits greater then 100 = {}", elementsWithSumOfDigitsGreaterHundred.size());
+        return elementsWithSumOfDigitsGreaterHundred.size();
     }
 
     /**
