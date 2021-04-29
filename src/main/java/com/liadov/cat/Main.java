@@ -54,10 +54,10 @@ public class Main {
         SausageController sausageController = new SausageController();
         Path path = Paths.get("src/main/resources/sausageFile.txt");
         List<Sausage> sausageList = List.of(new Sausage("one", 11, 301), new Sausage("two", 12, 302), new Sausage("three", 13, 303));
-
         sausageController.writeListToFile(path, sausageList);
         log.trace("elements written to file: {}", sausageList);
 
+        path = Paths.get("src/main/resources/File.txt");
         List<Sausage> sausagesFromFile = sausageController.readObjectsFromFile(path);
         log.trace("sausage elements received from file: {}", sausagesFromFile);
     }
@@ -70,6 +70,7 @@ public class Main {
         sausageControllerWithFor.writeListToFile(path, sausageList);
         log.trace("elements written to file: {}", sausageList);
 
+        path = Paths.get("src/main/resources/File.txt");
         List<Sausage> sausagesFromFile = sausageControllerWithFor.readObjectsFromFile(path);
         log.trace("sausage elements received from file: {}", sausagesFromFile);
     }

@@ -1,6 +1,7 @@
 package com.liadov.cat.lesson10.task1;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -24,8 +25,9 @@ public class UuidHandlerTest {
         int expectedResult = 10;
 
         List<String> stringList = handler.generateCollection(10);
+        int actualResult = stringList.size();
 
-        assertEquals(expectedResult, stringList.size());
+        assertEquals(expectedResult, actualResult);
     }
 
     @Test
@@ -55,14 +57,18 @@ public class UuidHandlerTest {
     public void writeCollectionToFileNotThrowingNullPointer() {
         UuidHandler handler = new UuidHandler();
 
-        assertDoesNotThrow(() -> handler.writeCollectionToFile(null, null));
+        Executable executable = () -> handler.writeCollectionToFile(null, null);
+
+        assertDoesNotThrow(executable);
     }
 
     @Test
     public void countElementsInFileWithSumOfDigitsGraterHundredNotThrowingNullPointer() {
         UuidHandler handler = new UuidHandler();
 
-        assertDoesNotThrow(() -> handler.countElementsInFileWithSumOfDigitsGreaterHundred(null));
+        Executable executable = () -> handler.countElementsInFileWithSumOfDigitsGreaterHundred(null);
+
+        assertDoesNotThrow(executable);
     }
 
     @Test

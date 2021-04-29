@@ -1,6 +1,7 @@
 package com.liadov.cat.lesson10.task2;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -22,18 +23,26 @@ public class SausageControllerWithForTest {
         Path path = Paths.get("testFile.txt");
         Files.deleteIfExists(path);
         SausageControllerWithFor sausageController = new SausageControllerWithFor();
-        List<Sausage> list = List.of(new Sausage("one", 1, 1), new Sausage("two", 2, 2), new Sausage("three", 3, 3));
+        Sausage one = new Sausage("one", 1, 1);
+        Sausage two = new Sausage("two", 2, 2);
+        Sausage three = new Sausage("three", 3, 3);
+        List<Sausage> list = List.of(one, two, three);
+        int expectedResult = list.size();
 
         sausageController.writeListToFile(path, list);
 
-        assertEquals(list.size(), sausageController.readObjectsFromFile(path).size());
+        List<Sausage> sausageList = sausageController.readObjectsFromFile(path);
+        int actualResult = sausageList.size();
+        assertEquals(expectedResult, actualResult);
     }
 
     @Test
     public void writeListToFileNotThrowingNullPointer() {
         SausageControllerWithFor sausageController = new SausageControllerWithFor();
 
-        assertDoesNotThrow(() -> sausageController.writeListToFile(null, null));
+        Executable executable = () -> sausageController.writeListToFile(null, null);
+
+        assertDoesNotThrow(executable);
     }
 
     @Test
@@ -41,18 +50,26 @@ public class SausageControllerWithForTest {
         Path path = Paths.get("testFile.txt");
         Files.deleteIfExists(path);
         SausageControllerWithFor sausageController = new SausageControllerWithFor();
-        List<Sausage> list = List.of(new Sausage("one", 1, 1), new Sausage("two", 2, 2), new Sausage("three", 3, 3), new Sausage("four", 4, 4));
+        Sausage one = new Sausage("one", 1, 1);
+        Sausage two = new Sausage("two", 2, 2);
+        Sausage three = new Sausage("three", 3, 3);
+        Sausage four = new Sausage("four", 4, 4);
+        List<Sausage> expectedList = List.of(one, two, three, four);
 
-        sausageController.writeListToFile(path, list);
+        sausageController.writeListToFile(path, expectedList);
 
-        assertTrue(list.containsAll(sausageController.readObjectsFromFile(path)));
+        List<Sausage> actualSausageList = sausageController.readObjectsFromFile(path);
+        boolean result = expectedList.containsAll(actualSausageList);
+        assertTrue(result);
     }
 
     @Test
-    public void readObjectsFromFileNotThrowingNullPointer() throws IOException {
+    public void readObjectsFromFileNotThrowingNullPointer() {
         SausageControllerWithFor sausageController = new SausageControllerWithFor();
 
-        assertDoesNotThrow(() -> sausageController.readObjectsFromFile(null));
+        Executable executable = () -> sausageController.readObjectsFromFile(null);
+
+        assertDoesNotThrow(executable);
     }
 
 }

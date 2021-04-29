@@ -74,7 +74,7 @@ public class UuidHandler {
         if (optionalPath.isPresent()) {
             try {
                 elementsWithSumOfDigitsGreaterHundred = Files.lines(path)
-                        .filter((str) -> checkSumOfDigitsGreaterThanHundred(str))
+                        .filter(this::checkSumOfDigitsGreaterThanHundred)
                         .collect(Collectors.toList());
             } catch (IOException e) {
                 log.error("Error", e);
