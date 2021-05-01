@@ -1,5 +1,7 @@
 package com.liadov.cat.lesson10.task2;
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 
@@ -18,11 +20,17 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class SausageControllerWithForTest {
 
+    private static SausageControllerWithFor sausageController;
+
+    @BeforeAll
+    public static void initiateSausageControllerWithFor() {
+        sausageController = new SausageControllerWithFor();
+    }
+
     @Test
     public void writeListToFileCorrectNumberOfObjects() throws IOException {
         Path path = Paths.get("testFile.txt");
         Files.deleteIfExists(path);
-        SausageControllerWithFor sausageController = new SausageControllerWithFor();
         Sausage one = new Sausage("one", 1, 1);
         Sausage two = new Sausage("two", 2, 2);
         Sausage three = new Sausage("three", 3, 3);
@@ -38,8 +46,6 @@ public class SausageControllerWithForTest {
 
     @Test
     public void writeListToFileNotThrowingNullPointer() {
-        SausageControllerWithFor sausageController = new SausageControllerWithFor();
-
         Executable executable = () -> sausageController.writeListToFile(null, null);
 
         assertDoesNotThrow(executable);
@@ -49,7 +55,6 @@ public class SausageControllerWithForTest {
     public void readObjectsFromFileSameAsWrittenToFile() throws IOException {
         Path path = Paths.get("testFile.txt");
         Files.deleteIfExists(path);
-        SausageControllerWithFor sausageController = new SausageControllerWithFor();
         Sausage one = new Sausage("one", 1, 1);
         Sausage two = new Sausage("two", 2, 2);
         Sausage three = new Sausage("three", 3, 3);
@@ -65,11 +70,15 @@ public class SausageControllerWithForTest {
 
     @Test
     public void readObjectsFromFileNotThrowingNullPointer() {
-        SausageControllerWithFor sausageController = new SausageControllerWithFor();
 
         Executable executable = () -> sausageController.readObjectsFromFile(null);
 
         assertDoesNotThrow(executable);
     }
 
+    @AfterAll
+    public static void deleteTestFile() throws IOException {
+        Path path = Paths.get("testFile.txt");
+        Files.deleteIfExists(path);
+    }
 }

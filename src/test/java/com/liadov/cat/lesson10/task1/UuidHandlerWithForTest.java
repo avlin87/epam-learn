@@ -1,5 +1,7 @@
 package com.liadov.cat.lesson10.task1;
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 
@@ -18,10 +20,16 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Aleksandr Liadov on 4/26/2021
  */
 public class UuidHandlerWithForTest {
+    private static UuidHandlerWithFor handler;
+
+    @BeforeAll
+    public static void initiateUuidHandlerWithFor() {
+        handler = new UuidHandlerWithFor();
+    }
+
 
     @Test
     public void generateCollectionAsRequestedAmount() {
-        UuidHandlerWithFor handler = new UuidHandlerWithFor();
         int expectedResult = 10;
 
         List<String> stringList = handler.generateCollection(10);
@@ -32,8 +40,6 @@ public class UuidHandlerWithForTest {
 
     @Test
     public void generateCollectionReturnNotNull() {
-        UuidHandlerWithFor handler = new UuidHandlerWithFor();
-
         List<String> stringList = handler.generateCollection(0);
 
         assertNotNull(stringList);
@@ -41,7 +47,6 @@ public class UuidHandlerWithForTest {
 
     @Test
     public void writeCollectionToFile() throws IOException {
-        UuidHandlerWithFor handler = new UuidHandlerWithFor();
         Path path = Paths.get("testFile.txt");
         Files.deleteIfExists(path);
         List<String> stringList = List.of("999999999999", "9a9b9c9d9e9f9g9h9i9j9K9", "testRow", "999999999999");
@@ -55,8 +60,6 @@ public class UuidHandlerWithForTest {
 
     @Test
     public void writeCollectionToFileNotThrowingNullPointer() {
-        UuidHandlerWithFor handler = new UuidHandlerWithFor();
-
         Executable executable = () -> handler.writeCollectionToFile(null, null);
 
         assertDoesNotThrow(executable);
@@ -64,8 +67,6 @@ public class UuidHandlerWithForTest {
 
     @Test
     public void countElementsInFileWithSumOfDigitsGraterHundredNotThrowingNullPointer() {
-        UuidHandlerWithFor handler = new UuidHandlerWithFor();
-
         Executable executable = () -> handler.countElementsInFileWithSumOfDigitsGreaterHundred(null);
 
         assertDoesNotThrow(executable);
@@ -73,10 +74,14 @@ public class UuidHandlerWithForTest {
 
     @Test
     public void doomsDayReturnNotNull() {
-        UuidHandlerWithFor handler = new UuidHandlerWithFor();
-
         LocalDate localDate = handler.doomsDay(0);
 
         assertNotNull(localDate);
+    }
+
+    @AfterAll
+    public static void deleteTestFile() throws IOException {
+        Path path = Paths.get("testFile.txt");
+        Files.deleteIfExists(path);
     }
 }

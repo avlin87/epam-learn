@@ -1,5 +1,7 @@
 package com.liadov.cat.lesson10.task1;
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 
@@ -18,10 +20,15 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Aleksandr Liadov on 4/26/2021
  */
 public class UuidHandlerTest {
+    private static UuidHandler handler;
+
+    @BeforeAll
+    public static void initiateUuidHandler() {
+        handler = new UuidHandler();
+    }
 
     @Test
     public void generateCollectionAsRequestedAmount() {
-        UuidHandler handler = new UuidHandler();
         int expectedResult = 10;
 
         List<String> stringList = handler.generateCollection(10);
@@ -32,8 +39,6 @@ public class UuidHandlerTest {
 
     @Test
     public void generateCollectionReturnNotNull() {
-        UuidHandler handler = new UuidHandler();
-
         List<String> stringList = handler.generateCollection(0);
 
         assertNotNull(stringList);
@@ -41,7 +46,6 @@ public class UuidHandlerTest {
 
     @Test
     public void writeCollectionToFile() throws IOException {
-        UuidHandler handler = new UuidHandler();
         Path path = Paths.get("testFile.txt");
         Files.deleteIfExists(path);
         List<String> stringList = List.of("999999999999", "9a9b9c9d9e9f9g9h9i9j9K9", "testRow", "999999999999");
@@ -55,8 +59,6 @@ public class UuidHandlerTest {
 
     @Test
     public void writeCollectionToFileNotThrowingNullPointer() {
-        UuidHandler handler = new UuidHandler();
-
         Executable executable = () -> handler.writeCollectionToFile(null, null);
 
         assertDoesNotThrow(executable);
@@ -64,8 +66,6 @@ public class UuidHandlerTest {
 
     @Test
     public void countElementsInFileWithSumOfDigitsGraterHundredNotThrowingNullPointer() {
-        UuidHandler handler = new UuidHandler();
-
         Executable executable = () -> handler.countElementsInFileWithSumOfDigitsGreaterHundred(null);
 
         assertDoesNotThrow(executable);
@@ -73,10 +73,14 @@ public class UuidHandlerTest {
 
     @Test
     public void doomsDayReturnNotNull() {
-        UuidHandler handler = new UuidHandler();
-
         LocalDate localDate = handler.doomsDay(0);
 
         assertNotNull(localDate);
+    }
+
+    @AfterAll
+    public static void deleteTestFile() throws IOException {
+        Path path = Paths.get("testFile.txt");
+        Files.deleteIfExists(path);
     }
 }

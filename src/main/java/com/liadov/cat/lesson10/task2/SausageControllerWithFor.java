@@ -20,7 +20,7 @@ import java.util.stream.Stream;
  */
 @Slf4j
 public class SausageControllerWithFor {
-    private final String replacePattern = "^Sausage\\{type='|', weight=|, cost=|}";
+    private final String replacePattern = "^Sausage\\(type=|, weight=|, cost=|\\)";
     private Path defaultFilePath = Paths.get("src/main/resources/defaultSausageFile.txt");
 
     /**
