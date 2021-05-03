@@ -2,14 +2,14 @@
 
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} &lt;%M&gt; - %msg%n</Pattern>
+            <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{54} &lt;%M&gt; - %msg%n</Pattern>
         </encoder>
     </appender>
 
     <appender name="FILE-Main" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>LOG/debugMain.log</file>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} &lt;%M&gt; - %msg%n</Pattern>
+            <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{54} &lt;%M&gt; - %msg%n</Pattern>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"><!-- rollover daily -->
             <fileNamePattern>LOG/archived/debugMain.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
@@ -19,7 +19,7 @@
         </rollingPolicy>
     </appender>
 
-    <logger name="com.liadov.cat" level="debug" additivity="false">
+    <logger name="com.liadov.cat" level="trace" additivity="false">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE-Main"/>
     </logger>
