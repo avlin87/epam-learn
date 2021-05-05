@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -28,7 +27,7 @@ public class Chat {
      * @return boolean: true - in case message added, false - in case  message was not added.
      */
     public boolean add(String smsText) {
-        Lock writeLock = rwLock.writeLock();
+        var writeLock = rwLock.writeLock();
         writeLock.lock();
         log.trace("write locked");
         try {
@@ -53,7 +52,7 @@ public class Chat {
      * @return String value of message or blank text if List of messages is blank
      */
     public String getLastAndRemove() {
-        Lock writeLock = rwLock.writeLock();
+        var writeLock = rwLock.writeLock();
         writeLock.lock();
         log.trace("write locked");
         String lastSmsText = "";
@@ -79,7 +78,7 @@ public class Chat {
      * @return String value of message or blank text if List of messages is blank.
      */
     public String getRandom() {
-        Lock readLock = rwLock.readLock();
+        var readLock = rwLock.readLock();
         readLock.lock();
         log.trace("read locked");
         String smsText = "";
@@ -105,7 +104,7 @@ public class Chat {
      * @param updatedMessage String value of updated message
      */
     public void update(String message, String updatedMessage) {
-        Lock writeLock = rwLock.writeLock();
+        var writeLock = rwLock.writeLock();
         writeLock.lock();
         log.trace("write locked");
         try {
@@ -121,7 +120,7 @@ public class Chat {
     }
 
     private int size() {
-        Lock readLock = rwLock.readLock();
+        var readLock = rwLock.readLock();
         readLock.lock();
         log.trace("read locked");
         try {

@@ -9,15 +9,16 @@ import lombok.extern.slf4j.Slf4j;
 public class Main {
 
     public static void main(String[] args) {
-        RaceConditionExample raceConditionExample = new RaceConditionExample();
+        var raceConditionExample = new RaceConditionExample();
         raceConditionExample.startRaceConditionMath();
         raceConditionExample.startNormalMath();
+        raceConditionExample.startNormalAtomicMath();
 
-        DeadLockExample deadLockExample = new DeadLockExample();
+        var deadLockExample = new DeadLockExample();
         deadLockExample.startNormalPuppies();
         deadLockExample.startDeadLock();
 
-        ChatHandler chatHandler = new ChatHandler();
+        var chatHandler = new ChatHandler();
         chatHandler.startChat();
     }
 

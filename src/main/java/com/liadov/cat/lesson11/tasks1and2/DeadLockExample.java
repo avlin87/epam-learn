@@ -17,25 +17,25 @@ public class DeadLockExample {
      * Method start Threads for objects with solved DeadLock
      */
     public void startNormalPuppies() {
-        Puppy arnold = new PuppyNormal("Arnold");
-        Puppy kevin = new PuppyNormal("Kevin");
+        var arnoldPuppy = new PuppyNormal("Arnold");
+        var kevinPuppy = new PuppyNormal("Kevin");
 
-        startThreadsTest(arnold, kevin);
+        startThreadsTest(arnoldPuppy, kevinPuppy);
     }
 
     /**
      * Method start Threads for objects with DeadLock problem
      */
     public void startDeadLock() {
-        Puppy gerald = new PuppyWithDeadLock("Gerald");
-        Puppy leo = new PuppyWithDeadLock("Leo");
+        var geraldPuppy = new PuppyWithDeadLock("Gerald");
+        var leoPuppy = new PuppyWithDeadLock("Leo");
 
-        startThreadsTest(gerald, leo);
+        startThreadsTest(geraldPuppy, leoPuppy);
     }
 
     private void startThreadsTest(Puppy puppy1, Puppy puppy2) {
-        Thread puppy1Thread = new Thread(() -> puppy1.playWithPuppy(puppy2));
-        Thread puppy2Thread = new Thread(() -> puppy2.playWithPuppy(puppy1));
+        var puppy1Thread = new Thread(() -> puppy1.playWithPuppy(puppy2));
+        var puppy2Thread = new Thread(() -> puppy2.playWithPuppy(puppy1));
         puppy1Thread.start();
         puppy2Thread.start();
 

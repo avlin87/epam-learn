@@ -19,19 +19,19 @@ public class ChatHandler {
      * Method initiate Chat and participants Threads
      */
     public void startChat() {
-        Chat chat = new Chat();
-        for (int i = 0; i < 5; i++) {
-            Writer writer = new Writer(chat);
+        var chat = new Chat();
+        for (var i = 0; i < 5; i++) {
+            var writer = new Writer(chat);
             threadList.add(new Thread(writer));
         }
 
-        for (int i = 0; i < 5; i++) {
-            Reader reader = new Reader(chat);
+        for (var i = 0; i < 5; i++) {
+            var reader = new Reader(chat);
             threadList.add(new Thread(reader));
         }
 
-        for (int i = 0; i < 3; i++) {
-            Updater updater = new Updater(chat);
+        for (var i = 0; i < 3; i++) {
+            var updater = new Updater(chat);
             threadList.add(new Thread(updater));
         }
 

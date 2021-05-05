@@ -1,8 +1,8 @@
 package com.liadov.cat.lesson11.tasks1and2;
 
-import com.liadov.cat.lesson11.tasks1and2.interfaces.MathRace;
 import com.liadov.cat.lesson11.tasks1and2.problem.MathRaceCondition;
 import com.liadov.cat.lesson11.tasks1and2.solution.MathRaceConditionSolved;
+import com.liadov.cat.lesson11.tasks1and2.solution.RaceConditionSolvedAtomic;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -13,32 +13,40 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class RaceConditionExample {
     /**
-     * Method starts Threads for objects with solved Race Condition
+     * Method starts Threads for objects with solved Race Condition with synchronized
      */
     public void startNormalMath() {
-        MathRaceConditionSolved mathRaceCondition = new MathRaceConditionSolved();
+        var mathRaceCondition = new MathRaceConditionSolved();
         startThreads(mathRaceCondition);
+    }
+
+    /**
+     * Method starts Threads for objects with solved Race Condition with AtomicInteger
+     */
+    public void startNormalAtomicMath() {
+        var raceConditionSolvedAtomic = new RaceConditionSolvedAtomic();
+        startThreads(raceConditionSolvedAtomic);
     }
 
     /**
      * Method starts Threads for objects with Race Condition problem
      */
     public void startRaceConditionMath() {
-        MathRaceCondition mathRaceCondition = new MathRaceCondition();
+        var mathRaceCondition = new MathRaceCondition();
         startThreads(mathRaceCondition);
     }
 
-    private void startThreads(MathRace mathRace) {
+    private void startThreads(Runnable mathRace) {
         sleep(100);
         String className = mathRace.getClass().getSimpleName();
         log.info("{} started", className);
-        Thread t1 = new Thread(mathRace, "Thread-1");
-        Thread t2 = new Thread(mathRace, "Thread-2");
-        Thread t3 = new Thread(mathRace, "Thread-3");
-        t1.start();
-        t2.start();
-        t3.start();
-        while (t1.isAlive() | t2.isAlive() | t3.isAlive()) {
+        var raceThread1 = new Thread(mathRace, "Thread-1");
+        var raceThread2 = new Thread(mathRace, "Thread-2");
+        var raceThread3 = new Thread(mathRace, "Thread-3");
+        raceThread1.start();
+        raceThread2.start();
+        raceThread3.start();
+        while (raceThread1.isAlive() || raceThread2.isAlive() || raceThread3.isAlive()) {
             sleep(10);
         }
         log.info("{} finished\n", className);

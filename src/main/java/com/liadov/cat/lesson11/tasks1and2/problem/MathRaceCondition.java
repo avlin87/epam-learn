@@ -12,10 +12,12 @@ import lombok.extern.slf4j.Slf4j;
 public class MathRaceCondition implements Runnable, MathRace {
     private int a = 0;
 
+    @Override
     public void decrement() {
         a--;
     }
 
+    @Override
     public void increment() {
         try {
             Thread.sleep(10);
@@ -25,10 +27,10 @@ public class MathRaceCondition implements Runnable, MathRace {
         a++;
     }
 
+    @Override
     public int getValue() {
         return a;
     }
-
 
     @Override
     public void run() {
