@@ -21,5 +21,4 @@ public class Main {
         var chatHandler = new ChatHandler();
         chatHandler.startChat();
     }
-
 }

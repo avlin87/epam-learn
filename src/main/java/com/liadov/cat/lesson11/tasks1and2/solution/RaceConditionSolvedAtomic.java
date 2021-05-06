@@ -15,7 +15,7 @@ public class RaceConditionSolvedAtomic implements Runnable {
     @Override
     public void run() {
         String threadName = Thread.currentThread().getName();
-        AtomicInteger atomicValue = new AtomicInteger(0);
+        var atomicValue = new AtomicInteger(0);
         log.info("[{}]: Atomic Value Increment = {}", threadName, atomicValue.incrementAndGet());
 
         log.info("[{}]: Atomic Value Decrement = {}", threadName, atomicValue.decrementAndGet());
