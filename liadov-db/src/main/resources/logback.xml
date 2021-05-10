@@ -6,7 +6,7 @@
         </encoder>
     </appender>
 
-    <logger name="com.liadov.cat" level="trace" additivity="false">
+    <logger name="com.epam.liadov" level="trace" additivity="false">
         <appender-ref ref="CONSOLE"/>
     </logger>
 

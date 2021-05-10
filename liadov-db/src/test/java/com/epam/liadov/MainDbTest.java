@@ -1,4 +1,4 @@
-package com.liadov.cat;
+package com.epam.liadov;
 
 import org.junit.jupiter.api.Test;
 
