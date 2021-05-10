@@ -1,0 +1,13 @@
+<configuration>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{54} &lt;%M&gt; - %msg%n</Pattern>
+        </encoder>
+    </appender>
+
+    <logger name="com.epam.liadov" level="trace" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+
+</configuration>

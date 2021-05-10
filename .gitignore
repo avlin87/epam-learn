@@ -1,6 +1,12 @@
 # Project exclude paths
 /target/
 /LOG/
+/liadov-api/LOG
+/liadov-api/target
+/liadov-db/LOG
+/liadov-db/target
+/liadov-impl/LOG
+/liadov-impl/target
 
 ### IntelliJ IDEA ###
 .idea
