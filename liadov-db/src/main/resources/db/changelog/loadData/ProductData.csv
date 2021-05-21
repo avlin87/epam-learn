@@ -1,0 +1,5 @@
+productname,supplierid,unitprice,isdiscontinued
+795 Product,1,11.12,FALSE
+881 Product,2,12.12,FALSE
+343 Product,3,13.12,TRUE
+444 Product,4,14.12,FALSE

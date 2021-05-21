@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+    <changeSet author="Aleksandr Liadov" id="order_product_changelog-1.0">
+        <createTable tableName="OrderProduct">
+            <column name="OrderId" type="int">
+                <constraints nullable="false" primaryKey="true" unique="true"/>
+            </column>
+            <column name="ProductId" type="int">
+                <constraints nullable="false" primaryKey="true" unique="true"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="OrderProduct"
+                                 baseColumnNames="OrderId"
+                                 constraintName="fk_OrderProduct_Order"
+                                 referencedTableName="order"
+                                 referencedColumnNames="OrderId"
+                                 onUpdate="CASCADE"
+                                 onDelete="CASCADE"/>
+        <addForeignKeyConstraint baseTableName="OrderProduct"
+                                 baseColumnNames="ProductId"
+                                 constraintName="fk_OrderProduct_Product"
+                                 referencedTableName="Product"
+                                 referencedColumnNames="ProductId"
+                                 onUpdate="CASCADE"
+                                 onDelete="CASCADE"/>
+        <loadData catalogName="OrderProductData"
+                  commentLineStartsWith="//"
+                  file="loadData/OrderProductData.csv"
+                  quotchar="'"
+                  relativeToChangelogFile="true"
+                  schemaName="liadov"
+                  separator=","
+                  tableName="OrderProduct"
+                  usePreparedStatements="true">
+            <column header="orderid"
+                    name="OrderId"
+                    type="NUMERIC"/>
+            <column header="productid"
+                    name="ProductId"
+                    type="NUMERIC"/>
+        </loadData>
+    </changeSet>
+</databaseChangeLog>

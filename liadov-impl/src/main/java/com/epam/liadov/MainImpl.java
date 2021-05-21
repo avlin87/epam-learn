@@ -3,7 +3,7 @@ package com.epam.liadov;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * MainImpl - draft class for github to show package structure
+ * MainImpl - class for initiation of demonstration for CRUD implementation
  *
  * @author Aleksandr Liadov
  */
@@ -11,8 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 public class MainImpl {
 
     public static void main(String[] args) {
-        System.out.println("Hello World");
-        log.info("Hello World");
+        CrudController crudController = new CrudController();
+        crudController.demonstrate();
     }
 
 }

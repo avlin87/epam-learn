@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+    <changeSet author="Aleksandr Liadov" id="product_changelog-1.0">
+        <createTable tableName="Product">
+            <column name="ProductId" type="int" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true" unique="true"/>
+            </column>
+            <column name="ProductName" type="varchar(50)">
+                <constraints nullable="false" primaryKey="false" unique="true"/>
+            </column>
+            <column name="SupplierId" type="int">
+                <constraints nullable="false" primaryKey="false" unique="true"/>
+            </column>
+            <column name="UnitPrice" type="decimal(12,2)">
+                <constraints nullable="true" primaryKey="false" unique="false"/>
+            </column>
+            <column name="IsDiscontinued" type="boolean">
+                <constraints nullable="false" primaryKey="false" unique="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="Product"
+                                 baseColumnNames="SupplierId"
+                                 constraintName="fk_Product_Supplier"
+                                 referencedTableName="Supplier"
+                                 referencedColumnNames="SupplierId"
+                                 onUpdate="CASCADE"
+                                 onDelete="CASCADE"/>
+        <loadData catalogName="ProductData"
+                  commentLineStartsWith="//"
+                  file="loadData/ProductData.csv"
+                  quotchar="'"
+                  relativeToChangelogFile="true"
+                  schemaName="liadov"
+                  separator=","
+                  tableName="Product"
+                  usePreparedStatements="true">
+            <column header="productname"
+                    name="ProductName"
+                    type="STRING"/>
+            <column header="supplierid"
+                    name="SupplierId"
+                    type="NUMERIC"/>
+            <column header="unitprice"
+                    name="UnitPrice"
+                    type="NUMERIC"/>
+            <column header="isdiscontinued"
+                    name="IsDiscontinued"
+                    type="BOOLEAN"/>
+        </loadData>
+    </changeSet>
+</databaseChangeLog>
