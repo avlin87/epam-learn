@@ -11,6 +11,5 @@ public class MainImplTest {
 
     @Test
     public void main() {
-        MainImpl.main(null);
     }
 }
