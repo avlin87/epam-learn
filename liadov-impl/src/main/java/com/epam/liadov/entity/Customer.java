@@ -2,7 +2,10 @@ package com.epam.liadov.entity;
 
 import lombok.Data;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 /**
  * Customer - POJO class represented in database
@@ -10,27 +13,15 @@ import javax.persistence.*;
  * @author Aleksandr Liadov
  */
 @Entity
-@Table
 @Data
-public class Customer implements CrudEntity {
+public class Customer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column
     private int customerId;
 
-    @Column
     private String customerName;
 
-    @Column
     private String phone;
 
-
-    public Customer() {
-    }
-
-    public Customer(String customerName, String phone) {
-        this.customerName = customerName;
-        this.phone = phone;
-    }
 }

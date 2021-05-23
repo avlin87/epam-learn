@@ -11,35 +11,20 @@ import java.math.BigDecimal;
  * @author Aleksandr Liadov
  */
 @Entity
-@Table
 @Data
-public class Product implements CrudEntity {
+public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column
     private int productId;
 
-    @Column
     private String productName;
 
-    @Column
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_product_supplier"))
     private int supplierId;
 
-    @Column
     private BigDecimal unitPrice;
 
-    @Column
     private boolean isDiscontinued;
-
-    public Product() {
-    }
-
-    public Product(String productName, int supplierId, BigDecimal unitPrice, boolean isDiscontinued) {
-        this.productName = productName;
-        this.supplierId = supplierId;
-        this.unitPrice = unitPrice;
-        this.isDiscontinued = isDiscontinued;
-    }
 
 }
