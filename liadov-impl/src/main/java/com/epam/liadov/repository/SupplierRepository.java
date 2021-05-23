@@ -105,7 +105,7 @@ public class SupplierRepository {
 
         transaction.begin();
         try {
-            entityManager.remove(supplier);
+            entityManager.remove(entityManager.find(Supplier.class, supplier.getSupplierId()));
             transaction.commit();
             log.debug("object removed successfully");
             return true;

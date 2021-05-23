@@ -1,5 +1,6 @@
 package com.epam.liadov.repository;
 
+import com.epam.liadov.entity.Customer;
 import com.epam.liadov.entity.Product;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -105,7 +106,7 @@ public class ProductRepository {
 
         transaction.begin();
         try {
-            entityManager.remove(product);
+            entityManager.remove(entityManager.find(Product.class, product.getProductId()));
             transaction.commit();
             log.debug("object removed successfully");
             return true;

@@ -121,21 +121,21 @@ public class CrudServiceMain {
             log.trace("Customer removed = {}", isRemoved);
         }
 
-        Optional<Supplier> supplierOptionalForDelete = supplierRepository.find(1);
+        Optional<Supplier> supplierOptionalForDelete = supplierRepository.find(2);
         if (supplierOptionalForDelete.isPresent()) {
             Supplier supplierForDelete = supplierOptionalForDelete.get();
             boolean isRemoved = supplierRepository.delete(supplierForDelete);
             log.trace("Supplier removed = {}", isRemoved);
         }
 
-        Optional<Order> orderOptionalForDelete = orderRepository.find(1);
+        Optional<Order> orderOptionalForDelete = orderRepository.find(3);
         if (orderOptionalForDelete.isPresent()) {
             Order customerForDelete = orderOptionalForDelete.get();
             boolean isRemoved = orderRepository.delete(customerForDelete);
             log.trace("Order removed = {}", isRemoved);
         }
 
-        Optional<Product> productOptionalForDelete = productRepository.find(1);
+        Optional<Product> productOptionalForDelete = productRepository.find(4);
         if (productOptionalForDelete.isPresent()) {
             Product productForDelete = productOptionalForDelete.get();
             boolean isRemoved = productRepository.delete(productForDelete);

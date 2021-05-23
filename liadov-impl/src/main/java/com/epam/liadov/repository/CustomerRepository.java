@@ -105,7 +105,7 @@ public class CustomerRepository {
 
         transaction.begin();
         try {
-            entityManager.remove(customer);
+            entityManager.remove(entityManager.find(Customer.class, customer.getCustomerId()));
             transaction.commit();
             log.debug("object removed successfully");
             return true;

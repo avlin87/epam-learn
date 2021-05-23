@@ -1,5 +1,6 @@
 package com.epam.liadov.repository;
 
+import com.epam.liadov.entity.Customer;
 import com.epam.liadov.entity.Order;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -105,7 +106,7 @@ public class OrderRepository {
 
         transaction.begin();
         try {
-            entityManager.remove(order);
+            entityManager.remove(entityManager.find(Order.class, order.getOrderID()));
             transaction.commit();
             log.debug("object removed successfully");
             return true;
