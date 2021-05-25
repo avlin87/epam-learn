@@ -3,11 +3,11 @@ package com.epam.liadov.repository;
 import com.epam.liadov.entity.Supplier;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.exception.ConstraintViolationException;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.TransactionRequiredException;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -59,11 +59,14 @@ public class SupplierRepository {
         EntityTransaction transaction = entityManager.getTransaction();
         try {
             transaction.begin();
+            if (find(supplier.getSupplierId()).isEmpty()){
+                return false;
+            }
             entityManager.merge(supplier);
             transaction.commit();
             log.debug("object updated: {}", supplier);
             return true;
-        } catch (IllegalArgumentException | TransactionRequiredException e) {
+        } catch (IllegalArgumentException | ConstraintViolationException | RollbackException | TransactionRequiredException e) {
             log.error("Error during DB transaction ", e);
         } finally {
             entityManager.close();
@@ -116,5 +119,22 @@ public class SupplierRepository {
         }
         log.trace("object was not removed");
         return false;
+    }
+
+    public List<Supplier> getAll() {
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        List<Supplier> supplierList = new ArrayList<>();
+        try {
+            supplierList = entityManager.createQuery("select supplier from Supplier supplier", Supplier.class)
+                    .getResultList();
+            log.trace("Found suppliers = {}", supplierList);
+            return supplierList;
+        } catch (IllegalArgumentException e) {
+            log.error("Error", e);
+        } finally {
+            entityManager.close();
+        }
+        log.debug("object not found");
+        return supplierList;
     }
 }

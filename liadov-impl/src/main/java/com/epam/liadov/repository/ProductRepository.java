@@ -4,11 +4,11 @@ import com.epam.liadov.entity.Customer;
 import com.epam.liadov.entity.Product;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.exception.ConstraintViolationException;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.TransactionRequiredException;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -60,11 +60,14 @@ public class ProductRepository {
         EntityTransaction transaction = entityManager.getTransaction();
         try {
             transaction.begin();
+            if (find(product.getProductId()).isEmpty()){
+                return false;
+            }
             entityManager.merge(product);
             transaction.commit();
             log.debug("object updated: {}", product);
             return true;
-        } catch (IllegalArgumentException | TransactionRequiredException e) {
+        } catch (IllegalArgumentException | ConstraintViolationException | RollbackException | TransactionRequiredException e) {
             log.error("Error during DB transaction ", e);
         } finally {
             entityManager.close();
@@ -117,5 +120,22 @@ public class ProductRepository {
         }
         log.trace("object was not removed");
         return false;
+    }
+
+    public List<Product> getAll() {
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        List<Product> productList = new ArrayList<>();
+        try {
+            productList = entityManager.createQuery("select product from Product product", Product.class)
+                    .getResultList();
+            log.trace("Found products = {}", productList);
+            return productList;
+        } catch (IllegalArgumentException e) {
+            log.error("Error", e);
+        } finally {
+            entityManager.close();
+        }
+        log.debug("object not found");
+        return productList;
     }
 }
