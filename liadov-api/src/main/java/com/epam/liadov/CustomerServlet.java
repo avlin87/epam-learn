@@ -19,6 +19,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * CustomerServlet - class for Json representation on Customer class
+ */
 @Slf4j
 public class CustomerServlet extends HttpServlet {
 

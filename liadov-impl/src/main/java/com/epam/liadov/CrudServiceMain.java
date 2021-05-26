@@ -41,7 +41,7 @@ public class CrudServiceMain {
         var orderRepository = new OrderRepository(entityManagerFactory);
         var supplierRepository = new SupplierRepository(entityManagerFactory);
         var productRepository = new ProductRepository(entityManagerFactory);
-
+        customerRepository.getAll();
         Customer customer = factory.generateTestCustomer();
         Optional<Customer> customerInDatabase = customerRepository.save(customer);
         if (customerInDatabase.isPresent()) {

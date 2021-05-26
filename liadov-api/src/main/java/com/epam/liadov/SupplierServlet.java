@@ -19,6 +19,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * SupplierServlet - class for Json representation on Supplier class
+ */
+
 @Slf4j
 public class SupplierServlet extends HttpServlet {
 

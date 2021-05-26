@@ -1,19 +1,19 @@
 package com.epam.liadov.repository;
 
 import com.epam.liadov.EntityFactory;
-import com.epam.liadov.entity.Product;
 import com.epam.liadov.entity.Supplier;
 import org.hibernate.engine.transaction.internal.TransactionImpl;
 import org.hibernate.internal.SessionFactoryImpl;
 import org.hibernate.internal.SessionImpl;
+import org.hibernate.query.internal.QueryImpl;
+import org.hibernate.query.spi.NativeQueryImplementor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.TransactionRequiredException;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -30,13 +30,16 @@ class SupplierRepositoryTest {
     private EntityManagerFactory entityManagerFactoryMock;
     private EntityManager entityManagerMock;
     private EntityTransaction transactionMock;
-
+    private Query query;
+    private TypedQuery<Supplier> typedQuery;
 
     @BeforeEach
     public void prerequisite() {
         entityManagerFactoryMock = mock(SessionFactoryImpl.class);
         entityManagerMock = mock(SessionImpl.class);
         transactionMock = mock(TransactionImpl.class);
+        query = mock(NativeQueryImplementor.class);
+        typedQuery = (TypedQuery<Supplier>) mock(QueryImpl.class);
 
         when(entityManagerFactoryMock.createEntityManager()).thenReturn(entityManagerMock);
         when(entityManagerMock.getTransaction()).thenReturn(transactionMock);
@@ -77,6 +80,7 @@ class SupplierRepositoryTest {
     void updateReturnThue() {
         Supplier testSupplier = factory.generateTestSupplier();
         SupplierRepository supplierRepository = new SupplierRepository(entityManagerFactoryMock);
+        when(entityManagerMock.find(Supplier.class, testSupplier.getSupplierId())).thenReturn(testSupplier);
 
         boolean supplierUpdated = supplierRepository.update(testSupplier);
 
@@ -130,5 +134,33 @@ class SupplierRepositoryTest {
         boolean deleteResult = supplierRepository.delete(testSupplier);
 
         assertTrue(deleteResult);
+    }
+
+    @Test
+    void getAllReturnsList() {
+        Supplier supplier = factory.generateTestSupplier();
+        SupplierRepository productRepository = new SupplierRepository(entityManagerFactoryMock);
+        when(entityManagerMock.createQuery("select supplier from Supplier supplier", Supplier.class)).thenReturn(typedQuery);
+        List<Supplier> list = new ArrayList<>();
+        list.add(supplier);
+        when(typedQuery.getResultList()).thenReturn(list);
+
+        List<Supplier> all = productRepository.getAll();
+
+        assertFalse(all.isEmpty());
+    }
+
+    @Test
+    void getAllReturnsProcessException() {
+        Supplier supplier = factory.generateTestSupplier();
+        SupplierRepository productRepository = new SupplierRepository(entityManagerFactoryMock);
+        when(entityManagerMock.createQuery("select supplier from Supplier supplier", Supplier.class)).thenThrow(IllegalArgumentException.class);
+        List<Supplier> list = new ArrayList<>();
+        list.add(supplier);
+        when(typedQuery.getResultList()).thenReturn(list);
+
+        List<Supplier> all = productRepository.getAll();
+
+        assertTrue(all.isEmpty());
     }
 }

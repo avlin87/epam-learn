@@ -1,21 +1,20 @@
 package com.epam.liadov.repository;
 
 import com.epam.liadov.EntityFactory;
-import com.epam.liadov.entity.Customer;
-import com.epam.liadov.entity.Order;
 import com.epam.liadov.entity.Product;
 import com.epam.liadov.entity.Supplier;
 import org.hibernate.engine.transaction.internal.TransactionImpl;
 import org.hibernate.internal.SessionFactoryImpl;
 import org.hibernate.internal.SessionImpl;
+import org.hibernate.query.internal.QueryImpl;
+import org.hibernate.query.spi.NativeQueryImplementor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.TransactionRequiredException;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -32,13 +31,16 @@ class ProductRepositoryTest {
     private EntityManagerFactory entityManagerFactoryMock;
     private EntityManager entityManagerMock;
     private EntityTransaction transactionMock;
-
+    private Query query;
+    private TypedQuery<Product> typedQuery;
 
     @BeforeEach
     public void prerequisite() {
         entityManagerFactoryMock = mock(SessionFactoryImpl.class);
         entityManagerMock = mock(SessionImpl.class);
         transactionMock = mock(TransactionImpl.class);
+        query = mock(NativeQueryImplementor.class);
+        typedQuery = (TypedQuery<Product>) mock(QueryImpl.class);
 
         when(entityManagerFactoryMock.createEntityManager()).thenReturn(entityManagerMock);
         when(entityManagerMock.getTransaction()).thenReturn(transactionMock);
@@ -81,6 +83,7 @@ class ProductRepositoryTest {
         Supplier supplier = factory.generateTestSupplier();
         Product testProduct = factory.generateTestProduct(supplier);
         ProductRepository productRepository = new ProductRepository(entityManagerFactoryMock);
+        when(entityManagerMock.find(Product.class, testProduct.getProductId())).thenReturn(testProduct);
 
         boolean productUpdated = productRepository.update(testProduct);
 
@@ -136,5 +139,35 @@ class ProductRepositoryTest {
         boolean deleteResult = productRepository.delete(testProduct);
 
         assertTrue(deleteResult);
+    }
+
+    @Test
+    void getAllReturnsList() {
+        Supplier supplier = factory.generateTestSupplier();
+        Product product = factory.generateTestProduct(supplier);
+        ProductRepository productRepository = new ProductRepository(entityManagerFactoryMock);
+        when(entityManagerMock.createQuery("select product from Product product", Product.class)).thenReturn(typedQuery);
+        List<Product> list = new ArrayList<>();
+        list.add(product);
+        when(typedQuery.getResultList()).thenReturn(list);
+
+        List<Product> all = productRepository.getAll();
+
+        assertFalse(all.isEmpty());
+    }
+
+    @Test
+    void getAllReturnsProcessException() {
+        Supplier supplier = factory.generateTestSupplier();
+        Product product = factory.generateTestProduct(supplier);
+        ProductRepository productRepository = new ProductRepository(entityManagerFactoryMock);
+        when(entityManagerMock.createQuery("select product from Product product", Product.class)).thenThrow(IllegalArgumentException.class);
+        List<Product> list = new ArrayList<>();
+        list.add(product);
+        when(typedQuery.getResultList()).thenReturn(list);
+
+        List<Product> all = productRepository.getAll();
+
+        assertTrue(all.isEmpty());
     }
 }

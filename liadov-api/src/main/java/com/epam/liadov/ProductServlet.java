@@ -20,6 +20,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * ProductServlet - class for Json representation on Product class
+ */
 @Slf4j
 public class ProductServlet extends HttpServlet {
 
