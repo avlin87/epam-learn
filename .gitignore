@@ -1,6 +1,7 @@
 # Project exclude paths
 /target/
 /LOG/
+/out/
 /liadov-api/LOG
 /liadov-api/target
 /liadov-db/LOG
