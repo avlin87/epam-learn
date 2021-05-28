@@ -144,8 +144,8 @@
                 <version>${jacoco-maven-plugin.version}</version>
                 <configuration>
                     <excludes>
-                        <exclude>**/webservlet/*.class</exclude>
-                        <exclude>**/service/*.class</exclude>
+                        <exclude>**/webservlet/**</exclude>
+                        <exclude>**/service/**</exclude>
                     </excludes>
                 </configuration>
                 <executions>
