@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -56,33 +55,17 @@ public class ProductServlet extends HttpServlet {
 
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        var product = new Product();
-        Map<String, String[]> parameterMap = request.getParameterMap();
-        String requestParameters = getStringRequestParameters(parameterMap);
-        log.trace("Post parameters: {}", requestParameters);
-
-        product.setProductName(request.getParameter("productName"));
-        product.setSupplierId(Integer.parseInt(request.getParameter("supplierId")));
-        product.setUnitPrice(BigDecimal.valueOf(Long.parseLong(request.getParameter("unitPrice"))));
-        product.setDiscontinued(Boolean.parseBoolean(request.getParameter("discontinued")));
+        Product product = parsProductFromJson(request);
         product = productService.save(product);
-
         String productJson = gson.toJson(product);
         printResponse(response, productJson);
     }
 
     @Override
     public void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        var product = new Product();
-        int key = getKey(request, product);
-        if (key > 0) {
-            product.setProductName(request.getParameter("productName"));
-            product.setSupplierId(Integer.parseInt(request.getParameter("supplierId")));
-            product.setUnitPrice(BigDecimal.valueOf(Long.parseLong(request.getParameter("unitPrice"))));
-            product.setDiscontinued(Boolean.parseBoolean(request.getParameter("discontinued")));
-            boolean updateResult = productService.update(product);
-            log.trace("Product updated: {}", updateResult);
-        }
+        Product product = parsProductFromJson(request);
+        boolean updateResult = productService.update(product);
+        log.trace("Product updated: {}", updateResult);
         String productJson = gson.toJson(product);
         printResponse(response, productJson);
     }
@@ -114,6 +97,14 @@ public class ProductServlet extends HttpServlet {
         response.setCharacterEncoding(CHARACTER_ENCODING);
         out.print(productJson);
         out.flush();
+    }
+
+    private Product parsProductFromJson(HttpServletRequest request) throws IOException {
+        String requestBody = request.getReader()
+                .lines()
+                .collect(Collectors.joining("\n"));
+        log.trace("body request: {}", requestBody);
+        return gson.fromJson(requestBody, Product.class);
     }
 
     private int getKey(HttpServletRequest request, Product product) {

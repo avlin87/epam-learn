@@ -55,13 +55,7 @@ public class CustomerServlet extends HttpServlet {
 
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        var customer = new Customer();
-        Map<String, String[]> parameterMap = request.getParameterMap();
-        String requestParameters = getStringRequestParameters(parameterMap);
-        log.trace("Post parameters: {}", requestParameters);
-
-        customer.setCustomerName(request.getParameter("customerName"));
-        customer.setPhone(request.getParameter("phone"));
+        Customer customer = parsCustomerFromJson(request);
         customer = customerService.save(customer);
         String customerJson = gson.toJson(customer);
         printResponse(response, customerJson);
@@ -69,14 +63,9 @@ public class CustomerServlet extends HttpServlet {
 
     @Override
     public void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        var customer = new Customer();
-        int key = getKey(request, customer);
-        if (key > 0) {
-            customer.setCustomerName(request.getParameter("customerName"));
-            customer.setPhone(request.getParameter("phone"));
-            boolean updateResult = customerService.update(customer);
-            log.trace("Customer updated: {}", updateResult);
-        }
+        Customer customer = parsCustomerFromJson(request);
+        boolean updateResult = customerService.update(customer);
+        log.trace("Customer updated: {}", updateResult);
         String customerJson = gson.toJson(customer);
         printResponse(response, customerJson);
     }
@@ -107,6 +96,14 @@ public class CustomerServlet extends HttpServlet {
         response.setCharacterEncoding(CHARACTER_ENCODING);
         out.print(customerJson);
         out.flush();
+    }
+
+    private Customer parsCustomerFromJson(HttpServletRequest request) throws IOException {
+        String requestBody = request.getReader()
+                .lines()
+                .collect(Collectors.joining("\n"));
+        log.trace("body request: {}", requestBody);
+        return gson.fromJson(requestBody, Customer.class);
     }
 
     private int getKey(HttpServletRequest request, Customer customer) {

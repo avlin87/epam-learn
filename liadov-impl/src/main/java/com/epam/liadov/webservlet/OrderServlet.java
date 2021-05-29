@@ -12,9 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.math.BigDecimal;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -57,15 +55,7 @@ public class OrderServlet extends HttpServlet {
 
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        var order = new Order();
-        Map<String, String[]> parameterMap = request.getParameterMap();
-        String requestParameters = getStringRequestParameters(parameterMap);
-        log.trace("Post parameters: {}", requestParameters);
-
-        order.setOrderNumber(request.getParameter("orderNumber"));
-        order.setTotalAmount(BigDecimal.valueOf(Long.parseLong(request.getParameter("totalAmount"))));
-        order.setCustomerId(Integer.parseInt(request.getParameter("customerId")));
-        order.setOrderDate(new Date());
+        Order order = parsOrderFromJson(request);
         order = orderService.save(order);
         String orderJson = gson.toJson(order);
         printResponse(response, orderJson);
@@ -73,16 +63,9 @@ public class OrderServlet extends HttpServlet {
 
     @Override
     public void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        var order = new Order();
-        int key = getKey(request, order);
-        if (key > 0) {
-            order.setOrderNumber(request.getParameter("orderNumber"));
-            order.setTotalAmount(BigDecimal.valueOf(Long.parseLong(request.getParameter("totalAmount"))));
-            order.setCustomerId(Integer.parseInt(request.getParameter("customerId")));
-            order.setOrderDate(new Date());
-            boolean updateResult = orderService.update(order);
-            log.trace("Order updated: {}", updateResult);
-        }
+        Order order = parsOrderFromJson(request);
+        boolean updateResult = orderService.update(order);
+        log.trace("Order updated: {}", updateResult);
         String orderJson = gson.toJson(order);
         printResponse(response, orderJson);
     }
@@ -113,6 +96,14 @@ public class OrderServlet extends HttpServlet {
         response.setCharacterEncoding(CHARACTER_ENCODING);
         out.print(orderJson);
         out.flush();
+    }
+
+    private Order parsOrderFromJson(HttpServletRequest request) throws IOException {
+        String requestBody = request.getReader()
+                .lines()
+                .collect(Collectors.joining("\n"));
+        log.trace("body request: {}", requestBody);
+        return gson.fromJson(requestBody, Order.class);
     }
 
     private int getKey(HttpServletRequest request, Order order) {

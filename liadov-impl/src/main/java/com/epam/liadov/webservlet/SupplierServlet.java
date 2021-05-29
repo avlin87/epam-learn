@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 /**
  * SupplierServlet - class for Json representation on Supplier class
  */
-
 @Slf4j
 public class SupplierServlet extends HttpServlet {
 
@@ -56,29 +55,17 @@ public class SupplierServlet extends HttpServlet {
 
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        var supplier = new Supplier();
-        Map<String, String[]> parameterMap = request.getParameterMap();
-        String requestParameters = getStringRequestParameters(parameterMap);
-        log.trace("Post parameters: {}", requestParameters);
-
-        supplier.setPhone(request.getParameter("phone"));
-        supplier.setCompanyName(request.getParameter("companyName"));
+        Supplier supplier = parsSupplierFromJson(request);
         supplier = supplierService.save(supplier);
-
         String supplierJson = gson.toJson(supplier);
         printResponse(response, supplierJson);
     }
 
     @Override
     public void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        var supplier = new Supplier();
-        int key = getKey(request, supplier);
-        if (key > 0) {
-            supplier.setPhone(request.getParameter("phone"));
-            supplier.setCompanyName(request.getParameter("companyName"));
-            boolean updateResult = supplierService.update(supplier);
-            log.trace("Supplier updated: {}", updateResult);
-        }
+        Supplier supplier = parsSupplierFromJson(request);
+        boolean updateResult = supplierService.update(supplier);
+        log.trace("Supplier updated: {}", updateResult);
         String supplierJson = gson.toJson(supplier);
         printResponse(response, supplierJson);
     }
@@ -109,6 +96,14 @@ public class SupplierServlet extends HttpServlet {
         response.setCharacterEncoding(CHARACTER_ENCODING);
         out.print(supplierJson);
         out.flush();
+    }
+
+    private Supplier parsSupplierFromJson(HttpServletRequest request) throws IOException {
+        String requestBody = request.getReader()
+                .lines()
+                .collect(Collectors.joining("\n"));
+        log.trace("body request: {}", requestBody);
+        return gson.fromJson(requestBody, Supplier.class);
     }
 
     private int getKey(HttpServletRequest request, Supplier supplier) {
