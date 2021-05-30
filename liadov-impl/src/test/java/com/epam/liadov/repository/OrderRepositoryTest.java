@@ -142,6 +142,37 @@ class OrderRepositoryTest {
     }
 
     @Test
+    void getOrdersByCustomerIdReturnsList() {
+        Customer customer = factory.generateTestCustomer();
+        Order testOrder = factory.generateTestOrder(customer);
+        OrderRepository orderRepository = new OrderRepository(entityManagerFactoryMock);
+        when(entityManagerMock.createQuery("select order from Order order where order.customerId = :customerId", Order.class)).thenReturn(typedQuery);
+        when(typedQuery.setParameter(anyString(), anyInt())).thenReturn(typedQuery);
+        List<Order> list = new ArrayList<>();
+        list.add(testOrder);
+        when(typedQuery.getResultList()).thenReturn(list);
+
+        List<Order> all = orderRepository.getOrdersByCustomerId(customer.getCustomerId());
+
+        assertFalse(all.isEmpty());
+    }
+
+    @Test
+    void getOrdersByCustomerIdProcessException() {
+        Customer customer = factory.generateTestCustomer();
+        Order testOrder = factory.generateTestOrder(customer);
+        OrderRepository orderRepository = new OrderRepository(entityManagerFactoryMock);
+        when(entityManagerMock.createQuery("select order from Order order where order.customerId = :customerId", Order.class)).thenThrow(IllegalArgumentException.class);
+        List<Order> list = new ArrayList<>();
+        list.add(testOrder);
+        when(typedQuery.getResultList()).thenReturn(list);
+
+        List<Order> all = orderRepository.getOrdersByCustomerId(1);
+
+        assertTrue(all.isEmpty());
+    }
+
+    @Test
     void getAllReturnsList() {
         Customer customer = factory.generateTestCustomer();
         Order testOrder = factory.generateTestOrder(customer);

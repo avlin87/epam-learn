@@ -36,7 +36,17 @@ public class OrderServlet extends HttpServlet {
 
         String orderJson = "";
         int key;
-        if (parameterMap.containsKey("id")) {
+        if (parameterMap.containsKey("customerId")) {
+            try {
+                key = Integer.parseInt(request.getParameter("customerId"));
+                if (key > 0) {
+                    List<Order> orderList = orderService.findByCustomerId(key);
+                    orderJson = gson.toJson(orderList);
+                }
+            } catch (NumberFormatException e) {
+                log.trace("provided customerId is invalid", e);
+            }
+        } else if (parameterMap.containsKey("id")) {
             try {
                 key = Integer.parseInt(request.getParameter("id"));
                 if (key > 0) {
@@ -44,7 +54,7 @@ public class OrderServlet extends HttpServlet {
                     orderJson = gson.toJson(order);
                 }
             } catch (NumberFormatException e) {
-                log.trace("provided ID is invalid", e);
+                log.trace("provided id is invalid", e);
             }
         } else if (parameterMap.isEmpty()) {
             List<Order> orderList = orderService.getAll();
@@ -103,7 +113,9 @@ public class OrderServlet extends HttpServlet {
                 .lines()
                 .collect(Collectors.joining("\n"));
         log.trace("body request: {}", requestBody);
-        return gson.fromJson(requestBody, Order.class);
+        Order order = gson.fromJson(requestBody, Order.class);
+        log.trace("order = {}", order);
+        return order;
     }
 
     private int getKey(HttpServletRequest request, Order order) {

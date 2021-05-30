@@ -1,6 +1,5 @@
 package com.epam.liadov.repository;
 
-import com.epam.liadov.entity.Customer;
 import com.epam.liadov.entity.Order;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -60,7 +59,7 @@ public class OrderRepository {
         EntityTransaction transaction = entityManager.getTransaction();
         try {
             transaction.begin();
-            if (find(order.getOrderID()).isEmpty()){
+            if (find(order.getOrderID()).isEmpty()) {
                 return false;
             }
             entityManager.merge(order);
@@ -122,6 +121,34 @@ public class OrderRepository {
         return false;
     }
 
+    /**
+     * Method of all Order objects by CustomerId
+     *
+     * @return list
+     */
+    public List<Order> getOrdersByCustomerId(int customerId) {
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        List<Order> orderList = new ArrayList<>();
+        try {
+            orderList = entityManager.createQuery("select order from Order order where order.customerId = :customerId", Order.class)
+                    .setParameter("customerId", customerId)
+                    .getResultList();
+            log.trace("Found orders = {}", orderList);
+            return orderList;
+        } catch (IllegalArgumentException e) {
+            log.error("Error", e);
+        } finally {
+            entityManager.close();
+        }
+        log.debug("object not found");
+        return orderList;
+    }
+
+    /**
+     * Method of all Order objects in Database
+     *
+     * @return list
+     */
     public List<Order> getAll() {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         List<Order> orderList = new ArrayList<>();

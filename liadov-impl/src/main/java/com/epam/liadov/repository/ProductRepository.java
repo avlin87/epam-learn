@@ -122,6 +122,11 @@ public class ProductRepository {
         return false;
     }
 
+    /**
+     * Method of all Product objects in Database
+     *
+     * @return list
+     */
     public List<Product> getAll() {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         List<Product> productList = new ArrayList<>();

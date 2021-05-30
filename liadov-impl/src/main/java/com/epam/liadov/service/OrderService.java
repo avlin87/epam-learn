@@ -36,6 +36,14 @@ public interface OrderService {
     Order find(int primaryKey);
 
     /**
+     * Find Orders by customerId
+     *
+     * @param customerId - id of object
+     * @return list of found entity
+     */
+    List<Order> findByCustomerId(int customerId);
+
+    /**
      * Delete entity
      *
      * @param order to be deleted

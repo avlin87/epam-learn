@@ -91,10 +91,10 @@
     <changeSet author="Aleksandr Liadov" id="order_product_changelog-1.0">
         <createTable tableName="OrderProduct">
             <column name="OrderId" type="int">
-                <constraints nullable="false" primaryKey="true" unique="true"/>
+                <constraints nullable="false" primaryKey="true" unique="false"/>
             </column>
             <column name="ProductId" type="int">
-                <constraints nullable="false" primaryKey="true" unique="true"/>
+                <constraints nullable="false" primaryKey="true" unique="false"/>
             </column>
         </createTable>
         <addForeignKeyConstraint baseTableName="OrderProduct"
@@ -102,15 +102,12 @@
                                  constraintName="fk_OrderProduct_Order"
                                  referencedTableName="order"
                                  referencedColumnNames="OrderId"
-                                 onUpdate="CASCADE"
                                  onDelete="CASCADE"/>
         <addForeignKeyConstraint baseTableName="OrderProduct"
                                  baseColumnNames="ProductId"
                                  constraintName="fk_OrderProduct_Product"
                                  referencedTableName="Product"
-                                 referencedColumnNames="ProductId"
-                                 onUpdate="CASCADE"
-                                 onDelete="CASCADE"/>
+                                 referencedColumnNames="ProductId"/>
     </changeSet>
 
 </databaseChangeLog>

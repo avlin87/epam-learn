@@ -121,6 +121,11 @@ public class CustomerRepository {
         return false;
     }
 
+    /**
+     * Method of all Customer objects in Database
+     *
+     * @return list
+     */
     public List<Customer> getAll() {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         List<Customer> customerList = new ArrayList<>();

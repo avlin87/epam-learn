@@ -121,6 +121,11 @@ public class SupplierRepository {
         return false;
     }
 
+    /**
+     * Method of all Supplier objects in Database
+     *
+     * @return list
+     */
     public List<Supplier> getAll() {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         List<Supplier> supplierList = new ArrayList<>();
