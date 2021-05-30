@@ -1,14 +1,13 @@
 package com.epam.liadov.repository;
 
-import com.epam.liadov.entity.Customer;
 import com.epam.liadov.entity.Order;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.exception.ConstraintViolationException;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.TransactionRequiredException;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -60,11 +59,14 @@ public class OrderRepository {
         EntityTransaction transaction = entityManager.getTransaction();
         try {
             transaction.begin();
+            if (find(order.getOrderID()).isEmpty()) {
+                return false;
+            }
             entityManager.merge(order);
             transaction.commit();
             log.debug("object updated: {}", order);
             return true;
-        } catch (IllegalArgumentException | TransactionRequiredException e) {
+        } catch (IllegalArgumentException | ConstraintViolationException | RollbackException | TransactionRequiredException e) {
             log.error("Error during DB transaction ", e);
         } finally {
             entityManager.close();
@@ -117,5 +119,50 @@ public class OrderRepository {
         }
         log.trace("object was not removed");
         return false;
+    }
+
+    /**
+     * Method of all Order objects by CustomerId
+     *
+     * @return list
+     */
+    public List<Order> getOrdersByCustomerId(int customerId) {
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        List<Order> orderList = new ArrayList<>();
+        try {
+            orderList = entityManager.createQuery("select order from Order order where order.customerId = :customerId", Order.class)
+                    .setParameter("customerId", customerId)
+                    .getResultList();
+            log.trace("Found orders = {}", orderList);
+            return orderList;
+        } catch (IllegalArgumentException e) {
+            log.error("Error", e);
+        } finally {
+            entityManager.close();
+        }
+        log.debug("object not found");
+        return orderList;
+    }
+
+    /**
+     * Method of all Order objects in Database
+     *
+     * @return list
+     */
+    public List<Order> getAll() {
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        List<Order> orderList = new ArrayList<>();
+        try {
+            orderList = entityManager.createQuery("select order from Order order", Order.class)
+                    .getResultList();
+            log.trace("Found orders = {}", orderList);
+            return orderList;
+        } catch (IllegalArgumentException e) {
+            log.error("Error", e);
+        } finally {
+            entityManager.close();
+        }
+        log.debug("object not found");
+        return orderList;
     }
 }

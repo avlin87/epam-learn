@@ -6,14 +6,15 @@ import com.epam.liadov.entity.Order;
 import org.hibernate.engine.transaction.internal.TransactionImpl;
 import org.hibernate.internal.SessionFactoryImpl;
 import org.hibernate.internal.SessionImpl;
+import org.hibernate.query.internal.QueryImpl;
+import org.hibernate.query.spi.NativeQueryImplementor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.TransactionRequiredException;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -30,13 +31,16 @@ class OrderRepositoryTest {
     private EntityManagerFactory entityManagerFactoryMock;
     private EntityManager entityManagerMock;
     private EntityTransaction transactionMock;
-
+    private Query query;
+    private TypedQuery<Order> typedQuery;
 
     @BeforeEach
     public void prerequisite() {
         entityManagerFactoryMock = mock(SessionFactoryImpl.class);
         entityManagerMock = mock(SessionImpl.class);
         transactionMock = mock(TransactionImpl.class);
+        query = mock(NativeQueryImplementor.class);
+        typedQuery = (TypedQuery<Order>) mock(QueryImpl.class);
 
         when(entityManagerFactoryMock.createEntityManager()).thenReturn(entityManagerMock);
         when(entityManagerMock.getTransaction()).thenReturn(transactionMock);
@@ -79,6 +83,7 @@ class OrderRepositoryTest {
         Customer customer = factory.generateTestCustomer();
         Order testOrder = factory.generateTestOrder(customer);
         OrderRepository orderRepository = new OrderRepository(entityManagerFactoryMock);
+        when(entityManagerMock.find(Order.class, testOrder.getOrderID())).thenReturn(testOrder);
 
         boolean orderUpdated = orderRepository.update(testOrder);
 
@@ -134,5 +139,66 @@ class OrderRepositoryTest {
         boolean deleteResult = orderRepository.delete(testOrder);
 
         assertTrue(deleteResult);
+    }
+
+    @Test
+    void getOrdersByCustomerIdReturnsList() {
+        Customer customer = factory.generateTestCustomer();
+        Order testOrder = factory.generateTestOrder(customer);
+        OrderRepository orderRepository = new OrderRepository(entityManagerFactoryMock);
+        when(entityManagerMock.createQuery("select order from Order order where order.customerId = :customerId", Order.class)).thenReturn(typedQuery);
+        when(typedQuery.setParameter(anyString(), anyInt())).thenReturn(typedQuery);
+        List<Order> list = new ArrayList<>();
+        list.add(testOrder);
+        when(typedQuery.getResultList()).thenReturn(list);
+
+        List<Order> all = orderRepository.getOrdersByCustomerId(customer.getCustomerId());
+
+        assertFalse(all.isEmpty());
+    }
+
+    @Test
+    void getOrdersByCustomerIdProcessException() {
+        Customer customer = factory.generateTestCustomer();
+        Order testOrder = factory.generateTestOrder(customer);
+        OrderRepository orderRepository = new OrderRepository(entityManagerFactoryMock);
+        when(entityManagerMock.createQuery("select order from Order order where order.customerId = :customerId", Order.class)).thenThrow(IllegalArgumentException.class);
+        List<Order> list = new ArrayList<>();
+        list.add(testOrder);
+        when(typedQuery.getResultList()).thenReturn(list);
+
+        List<Order> all = orderRepository.getOrdersByCustomerId(1);
+
+        assertTrue(all.isEmpty());
+    }
+
+    @Test
+    void getAllReturnsList() {
+        Customer customer = factory.generateTestCustomer();
+        Order testOrder = factory.generateTestOrder(customer);
+        OrderRepository orderRepository = new OrderRepository(entityManagerFactoryMock);
+        when(entityManagerMock.createQuery("select order from Order order", Order.class)).thenReturn(typedQuery);
+        List<Order> list = new ArrayList<>();
+        list.add(testOrder);
+        when(typedQuery.getResultList()).thenReturn(list);
+
+        List<Order> all = orderRepository.getAll();
+
+        assertFalse(all.isEmpty());
+    }
+
+    @Test
+    void getAllReturnsProcessException() {
+        Customer customer = factory.generateTestCustomer();
+        Order testOrder = factory.generateTestOrder(customer);
+        OrderRepository orderRepository = new OrderRepository(entityManagerFactoryMock);
+        when(entityManagerMock.createQuery("select order from Order order", Order.class)).thenThrow(IllegalArgumentException.class);
+        List<Order> list = new ArrayList<>();
+        list.add(testOrder);
+        when(typedQuery.getResultList()).thenReturn(list);
+
+        List<Order> all = orderRepository.getAll();
+
+        assertTrue(all.isEmpty());
     }
 }

@@ -14,6 +14,8 @@ import org.junit.jupiter.api.Test;
 
 import javax.persistence.*;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -74,6 +76,31 @@ class OrderProductRepositoryTest {
         when(query.executeUpdate()).thenThrow(TransactionRequiredException.class);
 
         boolean saveExecutedResult = orderProductRepository.save(order, product);
+
+        assertFalse(saveExecutedResult);
+    }
+
+    @Test
+    void saveIdExecutesSuccessfully() {
+        Customer customer = factory.generateTestCustomer();
+        Order order = factory.generateTestOrder(customer);
+        order.setProductId(List.of(1,2));
+        OrderProductRepository orderProductRepository = new OrderProductRepository(entityManagerFactoryMock);
+
+        boolean saveExecutedResult = orderProductRepository.saveId(order.getOrderID(), order.getProductId());
+
+        assertTrue(saveExecutedResult);
+    }
+
+    @Test
+    void saveIdProcessException() {
+        Customer customer = factory.generateTestCustomer();
+        Order order = factory.generateTestOrder(customer);
+        order.setProductId(List.of(1,2));
+        OrderProductRepository orderProductRepository = new OrderProductRepository(entityManagerFactoryMock);
+        when(query.executeUpdate()).thenThrow(TransactionRequiredException.class);
+
+        boolean saveExecutedResult = orderProductRepository.saveId(order.getOrderID(), order.getProductId());
 
         assertFalse(saveExecutedResult);
     }

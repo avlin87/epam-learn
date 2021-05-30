@@ -5,6 +5,7 @@ import lombok.Data;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Order - POJO class represented in database
@@ -30,4 +31,6 @@ public class Order {
 
     private BigDecimal totalAmount;
 
+    @Transient
+    private List<Integer> productId;
 }
