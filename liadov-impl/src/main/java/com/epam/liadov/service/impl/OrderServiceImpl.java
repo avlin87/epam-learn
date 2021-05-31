@@ -5,11 +5,10 @@ import com.epam.liadov.repository.OrderProductRepository;
 import com.epam.liadov.repository.OrderRepository;
 import com.epam.liadov.service.OrderService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * OrderService
@@ -17,32 +16,38 @@ import java.util.Optional;
  * @author Aleksandr Liadov
  */
 @Slf4j
+@Service
 public class OrderServiceImpl implements OrderService {
 
-    private static final EntityManagerFactory entityPU = Persistence.createEntityManagerFactory("EntityPU");
-    private final OrderRepository orderRepository = new OrderRepository(entityPU);
-    private final OrderProductRepository orderProductRepository = new OrderProductRepository(entityPU);
+    private final OrderRepository orderRepository;
+    private final OrderProductRepository orderProductRepository;
+
+    @Autowired
+    public OrderServiceImpl(OrderRepository orderRepository, OrderProductRepository orderProductRepository) {
+        this.orderRepository = orderRepository;
+        this.orderProductRepository = orderProductRepository;
+    }
 
     @Override
-    public Order save(Order order) {
-        Order createdOrder = new Order();
-        Optional<Order> optionalOrder = orderRepository.save(order);
-        if (optionalOrder.isPresent()) {
-            createdOrder = optionalOrder.get();
-            int orderId = createdOrder.getOrderID();
-            orderProductRepository.saveId(orderId,createdOrder.getProductId());
-            log.trace("Order created successfully");
-        } else {
-            log.trace("Order was not created");
+    public boolean save(Order order) {
+        boolean saveOrderResult = orderRepository.save(order);
+        log.trace("Order created: {}", saveOrderResult);
+        if (saveOrderResult) {
+            boolean saveOrderProduct = orderProductRepository.saveId(order.getOrderID(), order.getProductId());
+            log.trace("OrderProduct updated: {}", saveOrderProduct);
+            if (!saveOrderProduct) {
+                delete(order);
+                saveOrderResult = false;
+            }
         }
-        return createdOrder;
+        return saveOrderResult;
     }
 
     @Override
     public boolean update(Order order) {
         boolean updateResult = orderRepository.update(order);
-        if (updateResult){
-            orderProductRepository.updateId(order.getOrderID(), order.getProductId());
+        if (updateResult) {
+            updateResult = orderProductRepository.updateId(order.getOrderID(), order.getProductId());
         }
         return updateResult;
     }

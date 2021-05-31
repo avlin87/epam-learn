@@ -1,6 +1,7 @@
 package com.epam.liadov.entity;
 
 import lombok.Data;
+import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -12,6 +13,7 @@ import java.math.BigDecimal;
  */
 @Entity
 @Data
+@Component
 public class Product {
 
     @Id

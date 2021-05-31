@@ -1,12 +1,14 @@
 package com.epam.liadov.repository;
 
-import com.epam.liadov.entity.Order;
-import com.epam.liadov.entity.Product;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.exception.ConstraintViolationException;
+import org.postgresql.util.PSQLException;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.*;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceContextType;
+import javax.persistence.Query;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,40 +18,11 @@ import java.util.List;
  * @author Aleksandr Liadov
  */
 @Slf4j
+@Repository
 public class OrderProductRepository {
-    private final EntityManagerFactory entityManagerFactory;
 
-    public OrderProductRepository(EntityManagerFactory entityManagerFactory) {
-        this.entityManagerFactory = entityManagerFactory;
-    }
-
-    /**
-     * Method populate orderProduct table in database
-     *
-     * @param order   target oder
-     * @param product target product
-     * @return boolean - true in case of success else false
-     */
-    public boolean save(@NonNull Order order, @NonNull Product product) {
-        EntityManager entityManager = entityManagerFactory.createEntityManager();
-        EntityTransaction transaction = entityManager.getTransaction();
-        try {
-            transaction.begin();
-            Query nativeQuery = entityManager.createNativeQuery("insert into liadov.orderproduct (orderid, productid) values (?,?)")
-                    .setParameter(1, order.getOrderID())
-                    .setParameter(2, product.getProductId());
-            nativeQuery.executeUpdate();
-            transaction.commit();
-            log.debug("OrderProduct table populated");
-            return true;
-        } catch (IllegalArgumentException | TransactionRequiredException | ConstraintViolationException e) {
-            log.error("Error during DB transaction ", e);
-        } finally {
-            entityManager.close();
-        }
-        log.debug("OrderProduct was not populated");
-        return false;
-    }
+    @PersistenceContext(type = PersistenceContextType.EXTENDED)
+    private EntityManager entityManager;
 
     /**
      * Method populate orderProduct table in database
@@ -58,24 +31,19 @@ public class OrderProductRepository {
      * @param productIds target productId
      * @return - true in case of success
      */
+    @Transactional
     public boolean saveId(int orderId, List<Integer> productIds) {
-        EntityManager entityManager = entityManagerFactory.createEntityManager();
-        EntityTransaction transaction = entityManager.getTransaction();
         try {
-            transaction.begin();
             Query insertQuery = entityManager.createNativeQuery("insert into liadov.orderproduct (orderid, productid) values (?,?)")
                     .setParameter(1, orderId);
             for (int productId : productIds) {
                 insertQuery.setParameter(2, productId);
                 insertQuery.executeUpdate();
             }
-            transaction.commit();
             log.debug("OrderProduct table populated");
             return true;
-        } catch (IllegalArgumentException | TransactionRequiredException | ConstraintViolationException e) {
+        } catch (RuntimeException e) {
             log.error("Error during DB transaction ", e);
-        } finally {
-            entityManager.close();
         }
         log.debug("OrderProduct was not populated");
         return false;
@@ -88,11 +56,9 @@ public class OrderProductRepository {
      * @param productIds List of target productId
      * @return true in case of success
      */
+    @Transactional
     public boolean updateId(int orderId, List<Integer> productIds) {
-        EntityManager entityManager = entityManagerFactory.createEntityManager();
-        EntityTransaction transaction = entityManager.getTransaction();
         try {
-            transaction.begin();
             List<Integer> productsInDb = getCurrentProductList(orderId, entityManager);
             if ((productIds.containsAll(productsInDb)) && (productsInDb.containsAll(productIds))) {
                 log.debug("OrderProduct table up to date");
@@ -101,13 +67,10 @@ public class OrderProductRepository {
                 insertNewValues(orderId, productIds, entityManager, productsInDb);
                 deleteOldValues(orderId, productIds, entityManager, productsInDb);
             }
-            transaction.commit();
             log.debug("OrderProduct table populated");
             return true;
-        } catch (IllegalArgumentException | TransactionRequiredException | ConstraintViolationException e) {
+        } catch (RuntimeException | PSQLException e) {
             log.error("Error during DB transaction ", e);
-        } finally {
-            entityManager.close();
         }
         return false;
     }
@@ -117,13 +80,13 @@ public class OrderProductRepository {
         List rowsList = entityManager.createNativeQuery("select ordpro.productid from liadov.orderproduct ordpro where ordpro.orderId = :orderId")
                 .setParameter("orderId", orderId)
                 .getResultList();
-        for (int i = 0; i < rowsList.size(); i++) {
-            integerList.add(Integer.valueOf(rowsList.get(i).toString()));
+        for (Object o : rowsList) {
+            integerList.add(Integer.valueOf(o.toString()));
         }
         return integerList;
     }
 
-    private void insertNewValues(int orderId, List<Integer> productIds, EntityManager entityManager, List<Integer> productsInDb) {
+    private void insertNewValues(int orderId, List<Integer> productIds, EntityManager entityManager, List<Integer> productsInDb) throws RuntimeException, PSQLException {
         Query insertQuery = entityManager.createNativeQuery("insert into liadov.orderproduct (orderid, productid) values (?,?)")
                 .setParameter(1, orderId);
         for (int productId : productIds) {
@@ -135,7 +98,7 @@ public class OrderProductRepository {
         }
     }
 
-    private void deleteOldValues(int orderId, List<Integer> productIds, EntityManager entityManager, List<Integer> productsInDb) {
+    private void deleteOldValues(int orderId, List<Integer> productIds, EntityManager entityManager, List<Integer> productsInDb) throws RuntimeException, PSQLException {
         Query deleteQuery = entityManager.createNativeQuery("delete from liadov.orderproduct ordpro where ordpro.orderid= ? and productid = ?")
                 .setParameter(1, orderId);
         for (int productId : productsInDb) {

@@ -17,7 +17,7 @@ public interface SupplierService {
      * @param supplier entity
      * @return saved supplier entity
      */
-    Supplier save(Supplier supplier);
+    boolean save(Supplier supplier);
 
     /**
      * Update supplier

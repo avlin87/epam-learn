@@ -3,16 +3,18 @@ package com.epam.liadov.repository;
 import com.epam.liadov.EntityFactory;
 import com.epam.liadov.entity.Customer;
 import com.epam.liadov.entity.Order;
-import org.hibernate.engine.transaction.internal.TransactionImpl;
-import org.hibernate.internal.SessionFactoryImpl;
-import org.hibernate.internal.SessionImpl;
-import org.hibernate.query.internal.QueryImpl;
-import org.hibernate.query.spi.NativeQueryImplementor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
-import javax.persistence.*;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceException;
+import javax.persistence.TransactionRequiredException;
+import javax.persistence.TypedQuery;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -27,62 +29,46 @@ import static org.mockito.Mockito.*;
  */
 class OrderRepositoryTest {
 
-    private EntityFactory factory;
-    private EntityManagerFactory entityManagerFactoryMock;
+    @Mock
     private EntityManager entityManagerMock;
-    private EntityTransaction transactionMock;
-    private Query query;
+
+    @Mock
     private TypedQuery<Order> typedQuery;
 
+    @InjectMocks
+    private OrderRepository orderRepository;
+
+    private EntityFactory factory;
+    private Customer customer;
+
     @BeforeEach
-    public void prerequisite() {
-        entityManagerFactoryMock = mock(SessionFactoryImpl.class);
-        entityManagerMock = mock(SessionImpl.class);
-        transactionMock = mock(TransactionImpl.class);
-        query = mock(NativeQueryImplementor.class);
-        typedQuery = (TypedQuery<Order>) mock(QueryImpl.class);
-
-        when(entityManagerFactoryMock.createEntityManager()).thenReturn(entityManagerMock);
-        when(entityManagerMock.getTransaction()).thenReturn(transactionMock);
-
+    public void setup() {
+        MockitoAnnotations.openMocks(this);
         factory = new EntityFactory();
+        customer = factory.generateTestCustomer();
     }
 
     @Test
-    void saveReturnsOrderObject() {
-        Customer customer = factory.generateTestCustomer();
+    void saveReturnsTrue() {
         Order testOrder = factory.generateTestOrder(customer);
-        OrderRepository orderRepository = new OrderRepository(entityManagerFactoryMock);
 
-        Optional<Order> orderOptional = orderRepository.save(testOrder);
+        boolean saveResult = orderRepository.save(testOrder);
 
-        assertTrue(orderOptional.get() instanceof Order);
+        assertTrue(saveResult);
     }
 
     @Test
-    void saveReturnsEmptyObject() {
-        OrderRepository orderRepository = new OrderRepository(entityManagerFactoryMock);
+    void saveReturnsFalse() {
+        Mockito.doThrow(new PersistenceException()).when(entityManagerMock).persist(null);
 
-        Optional<Order> orderOptional = orderRepository.save(null);
+        boolean saveResult = orderRepository.save(null);
 
-        assertFalse(orderOptional.isPresent());
-    }
-
-    @Test
-    void saveProcessException() {
-        doThrow(IllegalArgumentException.class).when(entityManagerMock).persist(null);
-        OrderRepository orderRepository = new OrderRepository(entityManagerFactoryMock);
-
-        Optional<Order> orderOptional = orderRepository.save(null);
-
-        assertFalse(orderOptional.isPresent());
+        assertFalse(saveResult);
     }
 
     @Test
     void updateReturnThue() {
-        Customer customer = factory.generateTestCustomer();
         Order testOrder = factory.generateTestOrder(customer);
-        OrderRepository orderRepository = new OrderRepository(entityManagerFactoryMock);
         when(entityManagerMock.find(Order.class, testOrder.getOrderID())).thenReturn(testOrder);
 
         boolean orderUpdated = orderRepository.update(testOrder);
@@ -92,10 +78,19 @@ class OrderRepositoryTest {
 
     @Test
     void updateReturnFalse() {
-        Customer customer = factory.generateTestCustomer();
         Order testOrder = factory.generateTestOrder(customer);
         when(entityManagerMock.merge(testOrder)).thenThrow(TransactionRequiredException.class);
-        OrderRepository orderRepository = new OrderRepository(entityManagerFactoryMock);
+
+        boolean customerUpdated = orderRepository.update(testOrder);
+
+        assertFalse(customerUpdated);
+    }
+
+    @Test
+    void updateReturnFalseDueToException() {
+        Order testOrder = factory.generateTestOrder(customer);
+        when(entityManagerMock.find(Order.class, testOrder.getOrderID())).thenReturn(testOrder);
+        when(entityManagerMock.merge(testOrder)).thenThrow(TransactionRequiredException.class);
 
         boolean customerUpdated = orderRepository.update(testOrder);
 
@@ -104,8 +99,6 @@ class OrderRepositoryTest {
 
     @Test
     void updateTrowsExceptionIfReceivesNullOrder() {
-        OrderRepository orderRepository = new OrderRepository(entityManagerFactoryMock);
-
         Executable executable = () -> orderRepository.update(null);
 
         assertThrows(NullPointerException.class, executable);
@@ -113,8 +106,6 @@ class OrderRepositoryTest {
 
     @Test
     void findReturnsEmptyOptional() {
-        OrderRepository orderRepository = new OrderRepository(entityManagerFactoryMock);
-
         Optional<Order> optionalOrder = orderRepository.find(0);
 
         assertFalse(optionalOrder.isPresent());
@@ -123,7 +114,6 @@ class OrderRepositoryTest {
     @Test
     void findProcessException() {
         when(entityManagerMock.find(Order.class, 1)).thenThrow(IllegalArgumentException.class);
-        OrderRepository orderRepository = new OrderRepository(entityManagerFactoryMock);
 
         Optional<Order> optionalOrder = orderRepository.find(1);
 
@@ -132,9 +122,7 @@ class OrderRepositoryTest {
 
     @Test
     void deleteReturnsTrue() {
-        Customer customer = factory.generateTestCustomer();
         Order testOrder = factory.generateTestOrder(customer);
-        OrderRepository orderRepository = new OrderRepository(entityManagerFactoryMock);
 
         boolean deleteResult = orderRepository.delete(testOrder);
 
@@ -142,14 +130,22 @@ class OrderRepositoryTest {
     }
 
     @Test
-    void getOrdersByCustomerIdReturnsList() {
-        Customer customer = factory.generateTestCustomer();
+    void deleteProcessException() {
         Order testOrder = factory.generateTestOrder(customer);
-        OrderRepository orderRepository = new OrderRepository(entityManagerFactoryMock);
-        when(entityManagerMock.createQuery("select order from Order order where order.customerId = :customerId", Order.class)).thenReturn(typedQuery);
-        when(typedQuery.setParameter(anyString(), anyInt())).thenReturn(typedQuery);
+        doThrow(IllegalArgumentException.class).when(entityManagerMock).remove(any());
+
+        boolean deleteResult = orderRepository.delete(testOrder);
+
+        assertFalse(deleteResult);
+    }
+
+    @Test
+    void getOrdersByCustomerIdReturnsList() {
+        Order testOrder = factory.generateTestOrder(customer);
         List<Order> list = new ArrayList<>();
         list.add(testOrder);
+        when(entityManagerMock.createQuery("select order from Order order where order.customerId = :customerId", Order.class)).thenReturn(typedQuery);
+        when(typedQuery.setParameter(anyString(), anyInt())).thenReturn(typedQuery);
         when(typedQuery.getResultList()).thenReturn(list);
 
         List<Order> all = orderRepository.getOrdersByCustomerId(customer.getCustomerId());
@@ -159,9 +155,7 @@ class OrderRepositoryTest {
 
     @Test
     void getOrdersByCustomerIdProcessException() {
-        Customer customer = factory.generateTestCustomer();
         Order testOrder = factory.generateTestOrder(customer);
-        OrderRepository orderRepository = new OrderRepository(entityManagerFactoryMock);
         when(entityManagerMock.createQuery("select order from Order order where order.customerId = :customerId", Order.class)).thenThrow(IllegalArgumentException.class);
         List<Order> list = new ArrayList<>();
         list.add(testOrder);
@@ -174,12 +168,10 @@ class OrderRepositoryTest {
 
     @Test
     void getAllReturnsList() {
-        Customer customer = factory.generateTestCustomer();
         Order testOrder = factory.generateTestOrder(customer);
-        OrderRepository orderRepository = new OrderRepository(entityManagerFactoryMock);
-        when(entityManagerMock.createQuery("select order from Order order", Order.class)).thenReturn(typedQuery);
         List<Order> list = new ArrayList<>();
         list.add(testOrder);
+        when(entityManagerMock.createQuery("select order from Order order", Order.class)).thenReturn(typedQuery);
         when(typedQuery.getResultList()).thenReturn(list);
 
         List<Order> all = orderRepository.getAll();
@@ -189,12 +181,10 @@ class OrderRepositoryTest {
 
     @Test
     void getAllReturnsProcessException() {
-        Customer customer = factory.generateTestCustomer();
         Order testOrder = factory.generateTestOrder(customer);
-        OrderRepository orderRepository = new OrderRepository(entityManagerFactoryMock);
-        when(entityManagerMock.createQuery("select order from Order order", Order.class)).thenThrow(IllegalArgumentException.class);
         List<Order> list = new ArrayList<>();
         list.add(testOrder);
+        when(entityManagerMock.createQuery("select order from Order order", Order.class)).thenThrow(IllegalArgumentException.class);
         when(typedQuery.getResultList()).thenReturn(list);
 
         List<Order> all = orderRepository.getAll();

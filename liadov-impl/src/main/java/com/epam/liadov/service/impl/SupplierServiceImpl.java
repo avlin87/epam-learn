@@ -4,11 +4,10 @@ import com.epam.liadov.entity.Supplier;
 import com.epam.liadov.repository.SupplierRepository;
 import com.epam.liadov.service.SupplierService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * SupplierServiceImpl
@@ -16,22 +15,21 @@ import java.util.Optional;
  * @author Aleksandr Liadov
  */
 @Slf4j
+@Service
 public class SupplierServiceImpl implements SupplierService {
 
-    private static final EntityManagerFactory entityPU = Persistence.createEntityManagerFactory("EntityPU");
-    private final SupplierRepository supplierRepository = new SupplierRepository(entityPU);
+    private final SupplierRepository supplierRepository;
+
+    @Autowired
+    public SupplierServiceImpl(SupplierRepository supplierRepository) {
+        this.supplierRepository = supplierRepository;
+    }
 
     @Override
-    public Supplier save(Supplier supplier) {
-        Supplier createdSupplier = new Supplier();
-        Optional<Supplier> optionalSupplier = supplierRepository.save(supplier);
-        if (optionalSupplier.isPresent()) {
-            createdSupplier = optionalSupplier.get();
-            log.trace("Supplier created successfully");
-        } else {
-            log.trace("Supplier was not created");
-        }
-        return createdSupplier;
+    public boolean save(Supplier supplier) {
+        boolean saveResult = supplierRepository.save(supplier);
+        log.trace("Supplier created: {}", saveResult);
+        return saveResult;
     }
 
     @Override

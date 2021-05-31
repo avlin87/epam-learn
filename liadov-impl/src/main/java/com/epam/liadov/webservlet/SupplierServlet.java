@@ -2,11 +2,17 @@ package com.epam.liadov.webservlet;
 
 import com.epam.liadov.entity.Supplier;
 import com.epam.liadov.service.SupplierService;
-import com.epam.liadov.service.impl.SupplierServiceImpl;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -21,12 +27,24 @@ import java.util.stream.Collectors;
  * SupplierServlet - class for Json representation on Supplier class
  */
 @Slf4j
+@Controller
+@WebServlet("/supplier")
 public class SupplierServlet extends HttpServlet {
 
     private static final Gson gson = new Gson();
-    private static SupplierService supplierService = new SupplierServiceImpl();
     private final String CONTENT_TYPE = "application/json";
     private final String CHARACTER_ENCODING = "UTF-8";
+    @Autowired
+    private SupplierService supplierService;
+    private WebApplicationContext springContext;
+
+    @Override
+    public void init(final ServletConfig config) throws ServletException {
+        super.init(config);
+        springContext = WebApplicationContextUtils.getRequiredWebApplicationContext(config.getServletContext());
+        final AutowireCapableBeanFactory beanFactory = springContext.getAutowireCapableBeanFactory();
+        beanFactory.autowireBean(this);
+    }
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -56,13 +74,14 @@ public class SupplierServlet extends HttpServlet {
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         Supplier supplier = parsSupplierFromJson(request);
-        supplier = supplierService.save(supplier);
+        boolean saveResult = supplierService.save(supplier);
+        log.trace("Supplier updated: {}", saveResult);
         String supplierJson = gson.toJson(supplier);
         printResponse(response, supplierJson);
     }
 
     @Override
-    public void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
         Supplier supplier = parsSupplierFromJson(request);
         boolean updateResult = supplierService.update(supplier);
         log.trace("Supplier updated: {}", updateResult);
@@ -71,7 +90,7 @@ public class SupplierServlet extends HttpServlet {
     }
 
     @Override
-    public void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {
         var supplier = new Supplier();
         int key = getKey(request, supplier);
         if (key > 0) {

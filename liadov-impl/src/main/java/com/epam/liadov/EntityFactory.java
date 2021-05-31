@@ -6,16 +6,18 @@ import com.epam.liadov.entity.Product;
 import com.epam.liadov.entity.Supplier;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
 /**
- * EntityFactory - class to generate/update POJO objects
+ * EntityFactory - class to generate/update test POJO objects
  *
  * @author Aleksandr Liadov
  */
 @Slf4j
+@Component
 public class EntityFactory {
     /**
      * Method generate new Customer based on System.currentTimeMillis()

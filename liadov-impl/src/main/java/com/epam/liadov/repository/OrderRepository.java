@@ -4,6 +4,8 @@ import com.epam.liadov.entity.Order;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -16,13 +18,11 @@ import java.util.Optional;
  * @author Aleksandr Liadov
  */
 @Slf4j
+@Repository
 public class OrderRepository {
 
-    private final EntityManagerFactory entityManagerFactory;
-
-    public OrderRepository(@NonNull EntityManagerFactory entityManagerFactory) {
-        this.entityManagerFactory = entityManagerFactory;
-    }
+    @PersistenceContext
+    private EntityManager entityManager;
 
     /**
      * Method interact with database and store target object
@@ -30,22 +30,17 @@ public class OrderRepository {
      * @param order target object
      * @return boolean - true in case of success else false
      */
-    public Optional<Order> save(Order order) {
-        EntityManager entityManager = entityManagerFactory.createEntityManager();
-        EntityTransaction transaction = entityManager.getTransaction();
+    @Transactional
+    public boolean save(Order order) {
         try {
-            transaction.begin();
             entityManager.persist(order);
-            transaction.commit();
-            log.debug("{} sent to DataBase successfully", order);
-            return Optional.ofNullable(order);
-        } catch (IllegalArgumentException | TransactionRequiredException e) {
+            log.debug("Order sent to DataBase successfully: {}", order);
+            return true;
+        } catch (IllegalArgumentException | PersistenceException e) {
             log.error("Error during DB transaction ", e);
-        } finally {
-            entityManager.close();
         }
-        log.debug("{} was not sent to database", order);
-        return Optional.empty();
+        log.debug("Order was not sent to database: {}", order);
+        return false;
     }
 
     /**
@@ -54,22 +49,17 @@ public class OrderRepository {
      * @param order target object
      * @return - true in case of success else false
      */
+    @Transactional
     public boolean update(@NonNull Order order) {
-        EntityManager entityManager = entityManagerFactory.createEntityManager();
-        EntityTransaction transaction = entityManager.getTransaction();
         try {
-            transaction.begin();
             if (find(order.getOrderID()).isEmpty()) {
                 return false;
             }
             entityManager.merge(order);
-            transaction.commit();
             log.debug("object updated: {}", order);
             return true;
         } catch (IllegalArgumentException | ConstraintViolationException | RollbackException | TransactionRequiredException e) {
             log.error("Error during DB transaction ", e);
-        } finally {
-            entityManager.close();
         }
         log.debug("object was not updated: {}", order);
         return false;
@@ -82,15 +72,12 @@ public class OrderRepository {
      * @return Optional<Order> with found object on success else Optional.empty
      */
     public Optional<Order> find(int primaryKey) {
-        EntityManager entityManager = entityManagerFactory.createEntityManager();
         try {
             Order order = entityManager.find(Order.class, primaryKey);
             log.debug("Found order = {}", order);
             return Optional.ofNullable(order);
         } catch (IllegalArgumentException e) {
             log.error("Error", e);
-        } finally {
-            entityManager.close();
         }
         log.debug("object not found");
         return Optional.empty();
@@ -102,20 +89,14 @@ public class OrderRepository {
      * @param order target object
      * @return true in case of success else false
      */
+    @Transactional
     public boolean delete(@NonNull Order order) {
-        EntityManager entityManager = entityManagerFactory.createEntityManager();
-        EntityTransaction transaction = entityManager.getTransaction();
-
-        transaction.begin();
         try {
             entityManager.remove(entityManager.find(Order.class, order.getOrderID()));
-            transaction.commit();
             log.debug("object removed successfully");
             return true;
         } catch (IllegalArgumentException | TransactionRequiredException e) {
             log.error("DataBase transaction error", e);
-        } finally {
-            entityManager.close();
         }
         log.trace("object was not removed");
         return false;
@@ -127,7 +108,6 @@ public class OrderRepository {
      * @return list
      */
     public List<Order> getOrdersByCustomerId(int customerId) {
-        EntityManager entityManager = entityManagerFactory.createEntityManager();
         List<Order> orderList = new ArrayList<>();
         try {
             orderList = entityManager.createQuery("select order from Order order where order.customerId = :customerId", Order.class)
@@ -137,8 +117,6 @@ public class OrderRepository {
             return orderList;
         } catch (IllegalArgumentException e) {
             log.error("Error", e);
-        } finally {
-            entityManager.close();
         }
         log.debug("object not found");
         return orderList;
@@ -150,7 +128,6 @@ public class OrderRepository {
      * @return list
      */
     public List<Order> getAll() {
-        EntityManager entityManager = entityManagerFactory.createEntityManager();
         List<Order> orderList = new ArrayList<>();
         try {
             orderList = entityManager.createQuery("select order from Order order", Order.class)
@@ -159,8 +136,6 @@ public class OrderRepository {
             return orderList;
         } catch (IllegalArgumentException e) {
             log.error("Error", e);
-        } finally {
-            entityManager.close();
         }
         log.debug("object not found");
         return orderList;

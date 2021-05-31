@@ -4,9 +4,9 @@ import com.epam.liadov.entity.Customer;
 import com.epam.liadov.repository.CustomerRepository;
 import com.epam.liadov.service.CustomerService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,22 +16,21 @@ import java.util.Optional;
  * @author Aleksandr Liadov
  */
 @Slf4j
+@Service
 public class CustomerServiceImpl implements CustomerService {
 
-    private static final EntityManagerFactory entityPU = Persistence.createEntityManagerFactory("EntityPU");
-    private final CustomerRepository customerRepository = new CustomerRepository(entityPU);
+    private final CustomerRepository customerRepository;
+
+    @Autowired
+    public CustomerServiceImpl(CustomerRepository customerRepository) {
+        this.customerRepository = customerRepository;
+    }
 
     @Override
-    public Customer save(Customer customer) {
-        Customer createdCustomer = new Customer();
-        Optional<Customer> optionalCustomer = customerRepository.save(customer);
-        if (optionalCustomer.isPresent()) {
-            createdCustomer = optionalCustomer.get();
-            log.trace("Customer created successfully");
-        } else {
-            log.trace("Customer was not created");
-        }
-        return createdCustomer;
+    public boolean save(Customer customer) {
+        boolean saveResult = customerRepository.save(customer);
+        log.trace("Customer created: {}", saveResult);
+        return saveResult;
     }
 
     @Override
@@ -41,7 +40,8 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public Customer find(int primaryKey) {
-        return customerRepository.find(primaryKey).orElse(new Customer());
+        Optional<Customer> optionalCustomer = customerRepository.find(primaryKey);
+        return optionalCustomer.orElse(new Customer());
     }
 
     @Override

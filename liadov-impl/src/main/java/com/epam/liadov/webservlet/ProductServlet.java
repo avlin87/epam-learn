@@ -2,11 +2,17 @@ package com.epam.liadov.webservlet;
 
 import com.epam.liadov.entity.Product;
 import com.epam.liadov.service.ProductService;
-import com.epam.liadov.service.impl.ProductServiceImpl;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -21,12 +27,24 @@ import java.util.stream.Collectors;
  * ProductServlet - class for Json representation on Product class
  */
 @Slf4j
+@Controller
+@WebServlet("/product")
 public class ProductServlet extends HttpServlet {
 
     private static final Gson gson = new Gson();
-    private static ProductService productService = new ProductServiceImpl();
     private final String CONTENT_TYPE = "application/json";
     private final String CHARACTER_ENCODING = "UTF-8";
+    @Autowired
+    private ProductService productService;
+    private WebApplicationContext springContext;
+
+    @Override
+    public void init(final ServletConfig config) throws ServletException {
+        super.init(config);
+        springContext = WebApplicationContextUtils.getRequiredWebApplicationContext(config.getServletContext());
+        final AutowireCapableBeanFactory beanFactory = springContext.getAutowireCapableBeanFactory();
+        beanFactory.autowireBean(this);
+    }
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -56,13 +74,14 @@ public class ProductServlet extends HttpServlet {
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         Product product = parsProductFromJson(request);
-        product = productService.save(product);
+        boolean saveResult = productService.save(product);
+        log.trace("Product saved: {}", saveResult);
         String productJson = gson.toJson(product);
         printResponse(response, productJson);
     }
 
     @Override
-    public void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
         Product product = parsProductFromJson(request);
         boolean updateResult = productService.update(product);
         log.trace("Product updated: {}", updateResult);
@@ -71,7 +90,7 @@ public class ProductServlet extends HttpServlet {
     }
 
     @Override
-    public void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {
         var product = new Product();
         int key = getKey(request, product);
 
