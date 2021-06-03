@@ -1,7 +1,8 @@
-package com.epam.liadov.repository;
+package com.epam.liadov.repository.impl;
 
 import com.epam.liadov.EntityFactory;
 import com.epam.liadov.entity.Supplier;
+import com.epam.liadov.repository.impl.SupplierRepositoryImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
@@ -22,11 +23,11 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
- * SupplierRepositoryTest test for {@link SupplierRepository}
+ * SupplierRepositoryTest test for {@link SupplierRepositoryImpl}
  *
  * @author Aleksandr Liadov
  */
-class SupplierRepositoryTest {
+class SupplierRepositoryImplTest {
 
     @Mock
     private EntityManager entityManagerMock;
@@ -35,7 +36,7 @@ class SupplierRepositoryTest {
     private TypedQuery<Supplier> typedQuery;
 
     @InjectMocks
-    private SupplierRepository supplierRepository;
+    private SupplierRepositoryImpl supplierRepositoryImpl;
 
     private EntityFactory factory;
 
@@ -49,7 +50,7 @@ class SupplierRepositoryTest {
     void saveReturnsTrue() {
         Supplier testSupplier = factory.generateTestSupplier();
 
-        boolean saveResult = supplierRepository.save(testSupplier);
+        boolean saveResult = supplierRepositoryImpl.save(testSupplier);
 
         assertTrue(saveResult);
     }
@@ -58,7 +59,7 @@ class SupplierRepositoryTest {
     void saveReturnsFalse() {
         Mockito.doThrow(new PersistenceException()).when(entityManagerMock).persist(null);
 
-        boolean save = supplierRepository.save(null);
+        boolean save = supplierRepositoryImpl.save(null);
 
         assertFalse(save);
     }
@@ -68,7 +69,7 @@ class SupplierRepositoryTest {
         Supplier testSupplier = factory.generateTestSupplier();
         when(entityManagerMock.find(Supplier.class, testSupplier.getSupplierId())).thenReturn(testSupplier);
 
-        boolean supplierUpdated = supplierRepository.update(testSupplier);
+        boolean supplierUpdated = supplierRepositoryImpl.update(testSupplier);
 
         assertTrue(supplierUpdated);
     }
@@ -78,7 +79,7 @@ class SupplierRepositoryTest {
         Supplier testSupplier = factory.generateTestSupplier();
         when(entityManagerMock.merge(testSupplier)).thenThrow(TransactionRequiredException.class);
 
-        boolean supplierUpdated = supplierRepository.update(testSupplier);
+        boolean supplierUpdated = supplierRepositoryImpl.update(testSupplier);
 
         assertFalse(supplierUpdated);
     }
@@ -89,21 +90,21 @@ class SupplierRepositoryTest {
         when(entityManagerMock.find(Supplier.class, testSupplier.getSupplierId())).thenReturn(testSupplier);
         when(entityManagerMock.merge(testSupplier)).thenThrow(IllegalArgumentException.class);
 
-        boolean productUpdated = supplierRepository.update(testSupplier);
+        boolean productUpdated = supplierRepositoryImpl.update(testSupplier);
 
         assertFalse(productUpdated);
     }
 
     @Test
     void updateTrowsExceptionIfReceivesNullSupplier() {
-        Executable executable = () -> supplierRepository.update(null);
+        Executable executable = () -> supplierRepositoryImpl.update(null);
 
         assertThrows(NullPointerException.class, executable);
     }
 
     @Test
     void findReturnsEmptyOptional() {
-        Optional<Supplier> optionalSupplier = supplierRepository.find(0);
+        Optional<Supplier> optionalSupplier = supplierRepositoryImpl.find(0);
 
         assertFalse(optionalSupplier.isPresent());
     }
@@ -112,7 +113,7 @@ class SupplierRepositoryTest {
     void findProcessException() {
         when(entityManagerMock.find(Supplier.class, 1)).thenThrow(IllegalArgumentException.class);
 
-        Optional<Supplier> optionalSupplier = supplierRepository.find(1);
+        Optional<Supplier> optionalSupplier = supplierRepositoryImpl.find(1);
 
         assertFalse(optionalSupplier.isPresent());
     }
@@ -121,7 +122,7 @@ class SupplierRepositoryTest {
     void deleteReturnsTrue() {
         Supplier testSupplier = factory.generateTestSupplier();
 
-        boolean deleteResult = supplierRepository.delete(testSupplier);
+        boolean deleteResult = supplierRepositoryImpl.delete(testSupplier);
 
         assertTrue(deleteResult);
     }
@@ -131,7 +132,7 @@ class SupplierRepositoryTest {
         Supplier testSupplier = factory.generateTestSupplier();
         doThrow(IllegalArgumentException.class).when(entityManagerMock).remove(any());
 
-        boolean deleteResult = supplierRepository.delete(testSupplier);
+        boolean deleteResult = supplierRepositoryImpl.delete(testSupplier);
 
         assertFalse(deleteResult);
     }
@@ -144,7 +145,7 @@ class SupplierRepositoryTest {
         list.add(testSupplier);
         when(typedQuery.getResultList()).thenReturn(list);
 
-        List<Supplier> all = supplierRepository.getAll();
+        List<Supplier> all = supplierRepositoryImpl.getAll();
 
         assertFalse(all.isEmpty());
     }
@@ -157,7 +158,7 @@ class SupplierRepositoryTest {
         list.add(testSupplier);
         when(typedQuery.getResultList()).thenReturn(list);
 
-        List<Supplier> all = supplierRepository.getAll();
+        List<Supplier> all = supplierRepositoryImpl.getAll();
 
         assertTrue(all.isEmpty());
     }

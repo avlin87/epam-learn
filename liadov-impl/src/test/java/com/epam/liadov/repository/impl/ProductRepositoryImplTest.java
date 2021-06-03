@@ -1,8 +1,9 @@
-package com.epam.liadov.repository;
+package com.epam.liadov.repository.impl;
 
 import com.epam.liadov.EntityFactory;
 import com.epam.liadov.entity.Product;
 import com.epam.liadov.entity.Supplier;
+import com.epam.liadov.repository.impl.ProductRepositoryImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
@@ -22,11 +23,11 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
- * ProductRepositoryTest test for {@link ProductRepository}
+ * ProductRepositoryImplTest test for {@link ProductRepositoryImpl}
  *
  * @author Aleksandr Liadov
  */
-class ProductRepositoryTest {
+class ProductRepositoryImplTest {
 
     @Mock
     private EntityManager entityManagerMock;
@@ -35,7 +36,7 @@ class ProductRepositoryTest {
     private TypedQuery<Product> typedQuery;
 
     @InjectMocks
-    private ProductRepository productRepository;
+    private ProductRepositoryImpl productRepositoryImpl;
 
     private EntityFactory factory;
     private Supplier supplier;
@@ -51,7 +52,7 @@ class ProductRepositoryTest {
     void saveReturnsTrue() {
         Product testProduct = factory.generateTestProduct(supplier);
 
-        boolean saveResult = productRepository.save(testProduct);
+        boolean saveResult = productRepositoryImpl.save(testProduct);
 
         assertTrue(saveResult);
     }
@@ -60,7 +61,7 @@ class ProductRepositoryTest {
     void saveReturnsFalse() {
         Mockito.doThrow(new PersistenceException()).when(entityManagerMock).persist(null);
 
-        boolean save = productRepository.save(null);
+        boolean save = productRepositoryImpl.save(null);
 
         assertFalse(save);
     }
@@ -70,7 +71,7 @@ class ProductRepositoryTest {
         Product testProduct = factory.generateTestProduct(supplier);
         when(entityManagerMock.find(Product.class, testProduct.getProductId())).thenReturn(testProduct);
 
-        boolean productUpdated = productRepository.update(testProduct);
+        boolean productUpdated = productRepositoryImpl.update(testProduct);
 
         assertTrue(productUpdated);
     }
@@ -80,7 +81,7 @@ class ProductRepositoryTest {
         Product testProduct = factory.generateTestProduct(supplier);
         when(entityManagerMock.merge(testProduct)).thenThrow(IllegalArgumentException.class);
 
-        boolean productUpdated = productRepository.update(testProduct);
+        boolean productUpdated = productRepositoryImpl.update(testProduct);
 
         assertFalse(productUpdated);
     }
@@ -91,21 +92,21 @@ class ProductRepositoryTest {
         when(entityManagerMock.find(Product.class, testProduct.getProductId())).thenReturn(testProduct);
         when(entityManagerMock.merge(testProduct)).thenThrow(IllegalArgumentException.class);
 
-        boolean productUpdated = productRepository.update(testProduct);
+        boolean productUpdated = productRepositoryImpl.update(testProduct);
 
         assertFalse(productUpdated);
     }
 
     @Test
     void updateTrowsExceptionIfReceivesNullProduct() {
-        Executable executable = () -> productRepository.update(null);
+        Executable executable = () -> productRepositoryImpl.update(null);
 
         assertThrows(NullPointerException.class, executable);
     }
 
     @Test
     void findReturnsEmptyOptional() {
-        Optional<Product> optionalProduct = productRepository.find(0);
+        Optional<Product> optionalProduct = productRepositoryImpl.find(0);
 
         assertFalse(optionalProduct.isPresent());
     }
@@ -114,7 +115,7 @@ class ProductRepositoryTest {
     void findProcessException() {
         when(entityManagerMock.find(Product.class, 1)).thenThrow(IllegalArgumentException.class);
 
-        Optional<Product> optionalProduct = productRepository.find(1);
+        Optional<Product> optionalProduct = productRepositoryImpl.find(1);
 
         assertFalse(optionalProduct.isPresent());
     }
@@ -123,7 +124,7 @@ class ProductRepositoryTest {
     void deleteReturnsTrue() {
         Product testProduct = factory.generateTestProduct(supplier);
 
-        boolean deleteResult = productRepository.delete(testProduct);
+        boolean deleteResult = productRepositoryImpl.delete(testProduct);
 
         assertTrue(deleteResult);
     }
@@ -133,7 +134,7 @@ class ProductRepositoryTest {
         Product testProduct = factory.generateTestProduct(supplier);
         doThrow(IllegalArgumentException.class).when(entityManagerMock).remove(any());
 
-        boolean deleteResult = productRepository.delete(testProduct);
+        boolean deleteResult = productRepositoryImpl.delete(testProduct);
 
         assertFalse(deleteResult);
     }
@@ -146,7 +147,7 @@ class ProductRepositoryTest {
         list.add(testProduct);
         when(typedQuery.getResultList()).thenReturn(list);
 
-        List<Product> all = productRepository.getAll();
+        List<Product> all = productRepositoryImpl.getAll();
 
         assertFalse(all.isEmpty());
     }
@@ -159,7 +160,7 @@ class ProductRepositoryTest {
         list.add(testProduct);
         when(typedQuery.getResultList()).thenReturn(list);
 
-        List<Product> all = productRepository.getAll();
+        List<Product> all = productRepositoryImpl.getAll();
 
         assertTrue(all.isEmpty());
     }

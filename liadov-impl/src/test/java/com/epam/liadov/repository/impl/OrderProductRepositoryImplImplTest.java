@@ -1,8 +1,9 @@
-package com.epam.liadov.repository;
+package com.epam.liadov.repository.impl;
 
 import com.epam.liadov.EntityFactory;
 import com.epam.liadov.entity.Customer;
 import com.epam.liadov.entity.Order;
+import com.epam.liadov.repository.impl.OrderProductRepositoryImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -19,11 +20,11 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 /**
- * OrderProductRepositoryTest test for {@link OrderProductRepository}
+ * OrderProductRepositoryImplImplTest test for {@link OrderProductRepositoryImpl}
  *
  * @author Aleksandr Liadov
  */
-class OrderProductRepositoryTest {
+class OrderProductRepositoryImplImplTest {
 
     @Mock
     private EntityManager entityManagerMock;
@@ -32,7 +33,7 @@ class OrderProductRepositoryTest {
     private Query query;
 
     @InjectMocks
-    private OrderProductRepository orderProductRepository;
+    private OrderProductRepositoryImpl orderProductRepositoryImpl;
 
     private EntityFactory factory;
 
@@ -70,7 +71,7 @@ class OrderProductRepositoryTest {
         Order order = factory.generateTestOrder(customer);
         order.setProductId(List.of(1, 2));
 
-        boolean saveExecutedResult = orderProductRepository.saveId(order.getOrderID(), order.getProductId());
+        boolean saveExecutedResult = orderProductRepositoryImpl.saveId(order.getOrderID(), order.getProductId());
 
         assertTrue(saveExecutedResult);
     }
@@ -82,7 +83,7 @@ class OrderProductRepositoryTest {
         order.setProductId(List.of(1, 2));
         when(query.executeUpdate()).thenThrow(TransactionRequiredException.class);
 
-        boolean saveExecutedResult = orderProductRepository.saveId(order.getOrderID(), order.getProductId());
+        boolean saveExecutedResult = orderProductRepositoryImpl.saveId(order.getOrderID(), order.getProductId());
 
         assertFalse(saveExecutedResult);
     }
@@ -93,7 +94,7 @@ class OrderProductRepositoryTest {
         Order order = factory.generateTestOrder(customer);
         order.setProductId(List.of(1, 2));
 
-        boolean saveExecutedResult = orderProductRepository.updateId(order.getOrderID(), order.getProductId());
+        boolean saveExecutedResult = orderProductRepositoryImpl.updateId(order.getOrderID(), order.getProductId());
 
         assertTrue(saveExecutedResult);
     }
@@ -105,7 +106,7 @@ class OrderProductRepositoryTest {
         order.setProductId(List.of(1, 2));
         when(query.executeUpdate()).thenThrow(TransactionRequiredException.class);
 
-        boolean saveExecutedResult = orderProductRepository.updateId(order.getOrderID(), order.getProductId());
+        boolean saveExecutedResult = orderProductRepositoryImpl.updateId(order.getOrderID(), order.getProductId());
 
         assertFalse(saveExecutedResult);
     }

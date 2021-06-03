@@ -1,7 +1,8 @@
-package com.epam.liadov.repository;
+package com.epam.liadov.repository.impl;
 
 import com.epam.liadov.EntityFactory;
 import com.epam.liadov.entity.Customer;
+import com.epam.liadov.repository.impl.CustomerRepositoryImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
@@ -24,12 +25,12 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 /**
- * CustomerRepositoryTest test for {@link CustomerRepository}
+ * CustomerRepositoryImplTest test for {@link CustomerRepositoryImpl}
  *
  * @author Aleksandr Liadov
  */
 
-class CustomerRepositoryTest {
+class CustomerRepositoryImplTest {
 
     @Mock
     private EntityManager entityManagerMock;
@@ -38,7 +39,7 @@ class CustomerRepositoryTest {
     private TypedQuery<Customer> typedQuery;
 
     @InjectMocks
-    private CustomerRepository customerRepository;
+    private CustomerRepositoryImpl customerRepositoryImpl;
 
     private EntityFactory factory;
 
@@ -52,7 +53,7 @@ class CustomerRepositoryTest {
     void saveReturnsTrue() {
         Customer testCustomer = factory.generateTestCustomer();
 
-        boolean saveResult = customerRepository.save(testCustomer);
+        boolean saveResult = customerRepositoryImpl.save(testCustomer);
 
         assertTrue(saveResult);
     }
@@ -61,7 +62,7 @@ class CustomerRepositoryTest {
     void saveReturnsFalse() {
         Mockito.doThrow(new PersistenceException()).when(entityManagerMock).persist(null);
 
-        boolean save = customerRepository.save(null);
+        boolean save = customerRepositoryImpl.save(null);
 
         assertFalse(save);
     }
@@ -71,7 +72,7 @@ class CustomerRepositoryTest {
         Customer testCustomer = factory.generateTestCustomer();
         when(entityManagerMock.find(Customer.class, testCustomer.getCustomerId())).thenReturn(testCustomer);
 
-        boolean customerUpdated = customerRepository.update(testCustomer);
+        boolean customerUpdated = customerRepositoryImpl.update(testCustomer);
 
         assertTrue(customerUpdated);
     }
@@ -81,21 +82,21 @@ class CustomerRepositoryTest {
         Customer testCustomer = factory.generateTestCustomer();
         when(entityManagerMock.merge(testCustomer)).thenThrow(TransactionRequiredException.class);
 
-        boolean customerUpdated = customerRepository.update(testCustomer);
+        boolean customerUpdated = customerRepositoryImpl.update(testCustomer);
 
         assertFalse(customerUpdated);
     }
 
     @Test
     void updateTrowsExceptionIfReceivesNullCustomer() {
-        Executable executable = () -> customerRepository.update(null);
+        Executable executable = () -> customerRepositoryImpl.update(null);
 
         assertThrows(NullPointerException.class, executable);
     }
 
     @Test
     void findReturnsEmptyOptional() {
-        Optional<Customer> optionalCustomer = customerRepository.find(0);
+        Optional<Customer> optionalCustomer = customerRepositoryImpl.find(0);
 
         assertFalse(optionalCustomer.isPresent());
     }
@@ -104,7 +105,7 @@ class CustomerRepositoryTest {
     void findProcessException() {
         when(entityManagerMock.find(Customer.class, 1)).thenThrow(IllegalArgumentException.class);
 
-        Optional<Customer> optionalCustomer = customerRepository.find(1);
+        Optional<Customer> optionalCustomer = customerRepositoryImpl.find(1);
 
         assertFalse(optionalCustomer.isPresent());
     }
@@ -113,7 +114,7 @@ class CustomerRepositoryTest {
     void deleteReturnsTrue() {
         Customer testCustomer = factory.generateTestCustomer();
 
-        boolean deleteResult = customerRepository.delete(testCustomer);
+        boolean deleteResult = customerRepositoryImpl.delete(testCustomer);
 
         assertTrue(deleteResult);
     }
@@ -123,7 +124,7 @@ class CustomerRepositoryTest {
         Customer testCustomer = factory.generateTestCustomer();
         doThrow(IllegalArgumentException.class).when(entityManagerMock).remove(any());
 
-        boolean deleteResult = customerRepository.delete(testCustomer);
+        boolean deleteResult = customerRepositoryImpl.delete(testCustomer);
 
         assertFalse(deleteResult);
     }
@@ -136,7 +137,7 @@ class CustomerRepositoryTest {
         list.add(testCustomer);
         when(typedQuery.getResultList()).thenReturn(list);
 
-        List<Customer> all = customerRepository.getAll();
+        List<Customer> all = customerRepositoryImpl.getAll();
 
         assertFalse(all.isEmpty());
     }
@@ -149,7 +150,7 @@ class CustomerRepositoryTest {
         list.add(testCustomer);
         when(typedQuery.getResultList()).thenReturn(list);
 
-        List<Customer> all = customerRepository.getAll();
+        List<Customer> all = customerRepositoryImpl.getAll();
 
         assertTrue(all.isEmpty());
     }
