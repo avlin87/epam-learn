@@ -1,7 +1,7 @@
 package com.epam.liadov.webservlet;
 
 import com.epam.liadov.entity.Customer;
-import com.epam.liadov.service.impl.CustomerServiceImpl;
+import com.epam.liadov.service.CustomerService;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,11 +31,11 @@ import java.util.stream.Collectors;
 @WebServlet("/customer")
 public class CustomerServlet extends HttpServlet {
 
-    private static final Gson gson = new Gson();
     private final String CONTENT_TYPE = "application/json";
     private final String CHARACTER_ENCODING = "UTF-8";
     @Autowired
-    private CustomerServiceImpl customerService;
+    private CustomerService customerService;
+    private Gson gson = new Gson();
     private WebApplicationContext springContext;
 
     @Override

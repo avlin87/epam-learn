@@ -17,17 +17,17 @@ public interface OrderRepository {
      * Method interact with database and store target object
      *
      * @param order target object
-     * @return boolean - true in case of success else false
+     * @return Optional<Order> container
      */
-    boolean save(Order order);
+    Optional<Order> save(Order order);
 
     /**
      * Method interact with database and update target object
      *
      * @param order target object
-     * @return - true in case of success else false
+     * @return Optional<Order> container
      */
-    boolean update(@NonNull Order order);
+    Optional<Order> update(@NonNull Order order);
 
     /**
      * Method finds objects in database by primaryKey

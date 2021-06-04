@@ -2,7 +2,6 @@ package com.epam.liadov.repository.impl;
 
 import com.epam.liadov.EntityFactory;
 import com.epam.liadov.entity.Customer;
-import com.epam.liadov.repository.impl.CustomerRepositoryImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
@@ -11,10 +10,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceException;
-import javax.persistence.TransactionRequiredException;
-import javax.persistence.TypedQuery;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -38,6 +34,9 @@ class CustomerRepositoryImplTest {
     @Mock
     private TypedQuery<Customer> typedQuery;
 
+    @Mock
+    private EntityTransaction entityTransaction;
+
     @InjectMocks
     private CustomerRepositoryImpl customerRepositoryImpl;
 
@@ -50,40 +49,49 @@ class CustomerRepositoryImplTest {
     }
 
     @Test
-    void saveReturnsTrue() {
+    void saveReturnsOptionalWithCustomer() {
+        when(entityManagerMock.getTransaction()).thenReturn(entityTransaction);
         Customer testCustomer = factory.generateTestCustomer();
 
-        boolean saveResult = customerRepositoryImpl.save(testCustomer);
+        Optional<Customer> optionalCustomer = customerRepositoryImpl.save(testCustomer);
 
+        boolean saveResult = optionalCustomer.isPresent();
         assertTrue(saveResult);
     }
 
     @Test
-    void saveReturnsFalse() {
+    void saveReturnsEmptyOptional() {
+        when(entityManagerMock.getTransaction()).thenReturn(entityTransaction);
         Mockito.doThrow(new PersistenceException()).when(entityManagerMock).persist(null);
 
-        boolean save = customerRepositoryImpl.save(null);
+        Optional<Customer> optionalCustomer = customerRepositoryImpl.save(null);
 
+        boolean save = optionalCustomer.isPresent();
         assertFalse(save);
     }
 
     @Test
-    void updateReturnThue() {
+    void updateReturnOptionalWithCustomer() {
+        when(entityManagerMock.getTransaction()).thenReturn(entityTransaction);
         Customer testCustomer = factory.generateTestCustomer();
         when(entityManagerMock.find(Customer.class, testCustomer.getCustomerId())).thenReturn(testCustomer);
+        when(entityManagerMock.merge(any())).thenReturn(testCustomer);
 
-        boolean customerUpdated = customerRepositoryImpl.update(testCustomer);
+        Optional<Customer> optionalCustomer = customerRepositoryImpl.update(testCustomer);
 
+        boolean customerUpdated = optionalCustomer.isPresent();
         assertTrue(customerUpdated);
     }
 
     @Test
-    void updateReturnFalse() {
+    void updateReturnEmptyOptional() {
+        when(entityManagerMock.getTransaction()).thenReturn(entityTransaction);
         Customer testCustomer = factory.generateTestCustomer();
         when(entityManagerMock.merge(testCustomer)).thenThrow(TransactionRequiredException.class);
 
-        boolean customerUpdated = customerRepositoryImpl.update(testCustomer);
+        Optional<Customer> optionalCustomer = customerRepositoryImpl.update(testCustomer);
 
+        boolean customerUpdated = optionalCustomer.isPresent();
         assertFalse(customerUpdated);
     }
 
@@ -112,6 +120,7 @@ class CustomerRepositoryImplTest {
 
     @Test
     void deleteReturnsTrue() {
+        when(entityManagerMock.getTransaction()).thenReturn(entityTransaction);
         Customer testCustomer = factory.generateTestCustomer();
 
         boolean deleteResult = customerRepositoryImpl.delete(testCustomer);
@@ -121,6 +130,7 @@ class CustomerRepositoryImplTest {
 
     @Test
     void deleteProcessException() {
+        when(entityManagerMock.getTransaction()).thenReturn(entityTransaction);
         Customer testCustomer = factory.generateTestCustomer();
         doThrow(IllegalArgumentException.class).when(entityManagerMock).remove(any());
 

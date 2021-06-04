@@ -18,15 +18,4 @@
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
 
-    <!--<servlet>
-        <servlet-name>CustomerServlet</servlet-name>
-        <servlet-class>com.epam.liadov.webservlet.CustomerServlet</servlet-class>
-        <load-on-startup>0</load-on-startup>
-    </servlet>
-
-    <servlet-mapping>
-        <servlet-name>CustomerServlet</servlet-name>
-        <url-pattern>/customer</url-pattern>
-    </servlet-mapping>-->
-
 </web-app>

@@ -3,12 +3,11 @@ package com.epam.liadov.repository.impl;
 import com.epam.liadov.entity.Product;
 import com.epam.liadov.repository.ProductRepository;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.context.annotation.Profile;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -21,42 +20,48 @@ import java.util.Optional;
  * @author Aleksandr Liadov
  */
 @Slf4j
-@Repository
+@Component
+@RequiredArgsConstructor
 @Profile("!local")
 public class ProductRepositoryImpl implements ProductRepository {
 
-    @PersistenceContext
-    private EntityManager entityManager;
+    private final EntityManager entityManager;
 
     @Override
-    @Transactional
-    public boolean save(Product product) {
+    public Optional<Product> save(Product product) {
+        EntityTransaction transaction = entityManager.getTransaction();
         try {
+            transaction.begin();
             entityManager.persist(product);
+            transaction.commit();
             log.debug("{} sent to DataBase successfully", product);
-            return true;
-        } catch (IllegalArgumentException | PersistenceException | DataIntegrityViolationException e) {
+            return Optional.ofNullable(product);
+        } catch (IllegalArgumentException | PersistenceException e) {
+            transaction.rollback();
             log.error("Error during save DB transaction ", e);
         }
         log.debug("{} was not sent to database", product);
-        return false;
+        return Optional.empty();
     }
 
     @Override
-    @Transactional
-    public boolean update(@NonNull Product product) {
+    public Optional<Product> update(@NonNull Product product) {
+        EntityTransaction transaction = entityManager.getTransaction();
         try {
             if (find(product.getProductId()).isEmpty()) {
-                return false;
+                return Optional.empty();
             }
-            entityManager.merge(product);
+            transaction.begin();
+            product = entityManager.merge(product);
+            transaction.commit();
             log.debug("object updated: {}", product);
-            return true;
+            return Optional.ofNullable(product);
         } catch (IllegalArgumentException | ConstraintViolationException | RollbackException | TransactionRequiredException e) {
+            transaction.rollback();
             log.error("Error during DB transaction ", e);
         }
         log.debug("object was not updated: {}", product);
-        return false;
+        return Optional.empty();
     }
 
     @Override
@@ -73,13 +78,16 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     @Override
-    @Transactional
     public boolean delete(@NonNull Product product) {
+        EntityTransaction transaction = entityManager.getTransaction();
         try {
+            transaction.begin();
             entityManager.remove(entityManager.find(Product.class, product.getProductId()));
+            transaction.commit();
             log.debug("object removed successfully");
             return true;
         } catch (IllegalArgumentException | TransactionRequiredException e) {
+            transaction.rollback();
             log.error("DataBase transaction error", e);
         }
         log.trace("object was not removed");

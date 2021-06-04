@@ -18,7 +18,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 /**
- * ProductRepositoryStubTest
+ * ProductRepositoryStubTest - test for {@link ProductRepositoryStub}
  *
  * @author Aleksandr Liadov
  */
@@ -44,16 +44,20 @@ class ProductRepositoryStubTest {
     @Test
     void saveReturnTrue() {
         Product product = factory.generateTestProduct(supplier);
-        boolean saveResult = productRepository.save(product);
 
+        Optional<Product> optionalProduct = productRepository.save(product);
+
+        boolean saveResult = optionalProduct.isPresent();
         assertTrue(saveResult);
     }
 
     @Test
     void updateReturnTrue() {
         Product product = factory.generateTestProduct(supplier);
-        boolean updateResult = productRepository.update(product);
 
+        Optional<Product> optionalProduct = productRepository.update(product);
+
+        boolean updateResult = optionalProduct.isPresent();
         assertTrue(updateResult);
     }
 

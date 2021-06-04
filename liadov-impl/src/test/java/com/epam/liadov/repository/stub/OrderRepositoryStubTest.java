@@ -18,7 +18,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 /**
- * OrderRepositoryStubTest
+ * OrderRepositoryStubTest - test for {@link OrderRepositoryStub}
  *
  * @author Aleksandr Liadov
  */
@@ -42,18 +42,22 @@ class OrderRepositoryStubTest {
     }
 
     @Test
-    void saveReturnTrue() {
+    void saveReturnOptionalWithOrder() {
         Order order = factory.generateTestOrder(customer);
-        boolean saveResult = orderRepository.save(order);
 
+        Optional<Order> optionalOrder = orderRepository.save(order);
+
+        boolean saveResult = optionalOrder.isPresent();
         assertTrue(saveResult);
     }
 
     @Test
-    void updateReturnTrue() {
+    void updateReturnOptionalWithOrder() {
         Order order = factory.generateTestOrder(customer);
-        boolean updateResult = orderRepository.update(order);
 
+        Optional<Order> optionalOrder = orderRepository.update(order);
+
+        boolean updateResult = optionalOrder.isPresent();
         assertTrue(updateResult);
     }
 

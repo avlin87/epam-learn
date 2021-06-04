@@ -3,14 +3,16 @@ package com.epam.liadov.repository.impl;
 import com.epam.liadov.EntityFactory;
 import com.epam.liadov.entity.Customer;
 import com.epam.liadov.entity.Order;
-import com.epam.liadov.repository.impl.OrderProductRepositoryImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import javax.persistence.*;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
+import javax.persistence.Query;
+import javax.persistence.TransactionRequiredException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -32,6 +34,9 @@ class OrderProductRepositoryImplImplTest {
     @Mock
     private Query query;
 
+    @Mock
+    private EntityTransaction entityTransaction;
+
     @InjectMocks
     private OrderProductRepositoryImpl orderProductRepositoryImpl;
 
@@ -48,25 +53,9 @@ class OrderProductRepositoryImplImplTest {
         when(query.setParameter(anyString(), anyInt())).thenReturn(query);
     }
 
-
-
-    /*@BeforeEach
-    public void prerequisite() {
-        entityManagerFactoryMock = mock(SessionFactoryImpl.class);
-        entityManagerMock = mock(SessionImpl.class);
-        transactionMock = mock(TransactionImpl.class);
-        query = mock(NativeQueryImplementor.class);
-
-        when(entityManagerFactoryMock.createEntityManager()).thenReturn(entityManagerMock);
-        when(entityManagerMock.getTransaction()).thenReturn(transactionMock);
-
-        when(query.executeUpdate()).thenReturn(1);
-
-        factory = new EntityFactory();
-    }*/
-
     @Test
     void saveIdExecutesSuccessfully() {
+        when(entityManagerMock.getTransaction()).thenReturn(entityTransaction);
         Customer customer = factory.generateTestCustomer();
         Order order = factory.generateTestOrder(customer);
         order.setProductId(List.of(1, 2));
@@ -78,6 +67,7 @@ class OrderProductRepositoryImplImplTest {
 
     @Test
     void saveIdProcessException() {
+        when(entityManagerMock.getTransaction()).thenReturn(entityTransaction);
         Customer customer = factory.generateTestCustomer();
         Order order = factory.generateTestOrder(customer);
         order.setProductId(List.of(1, 2));
@@ -90,6 +80,7 @@ class OrderProductRepositoryImplImplTest {
 
     @Test
     void updateExecutesSuccessfully() {
+        when(entityManagerMock.getTransaction()).thenReturn(entityTransaction);
         Customer customer = factory.generateTestCustomer();
         Order order = factory.generateTestOrder(customer);
         order.setProductId(List.of(1, 2));
@@ -101,6 +92,7 @@ class OrderProductRepositoryImplImplTest {
 
     @Test
     void updateProcessException() {
+        when(entityManagerMock.getTransaction()).thenReturn(entityTransaction);
         Customer customer = factory.generateTestCustomer();
         Order order = factory.generateTestOrder(customer);
         order.setProductId(List.of(1, 2));

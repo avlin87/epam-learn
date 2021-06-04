@@ -2,6 +2,7 @@ package com.epam.liadov.repository.stub;
 
 import com.epam.liadov.EntityFactory;
 import com.epam.liadov.entity.Customer;
+import com.epam.liadov.repository.impl.SupplierRepositoryImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -16,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 /**
- * CustomerRepositoryStubTest
+ * CustomerRepositoryStubTest - test for {@link CustomerRepositoryStub}
  *
  * @author Aleksandr Liadov
  */
@@ -37,18 +38,22 @@ class CustomerRepositoryStubTest {
     }
 
     @Test
-    void saveReturnTrue() {
+    void saveReturnOptionalWithCustomer() {
         Customer customer = factory.generateTestCustomer();
-        boolean saveResult = customerRepository.save(customer);
 
+        Optional<Customer> optionalCustomer = customerRepository.save(customer);
+
+        boolean saveResult = optionalCustomer.isPresent();
         assertTrue(saveResult);
     }
 
     @Test
-    void updateReturnTrue() {
+    void updateReturnOptionalWithCustomer() {
         Customer customer = factory.generateTestCustomer();
-        boolean updateResult = customerRepository.update(customer);
 
+        Optional<Customer> optionalCustomer = customerRepository.update(customer);
+
+        boolean updateResult = optionalCustomer.isPresent();
         assertTrue(updateResult);
     }
 

@@ -6,10 +6,10 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * OrderProductRepositoryStubTest
+ * OrderProductRepositoryStubTest - test for {@link OrderProductRepositoryStub}
  *
  * @author Aleksandr Liadov
  */
@@ -19,7 +19,7 @@ class OrderProductRepositoryStubTest {
 
     @Test
     void saveIdReturnTrue() {
-        List<Integer> list = new ArrayList<>(List.of(1,2,3,4));
+        List<Integer> list = new ArrayList<>(List.of(1, 2, 3, 4));
 
         boolean saveResult = orderProductRepository.saveId(1, list);
 
@@ -28,7 +28,7 @@ class OrderProductRepositoryStubTest {
 
     @Test
     void updateIdReturnTrue() {
-        List<Integer> list = new ArrayList<>(List.of(1,2,3,4));
+        List<Integer> list = new ArrayList<>(List.of(1, 2, 3, 4));
 
         boolean updateResult = orderProductRepository.updateId(1, list);
 

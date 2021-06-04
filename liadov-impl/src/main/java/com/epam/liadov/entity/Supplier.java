@@ -15,7 +15,6 @@ import javax.persistence.Id;
  */
 @Entity
 @Data
-@Component
 public class Supplier {
 
     @Id

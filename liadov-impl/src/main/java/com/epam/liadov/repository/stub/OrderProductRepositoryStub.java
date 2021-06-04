@@ -3,7 +3,7 @@ package com.epam.liadov.repository.stub;
 import com.epam.liadov.repository.OrderProductRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
@@ -13,7 +13,7 @@ import java.util.List;
  * @author Aleksandr Liadov
  */
 @Slf4j
-@Repository
+@Component
 @Profile("local")
 public class OrderProductRepositoryStub implements OrderProductRepository {
 

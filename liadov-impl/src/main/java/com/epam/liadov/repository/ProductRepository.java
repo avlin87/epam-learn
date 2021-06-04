@@ -17,17 +17,17 @@ public interface ProductRepository {
      * Method interact with database and store target object
      *
      * @param product target object
-     * @return boolean - true in case of success else false
+     * @return Optional<Product> container
      */
-    boolean save(Product product);
+    Optional<Product> save(Product product);
 
     /**
      * Method interact with database and update target object
      *
      * @param product target object
-     * @return - true in case of success else false
+     * @return Optional<Product> container
      */
-    boolean update(@NonNull Product product);
+    Optional<Product> update(@NonNull Product product);
 
     /**
      * Method finds objects in database by primaryKey

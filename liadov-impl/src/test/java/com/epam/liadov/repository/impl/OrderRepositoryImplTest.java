@@ -3,7 +3,6 @@ package com.epam.liadov.repository.impl;
 import com.epam.liadov.EntityFactory;
 import com.epam.liadov.entity.Customer;
 import com.epam.liadov.entity.Order;
-import com.epam.liadov.repository.impl.OrderRepositoryImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
@@ -12,10 +11,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceException;
-import javax.persistence.TransactionRequiredException;
-import javax.persistence.TypedQuery;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -36,6 +32,9 @@ class OrderRepositoryImplTest {
     @Mock
     private TypedQuery<Order> typedQuery;
 
+    @Mock
+    private EntityTransaction entityTransaction;
+
     @InjectMocks
     private OrderRepositoryImpl orderRepositoryImpl;
 
@@ -50,51 +49,61 @@ class OrderRepositoryImplTest {
     }
 
     @Test
-    void saveReturnsTrue() {
+    void saveReturnsTrueOptionalWithOrder() {
+        when(entityManagerMock.getTransaction()).thenReturn(entityTransaction);
         Order testOrder = factory.generateTestOrder(customer);
 
-        boolean saveResult = orderRepositoryImpl.save(testOrder);
+        Optional<Order> optionalOrder = orderRepositoryImpl.save(testOrder);
 
+        boolean saveResult = optionalOrder.isPresent();
         assertTrue(saveResult);
     }
 
     @Test
-    void saveReturnsFalse() {
+    void saveReturnsEmptyOptional() {
+        when(entityManagerMock.getTransaction()).thenReturn(entityTransaction);
         Mockito.doThrow(new PersistenceException()).when(entityManagerMock).persist(null);
 
-        boolean saveResult = orderRepositoryImpl.save(null);
+        Optional<Order> optionalOrder = orderRepositoryImpl.save(null);
 
+        boolean saveResult = optionalOrder.isPresent();
         assertFalse(saveResult);
     }
 
     @Test
-    void updateReturnThue() {
+    void updateReturnOptionalWithOrder() {
+        when(entityManagerMock.getTransaction()).thenReturn(entityTransaction);
         Order testOrder = factory.generateTestOrder(customer);
         when(entityManagerMock.find(Order.class, testOrder.getOrderID())).thenReturn(testOrder);
+        when(entityManagerMock.merge(any())).thenReturn(testOrder);
 
-        boolean orderUpdated = orderRepositoryImpl.update(testOrder);
+        Optional<Order> optionalOrder = orderRepositoryImpl.update(testOrder);
 
+        boolean orderUpdated = optionalOrder.isPresent();
         assertTrue(orderUpdated);
     }
 
     @Test
-    void updateReturnFalse() {
+    void updateReturnEmptyOptional() {
         Order testOrder = factory.generateTestOrder(customer);
         when(entityManagerMock.merge(testOrder)).thenThrow(TransactionRequiredException.class);
 
-        boolean customerUpdated = orderRepositoryImpl.update(testOrder);
+        Optional<Order> optionalOrder = orderRepositoryImpl.update(testOrder);
 
+        boolean customerUpdated = optionalOrder.isPresent();
         assertFalse(customerUpdated);
     }
 
     @Test
-    void updateReturnFalseDueToException() {
+    void updateReturnEmptyOptionalDueToException() {
+        when(entityManagerMock.getTransaction()).thenReturn(entityTransaction);
         Order testOrder = factory.generateTestOrder(customer);
         when(entityManagerMock.find(Order.class, testOrder.getOrderID())).thenReturn(testOrder);
         when(entityManagerMock.merge(testOrder)).thenThrow(TransactionRequiredException.class);
 
-        boolean customerUpdated = orderRepositoryImpl.update(testOrder);
+        Optional<Order> optionalOrder = orderRepositoryImpl.update(testOrder);
 
+        boolean customerUpdated = optionalOrder.isPresent();
         assertFalse(customerUpdated);
     }
 
@@ -123,6 +132,7 @@ class OrderRepositoryImplTest {
 
     @Test
     void deleteReturnsTrue() {
+        when(entityManagerMock.getTransaction()).thenReturn(entityTransaction);
         Order testOrder = factory.generateTestOrder(customer);
 
         boolean deleteResult = orderRepositoryImpl.delete(testOrder);
@@ -132,6 +142,7 @@ class OrderRepositoryImplTest {
 
     @Test
     void deleteProcessException() {
+        when(entityManagerMock.getTransaction()).thenReturn(entityTransaction);
         Order testOrder = factory.generateTestOrder(customer);
         doThrow(IllegalArgumentException.class).when(entityManagerMock).remove(any());
 

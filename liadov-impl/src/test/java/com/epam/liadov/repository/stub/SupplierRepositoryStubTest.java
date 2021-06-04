@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 /**
- * SupplierRepositoryStubTest
+ * SupplierRepositoryStubTest - test for {@link SupplierRepositoryStub}
  *
  * @author Aleksandr Liadov
  */
@@ -39,16 +39,20 @@ class SupplierRepositoryStubTest {
     @Test
     void saveReturnTrue() {
         Supplier supplier = factory.generateTestSupplier();
-        boolean saveResult = supplierRepository.save(supplier);
 
+        Optional<Supplier> optionalSupplier = supplierRepository.save(supplier);
+
+        boolean saveResult = optionalSupplier.isPresent();
         assertTrue(saveResult);
     }
 
     @Test
     void updateReturnTrue() {
         Supplier supplier = factory.generateTestSupplier();
-        boolean updateResult = supplierRepository.update(supplier);
 
+        Optional<Supplier> optionalSupplier = supplierRepository.update(supplier);
+
+        boolean updateResult = optionalSupplier.isPresent();
         assertTrue(updateResult);
     }
 

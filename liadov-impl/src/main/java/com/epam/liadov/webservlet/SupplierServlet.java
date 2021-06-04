@@ -3,6 +3,7 @@ package com.epam.liadov.webservlet;
 import com.epam.liadov.entity.Supplier;
 import com.epam.liadov.service.SupplierService;
 import com.google.gson.Gson;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
@@ -31,11 +32,11 @@ import java.util.stream.Collectors;
 @WebServlet("/supplier")
 public class SupplierServlet extends HttpServlet {
 
-    private static final Gson gson = new Gson();
     private final String CONTENT_TYPE = "application/json";
     private final String CHARACTER_ENCODING = "UTF-8";
     @Autowired
     private SupplierService supplierService;
+    private Gson gson = new Gson();
     private WebApplicationContext springContext;
 
     @Override

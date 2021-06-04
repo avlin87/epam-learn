@@ -5,7 +5,7 @@ import com.epam.liadov.entity.Product;
 import java.util.List;
 
 /**
- * ProductService
+ * ProductService - interface for service operations with Product repository
  *
  * @author Aleksandr Liadov
  */

@@ -5,7 +5,7 @@ import com.epam.liadov.entity.Customer;
 import java.util.List;
 
 /**
- * CustomerService
+ * CustomerService - interface for service operations with Customer repository
  *
  * @author Aleksandr Liadov
  */

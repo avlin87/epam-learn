@@ -16,7 +16,6 @@ import java.util.List;
 @Entity
 @Table(name = "[order]")
 @Data
-@Component
 public class Order {
 
     @Id

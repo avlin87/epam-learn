@@ -17,17 +17,17 @@ public interface SupplierRepository {
      * Method interact with database and store target object
      *
      * @param supplier target object
-     * @return boolean - true in case of success else false
+     * @return Optional<Supplier> container
      */
-    boolean save(Supplier supplier);
+    Optional<Supplier> save(Supplier supplier);
 
     /**
      * Method interact with database and update target object
      *
      * @param supplier target object
-     * @return - true in case of success else false
+     * @return Optional<Supplier> container
      */
-    boolean update(@NonNull Supplier supplier);
+    Optional<Supplier> update(@NonNull Supplier supplier);
 
     /**
      * Method finds objects in database by primaryKey

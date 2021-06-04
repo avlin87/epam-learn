@@ -3,13 +3,15 @@ package com.epam.liadov.repository.impl;
 import com.epam.liadov.entity.Customer;
 import com.epam.liadov.repository.CustomerRepository;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 
-import javax.persistence.*;
-import javax.transaction.Transactional;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
+import javax.persistence.PersistenceException;
+import javax.persistence.TransactionRequiredException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -20,39 +22,45 @@ import java.util.Optional;
  * @author Aleksandr Liadov
  */
 @Slf4j
-@Repository
+@Component
+@RequiredArgsConstructor
 @Profile("!local")
 public class CustomerRepositoryImpl implements CustomerRepository {
 
-    @PersistenceContext(type = PersistenceContextType.EXTENDED)
-    private EntityManager entityManager;
+    private final EntityManager entityManager;
 
     @Override
-    @Transactional
-    public boolean save(Customer customer) {
+    public Optional<Customer> save(Customer customer) {
+        EntityTransaction transaction = entityManager.getTransaction();
         try {
+            transaction.begin();
             entityManager.persist(customer);
+            transaction.commit();
             log.trace("customer sent to DB: {}", customer);
-            return true;
-        } catch (IllegalArgumentException | PersistenceException | DataIntegrityViolationException e) {
+            return Optional.ofNullable(customer);
+        } catch (IllegalArgumentException | PersistenceException e) {
+            transaction.rollback();
             log.error("Error during save DB transaction ", e);
         }
         log.debug("{} was not sent to database", customer);
-        return false;
+        return Optional.empty();
     }
 
     @Override
-    @Transactional
-    public boolean update(@NonNull Customer customer) {
+    public Optional<Customer> update(@NonNull Customer customer) {
+        EntityTransaction transaction = entityManager.getTransaction();
         try {
-            entityManager.merge(customer);
+            transaction.begin();
+            customer = entityManager.merge(customer);
+            transaction.commit();
             log.debug("object updated: {}", customer);
-            return true;
-        } catch (IllegalArgumentException | PersistenceException | DataIntegrityViolationException e) {
+            return Optional.of(customer);
+        } catch (IllegalArgumentException | PersistenceException e) {
+            transaction.rollback();
             log.error("Error during update DB transaction ", e);
         }
         log.debug("Customer was not updated: {}", customer);
-        return false;
+        return Optional.empty();
     }
 
     @Override
@@ -68,13 +76,16 @@ public class CustomerRepositoryImpl implements CustomerRepository {
     }
 
     @Override
-    @Transactional
     public boolean delete(@NonNull Customer customer) {
+        EntityTransaction transaction = entityManager.getTransaction();
         try {
+            transaction.begin();
             entityManager.remove(entityManager.find(Customer.class, customer.getCustomerId()));
+            transaction.commit();
             log.debug("object removed successfully");
             return true;
         } catch (IllegalArgumentException | TransactionRequiredException e) {
+            transaction.rollback();
             log.error("DataBase transaction error", e);
         }
         log.trace("object was not removed");

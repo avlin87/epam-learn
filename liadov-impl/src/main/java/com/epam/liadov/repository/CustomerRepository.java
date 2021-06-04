@@ -17,17 +17,17 @@ public interface CustomerRepository {
      * Method interact with database and store target object
      *
      * @param customer target object
-     * @return boolean - true in case of success else false
+     * @return Optional<Customer> container
      */
-    boolean save(Customer customer);
+    Optional<Customer> save(Customer customer);
 
     /**
      * Method interact with database and update target object
      *
      * @param customer target object
-     * @return - true in case of success else false
+     * @return Optional<Customer> container
      */
-    boolean update(@NonNull Customer customer);
+    Optional<Customer> update(@NonNull Customer customer);
 
     /**
      * Method finds objects in database by primaryKey

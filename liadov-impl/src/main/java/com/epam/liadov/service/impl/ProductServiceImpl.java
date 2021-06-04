@@ -3,38 +3,37 @@ package com.epam.liadov.service.impl;
 import com.epam.liadov.entity.Product;
 import com.epam.liadov.repository.ProductRepository;
 import com.epam.liadov.service.ProductService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
- * ProductServiceImpl
+ * ProductServiceImpl - Service for operations with Product repository
  *
  * @author Aleksandr Liadov
  */
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
 
-    @Autowired
-    public ProductServiceImpl(ProductRepository productRepository) {
-        this.productRepository = productRepository;
-    }
-
     @Override
     public boolean save(Product product) {
-        boolean saveResult = productRepository.save(product);
+        Optional<Product> optionalProduct = productRepository.save(product);
+        boolean saveResult = optionalProduct.isPresent();
         log.trace("Product created: {}", saveResult);
         return saveResult;
     }
 
     @Override
     public boolean update(Product product) {
-        return productRepository.update(product);
+        Optional<Product> optionalProduct = productRepository.update(product);
+        return optionalProduct.isPresent();
     }
 
     @Override

@@ -1,15 +1,14 @@
 package com.epam.liadov.repository.impl;
 
 import com.epam.liadov.repository.OrderProductRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.postgresql.util.PSQLException;
 import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceContextType;
+import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,26 +19,29 @@ import java.util.List;
  * @author Aleksandr Liadov
  */
 @Slf4j
-@Repository
+@Component
+@RequiredArgsConstructor
 @Profile("!local")
 public class OrderProductRepositoryImpl implements OrderProductRepository {
 
-    @PersistenceContext(type = PersistenceContextType.EXTENDED)
-    private EntityManager entityManager;
+    private final EntityManager entityManager;
 
     @Override
-    @Transactional
     public boolean saveId(int orderId, List<Integer> productIds) {
+        EntityTransaction transaction = entityManager.getTransaction();
         try {
+            transaction.begin();
             Query insertQuery = entityManager.createNativeQuery("insert into liadov.orderproduct (orderid, productid) values (?,?)")
                     .setParameter(1, orderId);
             for (int productId : productIds) {
                 insertQuery.setParameter(2, productId);
                 insertQuery.executeUpdate();
             }
+            transaction.commit();
             log.debug("OrderProduct table populated");
             return true;
         } catch (RuntimeException e) {
+            transaction.rollback();
             log.error("Error during DB transaction ", e);
         }
         log.debug("OrderProduct was not populated");
@@ -47,9 +49,10 @@ public class OrderProductRepositoryImpl implements OrderProductRepository {
     }
 
     @Override
-    @Transactional
     public boolean updateId(int orderId, List<Integer> productIds) {
+        EntityTransaction transaction = entityManager.getTransaction();
         try {
+            transaction.begin();
             List<Integer> productsInDb = getCurrentProductList(orderId, entityManager);
             if ((productIds.containsAll(productsInDb)) && (productsInDb.containsAll(productIds))) {
                 log.debug("OrderProduct table up to date");
@@ -58,9 +61,11 @@ public class OrderProductRepositoryImpl implements OrderProductRepository {
                 insertNewValues(orderId, productIds, entityManager, productsInDb);
                 deleteOldValues(orderId, productIds, entityManager, productsInDb);
             }
+            transaction.commit();
             log.debug("OrderProduct table populated");
             return true;
         } catch (RuntimeException | PSQLException e) {
+            transaction.rollback();
             log.error("Error during DB transaction ", e);
         }
         return false;

@@ -5,7 +5,7 @@ import com.epam.liadov.entity.Supplier;
 import java.util.List;
 
 /**
- * SupplierService
+ * SupplierService - interface for service operations with Supplier repository
  *
  * @author Aleksandr Liadov
  */

@@ -3,39 +3,37 @@ package com.epam.liadov.service.impl;
 import com.epam.liadov.entity.Customer;
 import com.epam.liadov.repository.CustomerRepository;
 import com.epam.liadov.service.CustomerService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 /**
- * CustomerServiceImpl
+ * CustomerServiceImpl - Service for operations with Customer repository
  *
  * @author Aleksandr Liadov
  */
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerRepository customerRepository;
 
-    @Autowired
-    public CustomerServiceImpl(CustomerRepository customerRepository) {
-        this.customerRepository = customerRepository;
-    }
-
     @Override
     public boolean save(Customer customer) {
-        boolean saveResult = customerRepository.save(customer);
+        Optional<Customer> optionalCustomer = customerRepository.save(customer);
+        boolean saveResult = optionalCustomer.isPresent();
         log.trace("Customer created: {}", saveResult);
         return saveResult;
     }
 
     @Override
     public boolean update(Customer customer) {
-        return customerRepository.update(customer);
+        Optional<Customer> optionalCustomer = customerRepository.update(customer);
+        return optionalCustomer.isPresent();
     }
 
     @Override

@@ -5,7 +5,7 @@ import com.epam.liadov.entity.Order;
 import java.util.List;
 
 /**
- * OrderService
+ * OrderService - interface for service operations with Order repository
  *
  * @author Aleksandr Liadov
  */

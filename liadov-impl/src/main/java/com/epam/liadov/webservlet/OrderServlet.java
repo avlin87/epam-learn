@@ -31,11 +31,11 @@ import java.util.stream.Collectors;
 @WebServlet("/order")
 public class OrderServlet extends HttpServlet {
 
-    private static final Gson gson = new Gson();
     private final String CONTENT_TYPE = "application/json";
     private final String CHARACTER_ENCODING = "UTF-8";
     @Autowired
     private OrderService orderService;
+    private Gson gson = new Gson();
     private WebApplicationContext springContext;
 
     @Override
