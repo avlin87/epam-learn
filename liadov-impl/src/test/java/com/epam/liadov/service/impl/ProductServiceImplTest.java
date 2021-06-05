@@ -13,8 +13,7 @@ import org.mockito.MockitoAnnotations;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
@@ -45,9 +44,9 @@ class ProductServiceImplTest {
         Product product = factory.generateTestProduct(supplier);
         when(productRepository.save(any())).thenReturn(Optional.ofNullable(product));
 
-        boolean saveResult = productServiceImpl.save(product);
+        Product saveResult = productServiceImpl.save(product);
 
-        assertTrue(saveResult);
+        assertEquals(product, saveResult);
     }
 
     @Test
@@ -56,9 +55,9 @@ class ProductServiceImplTest {
         Product product = factory.generateTestProduct(supplier);
         when(productRepository.update(any())).thenReturn(Optional.ofNullable(product));
 
-        boolean saveResult = productServiceImpl.update(product);
+        Product updateResult = productServiceImpl.update(product);
 
-        assertTrue(saveResult);
+        assertEquals(product, updateResult);
     }
 
     @Test

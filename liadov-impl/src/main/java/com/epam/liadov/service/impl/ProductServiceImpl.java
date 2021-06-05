@@ -23,22 +23,39 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
 
     @Override
-    public boolean save(Product product) {
+    public Product save(Product product) {
         Optional<Product> optionalProduct = productRepository.save(product);
         boolean saveResult = optionalProduct.isPresent();
         log.trace("Product created: {}", saveResult);
-        return saveResult;
+        if (saveResult) {
+            product = optionalProduct.get();
+            return product;
+        }
+        return new Product();
     }
 
     @Override
-    public boolean update(Product product) {
+    public Product update(Product product) {
         Optional<Product> optionalProduct = productRepository.update(product);
-        return optionalProduct.isPresent();
+        boolean updateResult = optionalProduct.isPresent();
+        log.trace("Product updated: {}", updateResult);
+        if (updateResult) {
+            product = optionalProduct.get();
+            return product;
+        }
+        return new Product();
     }
 
     @Override
     public Product find(int primaryKey) {
-        return productRepository.find(primaryKey).orElse(new Product());
+        Optional<Product> optionalProduct = productRepository.find(primaryKey);
+        boolean findResult = optionalProduct.isPresent();
+        log.trace("Product found: {}", findResult);
+        if (findResult) {
+            Product product = optionalProduct.get();
+            return product;
+        }
+        return new Product();
     }
 
     @Override

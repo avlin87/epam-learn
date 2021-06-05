@@ -23,23 +23,39 @@ public class CustomerServiceImpl implements CustomerService {
     private final CustomerRepository customerRepository;
 
     @Override
-    public boolean save(Customer customer) {
+    public Customer save(Customer customer) {
         Optional<Customer> optionalCustomer = customerRepository.save(customer);
         boolean saveResult = optionalCustomer.isPresent();
         log.trace("Customer created: {}", saveResult);
-        return saveResult;
+        if (saveResult) {
+            customer = optionalCustomer.get();
+            return customer;
+        }
+        return new Customer();
     }
 
     @Override
-    public boolean update(Customer customer) {
+    public Customer update(Customer customer) {
         Optional<Customer> optionalCustomer = customerRepository.update(customer);
-        return optionalCustomer.isPresent();
+        boolean updateResult = optionalCustomer.isPresent();
+        log.trace("Customer updated: {}", updateResult);
+        if (updateResult) {
+            customer = optionalCustomer.get();
+            return customer;
+        }
+        return new Customer();
     }
 
     @Override
     public Customer find(int primaryKey) {
         Optional<Customer> optionalCustomer = customerRepository.find(primaryKey);
-        return optionalCustomer.orElse(new Customer());
+        boolean findResult = optionalCustomer.isPresent();
+        log.trace("Customer found: {}", findResult);
+        if (findResult) {
+            Customer customer = optionalCustomer.get();
+            return customer;
+        }
+        return new Customer();
     }
 
     @Override

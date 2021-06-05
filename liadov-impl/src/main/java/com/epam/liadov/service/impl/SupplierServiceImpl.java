@@ -23,22 +23,39 @@ public class SupplierServiceImpl implements SupplierService {
     private final SupplierRepository supplierRepository;
 
     @Override
-    public boolean save(Supplier supplier) {
+    public Supplier save(Supplier supplier) {
         Optional<Supplier> optionalSupplier = supplierRepository.save(supplier);
         boolean saveResult = optionalSupplier.isPresent();
         log.trace("Supplier created: {}", saveResult);
-        return saveResult;
+        if (saveResult) {
+            supplier = optionalSupplier.get();
+            return supplier;
+        }
+        return new Supplier();
     }
 
     @Override
-    public boolean update(Supplier supplier) {
+    public Supplier update(Supplier supplier) {
         Optional<Supplier> optionalSupplier = supplierRepository.update(supplier);
-        return optionalSupplier.isPresent();
+        boolean updateResult = optionalSupplier.isPresent();
+        log.trace("Supplier Updated: {}", updateResult);
+        if (updateResult) {
+            supplier = optionalSupplier.get();
+            return supplier;
+        }
+        return new Supplier();
     }
 
     @Override
     public Supplier find(int primaryKey) {
-        return supplierRepository.find(primaryKey).orElse(new Supplier());
+        Optional<Supplier> optionalSupplier = supplierRepository.find(primaryKey);
+        boolean findResult = optionalSupplier.isPresent();
+        log.trace("Supplier found: {}", findResult);
+        if (findResult) {
+            Supplier supplier = optionalSupplier.get();
+            return supplier;
+        }
+        return new Supplier();
     }
 
     @Override

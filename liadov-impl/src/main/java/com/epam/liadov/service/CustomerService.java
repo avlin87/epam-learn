@@ -17,7 +17,7 @@ public interface CustomerService {
      * @param customer entity
      * @return saved customer entity
      */
-    boolean save(Customer customer);
+    Customer save(Customer customer);
 
     /**
      * Update customer
@@ -25,7 +25,7 @@ public interface CustomerService {
      * @param customer entity to update
      * @return - true if updated
      */
-    boolean update(Customer customer);
+    Customer update(Customer customer);
 
     /**
      * Find Customer by primaryKey

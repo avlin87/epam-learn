@@ -1,8 +1,10 @@
 package com.epam.liadov.webservlet;
 
 import com.epam.liadov.entity.Order;
+import com.epam.liadov.model.OrderJsonModel;
 import com.epam.liadov.service.OrderService;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
@@ -35,7 +37,9 @@ public class OrderServlet extends HttpServlet {
     private final String CHARACTER_ENCODING = "UTF-8";
     @Autowired
     private OrderService orderService;
-    private Gson gson = new Gson();
+    private Gson gson = new GsonBuilder()
+            .registerTypeAdapter(Order.class, new OrderJsonModel())
+            .create();
     private WebApplicationContext springContext;
 
     @Override
@@ -84,8 +88,8 @@ public class OrderServlet extends HttpServlet {
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         Order order = parsOrderFromJson(request);
-        boolean saveResult = orderService.save(order);
-        log.trace("Order saved: {}", saveResult);
+        order = orderService.save(order);
+        log.trace("Order saved: {}", order);
         String orderJson = gson.toJson(order);
         printResponse(response, orderJson);
     }
@@ -93,8 +97,8 @@ public class OrderServlet extends HttpServlet {
     @Override
     public void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
         Order order = parsOrderFromJson(request);
-        boolean updateResult = orderService.update(order);
-        log.trace("Order updated: {}", updateResult);
+        order = orderService.update(order);
+        log.trace("Order updated: {}", order);
         String orderJson = gson.toJson(order);
         printResponse(response, orderJson);
     }
@@ -132,6 +136,7 @@ public class OrderServlet extends HttpServlet {
                 .lines()
                 .collect(Collectors.joining("\n"));
         log.trace("body request: {}", requestBody);
+
         Order order = gson.fromJson(requestBody, Order.class);
         log.trace("order = {}", order);
         return order;

@@ -17,7 +17,7 @@ public interface ProductService {
      * @param product entity
      * @return saved product entity
      */
-    boolean save(Product product);
+    Product save(Product product);
 
     /**
      * Update product
@@ -25,7 +25,7 @@ public interface ProductService {
      * @param product entity to update
      * @return - true if updated
      */
-    boolean update(Product product);
+    Product update(Product product);
 
     /**
      * Find Product by primaryKey

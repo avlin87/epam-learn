@@ -17,7 +17,7 @@ public interface SupplierService {
      * @param supplier entity
      * @return saved supplier entity
      */
-    boolean save(Supplier supplier);
+    Supplier save(Supplier supplier);
 
     /**
      * Update supplier
@@ -25,7 +25,7 @@ public interface SupplierService {
      * @param supplier entity to update
      * @return - true if updated
      */
-    boolean update(Supplier supplier);
+    Supplier update(Supplier supplier);
 
     /**
      * Find Supplier by primaryKey

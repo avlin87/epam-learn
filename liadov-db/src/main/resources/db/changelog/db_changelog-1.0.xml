@@ -70,7 +70,7 @@
                 <constraints nullable="false" primaryKey="false" unique="true"/>
             </column>
             <column name="SupplierId" type="int">
-                <constraints nullable="false" primaryKey="false" unique="false"/>
+                <constraints nullable="false" primaryKey="false" unique="true"/>
             </column>
             <column name="UnitPrice" type="decimal(12,2)">
                 <constraints nullable="true" primaryKey="false" unique="false"/>
@@ -91,10 +91,10 @@
     <changeSet author="Aleksandr Liadov" id="order_product_changelog-1.0">
         <createTable tableName="OrderProduct">
             <column name="OrderId" type="int">
-                <constraints nullable="false" primaryKey="true" unique="false"/>
+                <constraints nullable="false" primaryKey="true" unique="true"/>
             </column>
             <column name="ProductId" type="int">
-                <constraints nullable="false" primaryKey="true" unique="false"/>
+                <constraints nullable="false" primaryKey="true" unique="true"/>
             </column>
         </createTable>
         <addForeignKeyConstraint baseTableName="OrderProduct"
@@ -102,12 +102,15 @@
                                  constraintName="fk_OrderProduct_Order"
                                  referencedTableName="order"
                                  referencedColumnNames="OrderId"
+                                 onUpdate="CASCADE"
                                  onDelete="CASCADE"/>
         <addForeignKeyConstraint baseTableName="OrderProduct"
                                  baseColumnNames="ProductId"
                                  constraintName="fk_OrderProduct_Product"
                                  referencedTableName="Product"
-                                 referencedColumnNames="ProductId"/>
+                                 referencedColumnNames="ProductId"
+                                 onUpdate="CASCADE"
+                                 onDelete="CASCADE"/>
     </changeSet>
 
 </databaseChangeLog>

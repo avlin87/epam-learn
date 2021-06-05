@@ -1,10 +1,12 @@
 package com.epam.liadov.entity;
 
 import lombok.Data;
-import org.springframework.stereotype.Component;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Product - POJO class represented in database
@@ -28,4 +30,8 @@ public class Product {
 
     private boolean isDiscontinued;
 
+    @ManyToMany(mappedBy = "productId", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    @Transient
+    private List<Order> orderList = new ArrayList<>();
 }

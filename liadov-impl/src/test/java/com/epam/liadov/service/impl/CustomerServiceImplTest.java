@@ -3,7 +3,6 @@ package com.epam.liadov.service.impl;
 import com.epam.liadov.EntityFactory;
 import com.epam.liadov.entity.Customer;
 import com.epam.liadov.repository.CustomerRepository;
-import com.epam.liadov.repository.stub.SupplierRepositoryStub;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -13,8 +12,7 @@ import org.mockito.MockitoAnnotations;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
@@ -44,9 +42,9 @@ class CustomerServiceImplTest {
         Customer customer = factory.generateTestCustomer();
         when(customerRepository.save(any())).thenReturn(Optional.ofNullable(customer));
 
-        boolean saveResult = customerServiceImpl.save(customer);
+        Customer saveResult = customerServiceImpl.save(customer);
 
-        assertTrue(saveResult);
+        assertEquals(customer, saveResult);
     }
 
     @Test
@@ -54,9 +52,9 @@ class CustomerServiceImplTest {
         Customer customer = factory.generateTestCustomer();
         when(customerRepository.update(any())).thenReturn(Optional.ofNullable(customer));
 
-        boolean saveResult = customerServiceImpl.update(customer);
+        Customer updateResult = customerServiceImpl.update(customer);
 
-        assertTrue(saveResult);
+        assertEquals(customer, updateResult);
     }
 
     @Test

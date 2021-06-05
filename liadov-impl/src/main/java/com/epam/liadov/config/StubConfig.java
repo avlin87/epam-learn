@@ -9,14 +9,14 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
 import java.util.Locale;
 
 /**
- * DaoStubConfig - Stubbed configuration
+ * StubConfig - Stubbed configuration
  * spring.profiles.active=local
  *
  * @author Aleksandr Liadov
  */
 @Configuration
 @Profile("local")
-public class DaoStubConfig {
+public class StubConfig {
 
     /**
      * Bean for getting messageSource

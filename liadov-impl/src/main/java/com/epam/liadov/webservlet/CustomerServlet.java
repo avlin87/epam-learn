@@ -74,8 +74,8 @@ public class CustomerServlet extends HttpServlet {
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         Customer customer = parsCustomerFromJson(request);
-        boolean saveResult = customerService.save(customer);
-        log.trace("Customer saved: {}", saveResult);
+        customer = customerService.save(customer);
+        log.trace("Customer saved: {}", customer);
         String customerJson = gson.toJson(customer);
         printResponse(response, customerJson);
     }
@@ -83,8 +83,8 @@ public class CustomerServlet extends HttpServlet {
     @Override
     public void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
         Customer customer = parsCustomerFromJson(request);
-        boolean updateResult = customerService.update(customer);
-        log.trace("Customer updated: {}", updateResult);
+        customer = customerService.update(customer);
+        log.trace("Customer updated: {}", customer);
         String customerJson = gson.toJson(customer);
         printResponse(response, customerJson);
     }

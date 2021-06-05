@@ -3,7 +3,6 @@ package com.epam.liadov.webservlet;
 import com.epam.liadov.entity.Supplier;
 import com.epam.liadov.service.SupplierService;
 import com.google.gson.Gson;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
@@ -75,8 +74,8 @@ public class SupplierServlet extends HttpServlet {
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         Supplier supplier = parsSupplierFromJson(request);
-        boolean saveResult = supplierService.save(supplier);
-        log.trace("Supplier updated: {}", saveResult);
+        supplier = supplierService.save(supplier);
+        log.trace("Supplier updated: {}", supplier);
         String supplierJson = gson.toJson(supplier);
         printResponse(response, supplierJson);
     }
@@ -84,8 +83,8 @@ public class SupplierServlet extends HttpServlet {
     @Override
     public void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
         Supplier supplier = parsSupplierFromJson(request);
-        boolean updateResult = supplierService.update(supplier);
-        log.trace("Supplier updated: {}", updateResult);
+        supplier = supplierService.update(supplier);
+        log.trace("Supplier updated: {}", supplier);
         String supplierJson = gson.toJson(supplier);
         printResponse(response, supplierJson);
     }

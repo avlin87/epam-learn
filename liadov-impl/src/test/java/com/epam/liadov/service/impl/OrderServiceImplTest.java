@@ -3,7 +3,6 @@ package com.epam.liadov.service.impl;
 import com.epam.liadov.EntityFactory;
 import com.epam.liadov.entity.Customer;
 import com.epam.liadov.entity.Order;
-import com.epam.liadov.repository.OrderProductRepository;
 import com.epam.liadov.repository.OrderRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,8 +13,7 @@ import org.mockito.MockitoAnnotations;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
@@ -30,8 +28,6 @@ class OrderServiceImplTest {
     @Mock
     private OrderRepository orderRepository;
 
-    @Mock
-    private OrderProductRepository orderProductRepository;
     private EntityFactory factory;
 
     @InjectMocks
@@ -44,31 +40,25 @@ class OrderServiceImplTest {
     }
 
     @Test
-    void saveReturnTrue() {
+    void saveReturnOrder() {
         Customer customer = factory.generateTestCustomer();
         Order order = factory.generateTestOrder(customer);
-        List<Integer> productId = List.of(1, 2);
-        order.setProductId(productId);
         when(orderRepository.save(order)).thenReturn(Optional.ofNullable(order));
-        when(orderProductRepository.saveId(order.getOrderID(), productId)).thenReturn(true);
 
-        boolean saveResult = orderServiceImpl.save(order);
+        Order saveResult = orderServiceImpl.save(order);
 
-        assertTrue(saveResult);
+        assertEquals(order, saveResult);
     }
 
     @Test
-    void updateReturnTrue() {
+    void updateReturnOrder() {
         Customer customer = factory.generateTestCustomer();
         Order order = factory.generateTestOrder(customer);
-        List<Integer> productId = List.of(1, 2);
-        order.setProductId(productId);
         when(orderRepository.update(any())).thenReturn(Optional.ofNullable(order));
-        when(orderProductRepository.updateId(order.getOrderID(), productId)).thenReturn(true);
 
-        boolean saveResult = orderServiceImpl.update(order);
+        Order updateResult = orderServiceImpl.update(order);
 
-        assertTrue(saveResult);
+        assertEquals(order, updateResult);
     }
 
     @Test

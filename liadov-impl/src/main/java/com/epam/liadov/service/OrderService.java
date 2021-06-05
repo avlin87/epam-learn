@@ -17,7 +17,7 @@ public interface OrderService {
      * @param order entity
      * @return saved order entity
      */
-    boolean save(Order order);
+    Order save(Order order);
 
     /**
      * Update order
@@ -25,7 +25,7 @@ public interface OrderService {
      * @param order entity to update
      * @return - true if updated
      */
-    boolean update(Order order);
+    Order update(Order order);
 
     /**
      * Find Order by primaryKey

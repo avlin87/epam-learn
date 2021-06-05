@@ -1,7 +1,6 @@
 package com.epam.liadov.service.impl;
 
 import com.epam.liadov.entity.Order;
-import com.epam.liadov.repository.OrderProductRepository;
 import com.epam.liadov.repository.OrderRepository;
 import com.epam.liadov.service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -22,37 +21,52 @@ import java.util.Optional;
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
-    private final OrderProductRepository orderProductRepository;
 
     @Override
-    public boolean save(Order order) {
+    public Order save(Order order) {
         Optional<Order> optionalOrder = orderRepository.save(order);
-        boolean saveOrderResult = optionalOrder.isPresent();
-        log.trace("Order created: {}", saveOrderResult);
-        if (saveOrderResult) {
-            boolean saveOrderProduct = orderProductRepository.saveId(order.getOrderID(), order.getProductId());
+        boolean saveResult = optionalOrder.isPresent();
+        if (saveResult) {
+            boolean saveOrderProduct = true;//orderProductRepository.saveId(order.getOrderID(), order.getProducts());
             log.trace("OrderProduct updated: {}", saveOrderProduct);
             if (!saveOrderProduct) {
                 delete(order);
-                saveOrderResult = false;
+                saveResult = false;
             }
         }
-        return saveOrderResult;
+        log.trace("Order updated: {}", saveResult);
+        if (saveResult) {
+            order = optionalOrder.get();
+            return order;
+        }
+        return new Order();
     }
 
     @Override
-    public boolean update(Order order) {
+    public Order update(Order order) {
         Optional<Order> optionalOrder = orderRepository.update(order);
         boolean updateResult = optionalOrder.isPresent();
         if (updateResult) {
-            updateResult = orderProductRepository.updateId(order.getOrderID(), order.getProductId());
+            //updateResult = orderProductRepository.updateId(order.getOrderID(), order.getProductId());
         }
-        return updateResult;
+        log.trace("Order updated: {}", updateResult);
+        if (updateResult) {
+            order = optionalOrder.get();
+            return order;
+        }
+        return new Order();
     }
 
     @Override
     public Order find(int primaryKey) {
-        return orderRepository.find(primaryKey).orElse(new Order());
+        Optional<Order> optionalOrder = orderRepository.find(primaryKey);
+        boolean findResult = optionalOrder.isPresent();
+        log.trace("Order found: {}", findResult);
+        if (findResult) {
+            Order order = optionalOrder.get();
+            return order;
+        }
+        return new Order();
     }
 
     @Override

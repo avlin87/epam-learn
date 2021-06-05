@@ -74,8 +74,8 @@ public class ProductServlet extends HttpServlet {
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         Product product = parsProductFromJson(request);
-        boolean saveResult = productService.save(product);
-        log.trace("Product saved: {}", saveResult);
+        product = productService.save(product);
+        log.trace("Product saved: {}", product);
         String productJson = gson.toJson(product);
         printResponse(response, productJson);
     }
@@ -83,8 +83,8 @@ public class ProductServlet extends HttpServlet {
     @Override
     public void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
         Product product = parsProductFromJson(request);
-        boolean updateResult = productService.update(product);
-        log.trace("Product updated: {}", updateResult);
+        product = productService.update(product);
+        log.trace("Product updated: {}", product);
         String productJson = gson.toJson(product);
         printResponse(response, productJson);
     }
