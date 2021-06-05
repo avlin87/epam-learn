@@ -3,40 +3,37 @@ package com.epam.liadov.service.impl;
 import com.epam.liadov.entity.Supplier;
 import com.epam.liadov.repository.SupplierRepository;
 import com.epam.liadov.service.SupplierService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import java.util.List;
 import java.util.Optional;
 
 /**
- * SupplierServiceImpl
+ * SupplierServiceImpl - Service for operations with Supplier repository
  *
  * @author Aleksandr Liadov
  */
 @Slf4j
+@Service
+@RequiredArgsConstructor
 public class SupplierServiceImpl implements SupplierService {
 
-    private static final EntityManagerFactory entityPU = Persistence.createEntityManagerFactory("EntityPU");
-    private final SupplierRepository supplierRepository = new SupplierRepository(entityPU);
+    private final SupplierRepository supplierRepository;
 
     @Override
-    public Supplier save(Supplier supplier) {
-        Supplier createdSupplier = new Supplier();
+    public boolean save(Supplier supplier) {
         Optional<Supplier> optionalSupplier = supplierRepository.save(supplier);
-        if (optionalSupplier.isPresent()) {
-            createdSupplier = optionalSupplier.get();
-            log.trace("Supplier created successfully");
-        } else {
-            log.trace("Supplier was not created");
-        }
-        return createdSupplier;
+        boolean saveResult = optionalSupplier.isPresent();
+        log.trace("Supplier created: {}", saveResult);
+        return saveResult;
     }
 
     @Override
     public boolean update(Supplier supplier) {
-        return supplierRepository.update(supplier);
+        Optional<Supplier> optionalSupplier = supplierRepository.update(supplier);
+        return optionalSupplier.isPresent();
     }
 
     @Override

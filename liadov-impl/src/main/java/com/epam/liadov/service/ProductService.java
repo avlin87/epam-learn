@@ -5,7 +5,7 @@ import com.epam.liadov.entity.Product;
 import java.util.List;
 
 /**
- * ProductService
+ * ProductService - interface for service operations with Product repository
  *
  * @author Aleksandr Liadov
  */
@@ -17,7 +17,7 @@ public interface ProductService {
      * @param product entity
      * @return saved product entity
      */
-    Product save(Product product);
+    boolean save(Product product);
 
     /**
      * Update product

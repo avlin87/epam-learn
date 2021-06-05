@@ -5,7 +5,7 @@ import com.epam.liadov.entity.Order;
 import java.util.List;
 
 /**
- * OrderService
+ * OrderService - interface for service operations with Order repository
  *
  * @author Aleksandr Liadov
  */
@@ -17,7 +17,7 @@ public interface OrderService {
      * @param order entity
      * @return saved order entity
      */
-    Order save(Order order);
+    boolean save(Order order);
 
     /**
      * Update order

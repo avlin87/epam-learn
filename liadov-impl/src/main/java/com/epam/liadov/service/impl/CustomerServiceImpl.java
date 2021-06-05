@@ -3,45 +3,43 @@ package com.epam.liadov.service.impl;
 import com.epam.liadov.entity.Customer;
 import com.epam.liadov.repository.CustomerRepository;
 import com.epam.liadov.service.CustomerService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import java.util.List;
 import java.util.Optional;
 
 /**
- * CustomerServiceImpl
+ * CustomerServiceImpl - Service for operations with Customer repository
  *
  * @author Aleksandr Liadov
  */
 @Slf4j
+@Service
+@RequiredArgsConstructor
 public class CustomerServiceImpl implements CustomerService {
 
-    private static final EntityManagerFactory entityPU = Persistence.createEntityManagerFactory("EntityPU");
-    private final CustomerRepository customerRepository = new CustomerRepository(entityPU);
+    private final CustomerRepository customerRepository;
 
     @Override
-    public Customer save(Customer customer) {
-        Customer createdCustomer = new Customer();
+    public boolean save(Customer customer) {
         Optional<Customer> optionalCustomer = customerRepository.save(customer);
-        if (optionalCustomer.isPresent()) {
-            createdCustomer = optionalCustomer.get();
-            log.trace("Customer created successfully");
-        } else {
-            log.trace("Customer was not created");
-        }
-        return createdCustomer;
+        boolean saveResult = optionalCustomer.isPresent();
+        log.trace("Customer created: {}", saveResult);
+        return saveResult;
     }
 
     @Override
     public boolean update(Customer customer) {
-        return customerRepository.update(customer);
+        Optional<Customer> optionalCustomer = customerRepository.update(customer);
+        return optionalCustomer.isPresent();
     }
 
     @Override
     public Customer find(int primaryKey) {
-        return customerRepository.find(primaryKey).orElse(new Customer());
+        Optional<Customer> optionalCustomer = customerRepository.find(primaryKey);
+        return optionalCustomer.orElse(new Customer());
     }
 
     @Override

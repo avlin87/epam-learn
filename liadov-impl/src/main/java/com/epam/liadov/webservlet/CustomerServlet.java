@@ -2,11 +2,17 @@ package com.epam.liadov.webservlet;
 
 import com.epam.liadov.entity.Customer;
 import com.epam.liadov.service.CustomerService;
-import com.epam.liadov.service.impl.CustomerServiceImpl;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -21,12 +27,24 @@ import java.util.stream.Collectors;
  * CustomerServlet - class for Json representation on Customer class
  */
 @Slf4j
+@Controller
+@WebServlet("/customer")
 public class CustomerServlet extends HttpServlet {
 
-    private static final Gson gson = new Gson();
-    private final CustomerService customerService = new CustomerServiceImpl();
     private final String CONTENT_TYPE = "application/json";
     private final String CHARACTER_ENCODING = "UTF-8";
+    @Autowired
+    private CustomerService customerService;
+    private Gson gson = new Gson();
+    private WebApplicationContext springContext;
+
+    @Override
+    public void init(final ServletConfig config) throws ServletException {
+        super.init(config);
+        springContext = WebApplicationContextUtils.getRequiredWebApplicationContext(config.getServletContext());
+        final AutowireCapableBeanFactory beanFactory = springContext.getAutowireCapableBeanFactory();
+        beanFactory.autowireBean(this);
+    }
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -56,13 +74,14 @@ public class CustomerServlet extends HttpServlet {
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         Customer customer = parsCustomerFromJson(request);
-        customer = customerService.save(customer);
+        boolean saveResult = customerService.save(customer);
+        log.trace("Customer saved: {}", saveResult);
         String customerJson = gson.toJson(customer);
         printResponse(response, customerJson);
     }
 
     @Override
-    public void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
         Customer customer = parsCustomerFromJson(request);
         boolean updateResult = customerService.update(customer);
         log.trace("Customer updated: {}", updateResult);
@@ -71,7 +90,7 @@ public class CustomerServlet extends HttpServlet {
     }
 
     @Override
-    public void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {
         var customer = new Customer();
         int key = getKey(request, customer);
         if (key > 0) {

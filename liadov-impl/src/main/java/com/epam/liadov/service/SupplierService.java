@@ -5,7 +5,7 @@ import com.epam.liadov.entity.Supplier;
 import java.util.List;
 
 /**
- * SupplierService
+ * SupplierService - interface for service operations with Supplier repository
  *
  * @author Aleksandr Liadov
  */
@@ -17,7 +17,7 @@ public interface SupplierService {
      * @param supplier entity
      * @return saved supplier entity
      */
-    Supplier save(Supplier supplier);
+    boolean save(Supplier supplier);
 
     /**
      * Update supplier

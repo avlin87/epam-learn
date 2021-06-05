@@ -5,7 +5,7 @@ import com.epam.liadov.entity.Customer;
 import java.util.List;
 
 /**
- * CustomerService
+ * CustomerService - interface for service operations with Customer repository
  *
  * @author Aleksandr Liadov
  */
@@ -17,7 +17,7 @@ public interface CustomerService {
      * @param customer entity
      * @return saved customer entity
      */
-    Customer save(Customer customer);
+    boolean save(Customer customer);
 
     /**
      * Update customer
