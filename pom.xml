@@ -8,10 +8,12 @@
     <artifactId>liadov</artifactId>
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
+
+
     <modules>
+        <module>liadov-impl</module>
         <module>liadov-api</module>
         <module>liadov-db</module>
-        <module>liadov-impl</module>
     </modules>
     <name>Liadov Parent</name>
 
@@ -25,25 +27,29 @@
         <lombok.version>1.18.20</lombok.version>
         <logback-classic.version>1.2.3</logback-classic.version>
         <junit-jupiter-engine.version>5.7.1</junit-jupiter-engine.version>
-        <junit-jupiter-api.version>5.7.1</junit-jupiter-api.version>
         <junit-platform-runner.version>1.7.1</junit-platform-runner.version>
         <mockito-junit-jupiter.version>3.9.0</mockito-junit-jupiter.version>
 
-        <jacoco-maven-plugin.haltOnFailure>true</jacoco-maven-plugin.haltOnFailure>
-        <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
-        <jacoco-maven-plugin.version>0.8.5</jacoco-maven-plugin.version>
-        <postgresql.version>42.2.20</postgresql.version>
-        <liquibase.version>4.3.5</liquibase.version>
+        <commons-dbcp2.version>2.8.0</commons-dbcp2.version>
+        <gson.version>2.8.7</gson.version>
         <hibernate.version>5.4.31.Final</hibernate.version>
+        <h2.version>1.4.200</h2.version>
+        <jacoco-maven-plugin.haltOnFailure>true</jacoco-maven-plugin.haltOnFailure>
+        <jacoco-maven-plugin.version>0.8.5</jacoco-maven-plugin.version>
+        <javax.servlet-api.version>4.0.1</javax.servlet-api.version>
+        <javax.annotation-api.version>1.3.2</javax.annotation-api.version>
+        <jackson-databind.version>2.12.3</jackson-databind.version>
+        <liquibase.version>4.3.5</liquibase.version>
+        <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <maven-site-plugin.version>3.9.1</maven-site-plugin.version>
-        <javax.servlet-api.version>3.0.1</javax.servlet-api.version>
-        <gson.version>2.8.7</gson.version>
+        <maven-war-plugin.version>3.3.1</maven-war-plugin.version>
+        <postgresql.version>42.2.20</postgresql.version>
         <spring-core.version>5.3.7</spring-core.version>
-        <spring-boot-starter-data-jpa.version>2.5.0</spring-boot-starter-data-jpa.version>
-        <mockito-core.version>3.9.0</mockito-core.version>
-        <javax.annotation-api.version>1.3.2</javax.annotation-api.version>
-        <commons-dbcp2.version>2.8.0</commons-dbcp2.version>
+        <spring-data-jpa.version>2.5.1</spring-data-jpa.version>
+        <tomcat7-maven-plugin.version>2.2</tomcat7-maven-plugin.version>
+        <validation-api.version>2.0.1.Final</validation-api.version>
+        <mockito-all.version>1.10.19</mockito-all.version>
     </properties>
 
     <dependencyManagement>
@@ -60,6 +66,25 @@
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-classic</artifactId>
                 <version>${logback-classic.version}</version>
+                <scope>compile</scope>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson-databind.version}</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/javax.validation/validation-api -->
+            <dependency>
+                <groupId>javax.validation</groupId>
+                <artifactId>validation-api</artifactId>
+                <version>${validation-api.version}</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/org.springframework.data/spring-data-jpa -->
+            <dependency>
+                <groupId>org.springframework.data</groupId>
+                <artifactId>spring-data-jpa</artifactId>
+                <version>${spring-data-jpa.version}</version>
             </dependency>
             <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-engine -->
             <dependency>
@@ -72,7 +97,7 @@
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-api</artifactId>
-                <version>${junit-jupiter-api.version}</version>
+                <version>${junit-jupiter-engine.version}</version>
                 <scope>provided</scope>
             </dependency>
             <!-- https://mvnrepository.com/artifact/org.junit.platform/junit-platform-runner -->
@@ -89,6 +114,7 @@
                 <version>${mockito-junit-jupiter.version}</version>
                 <scope>test</scope>
             </dependency>
+
             <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
             <dependency>
                 <groupId>org.postgresql</groupId>
@@ -107,17 +133,19 @@
                 <artifactId>hibernate-core</artifactId>
                 <version>${hibernate.version}</version>
             </dependency>
+            <!-- https://mvnrepository.com/artifact/org.springframework/spring-webmvc -->
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-webmvc</artifactId>
+                <version>${spring-core.version}</version>
+                <scope>compile</scope>
+            </dependency>
             <!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
             <dependency>
                 <groupId>javax.servlet</groupId>
                 <artifactId>javax.servlet-api</artifactId>
                 <version>${javax.servlet-api.version}</version>
-            </dependency>
-            <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
-            <dependency>
-                <groupId>com.google.code.gson</groupId>
-                <artifactId>gson</artifactId>
-                <version>${gson.version}</version>
+                <scope>provided</scope>
             </dependency>
             <!-- https://mvnrepository.com/artifact/org.springframework/spring-core -->
             <dependency>
@@ -131,38 +159,29 @@
                 <artifactId>spring-context</artifactId>
                 <version>${spring-core.version}</version>
             </dependency>
-
             <!-- https://mvnrepository.com/artifact/javax.annotation/javax.annotation-api -->
             <dependency>
                 <groupId>javax.annotation</groupId>
                 <artifactId>javax.annotation-api</artifactId>
                 <version>${javax.annotation-api.version}</version>
             </dependency>
-
-            <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-dbcp2 -->
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-dbcp2</artifactId>
-                <version>${commons-dbcp2.version}</version>
-            </dependency>
-
             <!-- https://mvnrepository.com/artifact/org.springframework/spring-web -->
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-web</artifactId>
                 <version>${spring-core.version}</version>
             </dependency>
-
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
+                <version>${jackson-databind.version}</version>
+                <scope>compile</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>${maven-surefire-plugin.version}</version>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -181,12 +200,43 @@
                 </configuration>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>${maven-war-plugin.version}</version>
+                <configuration>
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.1.2</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.tomcat.maven</groupId>
+                <artifactId>tomcat7-maven-plugin</artifactId>
+                <version>${tomcat7-maven-plugin.version}</version>
+                <configuration>
+                    <url>http://localhost:8080/manager/text</url>
+                    <server>tomcat</server>
+                    <username>admin1</username>
+                    <password>admin1</password>
+                    <path>/</path>
+                    <update>true</update>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven-surefire-plugin.version}</version>
+            </plugin>
+            <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>${jacoco-maven-plugin.version}</version>
                 <configuration>
                     <excludes>
-                        <exclude>**/webservlet/**</exclude>
+                        <exclude>**/config/**</exclude>
                     </excludes>
                 </configuration>
                 <executions>

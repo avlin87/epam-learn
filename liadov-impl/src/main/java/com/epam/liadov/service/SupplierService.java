@@ -1,6 +1,6 @@
 package com.epam.liadov.service;
 
-import com.epam.liadov.entity.Supplier;
+import com.epam.liadov.domain.Supplier;
 
 import java.util.List;
 
@@ -38,10 +38,10 @@ public interface SupplierService {
     /**
      * Delete entity
      *
-     * @param supplier to be deleted
+     * @param primaryKey to be deleted
      * @return - true if deleted
      */
-    boolean delete(Supplier supplier);
+    boolean delete(int primaryKey);
 
     /**
      * Return all of Supplier entities

@@ -1,8 +1,8 @@
 package com.epam.liadov.service.impl;
 
-import com.epam.liadov.EntityFactory;
-import com.epam.liadov.entity.Customer;
-import com.epam.liadov.entity.Order;
+import com.epam.liadov.domain.factory.EntityFactory;
+import com.epam.liadov.domain.Customer;
+import com.epam.liadov.domain.Order;
 import com.epam.liadov.repository.OrderRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,7 +43,7 @@ class OrderServiceImplTest {
     void saveReturnOrder() {
         Customer customer = factory.generateTestCustomer();
         Order order = factory.generateTestOrder(customer);
-        when(orderRepository.save(order)).thenReturn(Optional.ofNullable(order));
+        when(orderRepository.save(order)).thenReturn(order);
 
         Order saveResult = orderServiceImpl.save(order);
 
@@ -54,7 +54,8 @@ class OrderServiceImplTest {
     void updateReturnOrder() {
         Customer customer = factory.generateTestCustomer();
         Order order = factory.generateTestOrder(customer);
-        when(orderRepository.update(any())).thenReturn(Optional.ofNullable(order));
+        when(orderRepository.findById(any())).thenReturn(Optional.ofNullable(order));
+        when(orderRepository.save(any())).thenReturn(order);
 
         Order updateResult = orderServiceImpl.update(order);
 
@@ -65,7 +66,7 @@ class OrderServiceImplTest {
     void findReturnNotNull() {
         Customer customer = factory.generateTestCustomer();
         Order expectedValue = factory.generateTestOrder(customer);
-        when(orderRepository.find(anyInt())).thenReturn(Optional.ofNullable(expectedValue));
+        when(orderRepository.findById(anyInt())).thenReturn(Optional.ofNullable(expectedValue));
 
         Order order = orderServiceImpl.find(1);
 
@@ -76,9 +77,10 @@ class OrderServiceImplTest {
     void delete() {
         Customer customer = factory.generateTestCustomer();
         Order order = factory.generateTestOrder(customer);
-        when(orderRepository.delete(any())).thenReturn(true);
+        int orderID = order.getOrderID();
+        when(orderRepository.existsById(anyInt())).thenReturn(true).thenReturn(false);
 
-        boolean deleteResult = orderServiceImpl.delete(order);
+        boolean deleteResult = orderServiceImpl.delete(orderID);
 
         assertTrue(deleteResult);
     }

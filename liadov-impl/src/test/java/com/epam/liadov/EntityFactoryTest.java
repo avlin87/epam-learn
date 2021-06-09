@@ -1,9 +1,10 @@
 package com.epam.liadov;
 
-import com.epam.liadov.entity.Customer;
-import com.epam.liadov.entity.Order;
-import com.epam.liadov.entity.Product;
-import com.epam.liadov.entity.Supplier;
+import com.epam.liadov.domain.Customer;
+import com.epam.liadov.domain.Order;
+import com.epam.liadov.domain.Product;
+import com.epam.liadov.domain.Supplier;
+import com.epam.liadov.domain.factory.EntityFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

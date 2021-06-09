@@ -1,10 +1,11 @@
 package com.epam.liadov.service.impl;
 
-import com.epam.liadov.entity.Order;
+import com.epam.liadov.domain.Order;
 import com.epam.liadov.repository.OrderRepository;
 import com.epam.liadov.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,23 +19,17 @@ import java.util.Optional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Profile("!local")
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
 
     @Override
     public Order save(Order order) {
-        Optional<Order> optionalOrder = orderRepository.save(order);
+
+        Optional<Order> optionalOrder = Optional.ofNullable(orderRepository.save(order));
         boolean saveResult = optionalOrder.isPresent();
-        if (saveResult) {
-            boolean saveOrderProduct = true;//orderProductRepository.saveId(order.getOrderID(), order.getProducts());
-            log.trace("OrderProduct updated: {}", saveOrderProduct);
-            if (!saveOrderProduct) {
-                delete(order);
-                saveResult = false;
-            }
-        }
-        log.trace("Order updated: {}", saveResult);
+        log.trace("Order created: {}", saveResult);
         if (saveResult) {
             order = optionalOrder.get();
             return order;
@@ -44,22 +39,23 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Order update(Order order) {
-        Optional<Order> optionalOrder = orderRepository.update(order);
-        boolean updateResult = optionalOrder.isPresent();
-        if (updateResult) {
-            //updateResult = orderProductRepository.updateId(order.getOrderID(), order.getProductId());
+        int orderID = order.getOrderID();
+        Optional<Order> optionalOrder = orderRepository.findById(orderID);
+        if (optionalOrder.isPresent()) {
+            optionalOrder = Optional.ofNullable(orderRepository.save(order));
         }
-        log.trace("Order updated: {}", updateResult);
-        if (updateResult) {
+        if (optionalOrder.isPresent()) {
             order = optionalOrder.get();
+            log.trace("Order updated: {}", order);
             return order;
         }
+        log.trace("Order was not updated");
         return new Order();
     }
 
     @Override
     public Order find(int primaryKey) {
-        Optional<Order> optionalOrder = orderRepository.find(primaryKey);
+        Optional<Order> optionalOrder = orderRepository.findById(primaryKey);
         boolean findResult = optionalOrder.isPresent();
         log.trace("Order found: {}", findResult);
         if (findResult) {
@@ -70,17 +66,26 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<Order> findByCustomerId(int customerId) {
-        return orderRepository.getOrdersByCustomerId(customerId);
+    public boolean delete(int primaryKey) {
+        boolean existsInDb = orderRepository.existsById(primaryKey);
+        log.trace("Entity for removal exist in BD: {}", existsInDb);
+        if (existsInDb) {
+            orderRepository.deleteById(primaryKey);
+            boolean entityExistAfterRemove = orderRepository.existsById(primaryKey);
+            log.trace("Entity removed: {}", entityExistAfterRemove);
+            return !entityExistAfterRemove;
+        }
+        return false;
     }
 
     @Override
-    public boolean delete(Order order) {
-        return orderRepository.delete(order);
+    public List<Order> findByCustomerId(int customerId) {
+        return orderRepository.findAllByCustomerId(customerId);
     }
 
     @Override
     public List<Order> getAll() {
-        return orderRepository.getAll();
+        return orderRepository.findAll();
     }
+
 }

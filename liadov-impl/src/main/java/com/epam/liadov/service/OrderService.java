@@ -1,6 +1,6 @@
 package com.epam.liadov.service;
 
-import com.epam.liadov.entity.Order;
+import com.epam.liadov.domain.Order;
 
 import java.util.List;
 
@@ -46,10 +46,10 @@ public interface OrderService {
     /**
      * Delete entity
      *
-     * @param order to be deleted
+     * @param primaryKey to be deleted
      * @return - true if deleted
      */
-    boolean delete(Order order);
+    boolean delete(int primaryKey);
 
     /**
      * Return all of Order entities

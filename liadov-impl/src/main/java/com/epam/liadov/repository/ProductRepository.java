@@ -1,7 +1,8 @@
 package com.epam.liadov.repository;
 
-import com.epam.liadov.entity.Product;
-import lombok.NonNull;
+import com.epam.liadov.domain.Product;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,23 +12,18 @@ import java.util.Optional;
  *
  * @author Aleksandr Liadov
  */
-public interface ProductRepository {
+@Repository
+public interface ProductRepository extends CrudRepository<Product, Integer> {
 
     /**
      * Method interact with database and store target object
      *
      * @param product target object
+     * @param <S>     extending class
      * @return Optional<Product> container
      */
-    Optional<Product> save(Product product);
-
-    /**
-     * Method interact with database and update target object
-     *
-     * @param product target object
-     * @return Optional<Product> container
-     */
-    Optional<Product> update(@NonNull Product product);
+    @Override
+    <S extends Product> S save(S product);
 
     /**
      * Method finds objects in database by primaryKey
@@ -35,20 +31,32 @@ public interface ProductRepository {
      * @param primaryKey primaryKey of target object
      * @return Optional<Product> with found object on success else Optional.empty
      */
-    Optional<Product> find(int primaryKey);
+    @Override
+    Optional<Product> findById(Integer primaryKey);
 
     /**
      * Method delete target object from database
      *
-     * @param product target object
+     * @param primaryKey target object
      * @return true in case of success else false
      */
-    boolean delete(@NonNull Product product);
+    @Override
+    void deleteById(Integer primaryKey);
 
     /**
      * Method of all Product objects in Database
      *
      * @return list
      */
-    List<Product> getAll();
+    @Override
+    List<Product> findAll();
+
+    /**
+     * Method for checking if entity exists in database
+     *
+     * @param primaryKey target object
+     * @return true if found
+     */
+    @Override
+    boolean existsById(Integer primaryKey);
 }

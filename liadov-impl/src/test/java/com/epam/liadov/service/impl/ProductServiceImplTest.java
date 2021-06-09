@@ -1,8 +1,8 @@
 package com.epam.liadov.service.impl;
 
-import com.epam.liadov.EntityFactory;
-import com.epam.liadov.entity.Product;
-import com.epam.liadov.entity.Supplier;
+import com.epam.liadov.domain.factory.EntityFactory;
+import com.epam.liadov.domain.Product;
+import com.epam.liadov.domain.Supplier;
 import com.epam.liadov.repository.ProductRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,7 +42,7 @@ class ProductServiceImplTest {
     void saveReturnTrue() {
         Supplier supplier = factory.generateTestSupplier();
         Product product = factory.generateTestProduct(supplier);
-        when(productRepository.save(any())).thenReturn(Optional.ofNullable(product));
+        when(productRepository.save(any())).thenReturn(product);
 
         Product saveResult = productServiceImpl.save(product);
 
@@ -53,7 +53,8 @@ class ProductServiceImplTest {
     void updateReturnTrue() {
         Supplier supplier = factory.generateTestSupplier();
         Product product = factory.generateTestProduct(supplier);
-        when(productRepository.update(any())).thenReturn(Optional.ofNullable(product));
+        when(productRepository.findById(anyInt())).thenReturn(Optional.ofNullable(product));
+        when(productRepository.save(any())).thenReturn(product);
 
         Product updateResult = productServiceImpl.update(product);
 
@@ -64,7 +65,7 @@ class ProductServiceImplTest {
     void findReturnNotNull() {
         Supplier supplier = factory.generateTestSupplier();
         Product expectedValue = factory.generateTestProduct(supplier);
-        when(productRepository.find(anyInt())).thenReturn(Optional.ofNullable(expectedValue));
+        when(productRepository.findById(anyInt())).thenReturn(Optional.ofNullable(expectedValue));
 
         Product product = productServiceImpl.find(1);
 
@@ -75,9 +76,10 @@ class ProductServiceImplTest {
     void delete() {
         Supplier supplier = factory.generateTestSupplier();
         Product product = factory.generateTestProduct(supplier);
-        when(productRepository.delete(any())).thenReturn(true);
+        int productId = product.getProductId();
+        when(productRepository.existsById(anyInt())).thenReturn(true).thenReturn(false);
 
-        boolean deleteResult = productServiceImpl.delete(product);
+        boolean deleteResult = productServiceImpl.delete(productId);
 
         assertTrue(deleteResult);
     }

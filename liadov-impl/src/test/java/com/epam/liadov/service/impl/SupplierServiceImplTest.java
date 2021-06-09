@@ -1,7 +1,7 @@
 package com.epam.liadov.service.impl;
 
-import com.epam.liadov.EntityFactory;
-import com.epam.liadov.entity.Supplier;
+import com.epam.liadov.domain.Supplier;
+import com.epam.liadov.domain.factory.EntityFactory;
 import com.epam.liadov.repository.SupplierRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,7 +40,7 @@ class SupplierServiceImplTest {
     @Test
     void saveReturnSupplier() {
         Supplier supplier = factory.generateTestSupplier();
-        when(supplierRepository.save(any())).thenReturn(Optional.ofNullable(supplier));
+        when(supplierRepository.save(any())).thenReturn(supplier);
 
         Supplier saveResult = supplierServiceImpl.save(supplier);
 
@@ -50,7 +50,8 @@ class SupplierServiceImplTest {
     @Test
     void updateReturnTrue() {
         Supplier supplier = factory.generateTestSupplier();
-        when(supplierRepository.update(any())).thenReturn(Optional.ofNullable(supplier));
+        when(supplierRepository.findById(anyInt())).thenReturn(Optional.ofNullable(supplier));
+        when(supplierRepository.save(any())).thenReturn(supplier);
 
         Supplier updateResult = supplierServiceImpl.update(supplier);
 
@@ -60,7 +61,7 @@ class SupplierServiceImplTest {
     @Test
     void findReturnNotNull() {
         Supplier expectedValue = factory.generateTestSupplier();
-        when(supplierRepository.find(anyInt())).thenReturn(Optional.ofNullable(expectedValue));
+        when(supplierRepository.findById(anyInt())).thenReturn(Optional.ofNullable(expectedValue));
 
         Supplier supplier = supplierServiceImpl.find(1);
 
@@ -70,9 +71,10 @@ class SupplierServiceImplTest {
     @Test
     void delete() {
         Supplier supplier = factory.generateTestSupplier();
-        when(supplierRepository.delete(any())).thenReturn(true);
+        int supplierId = supplier.getSupplierId();
+        when(supplierRepository.existsById(anyInt())).thenReturn(true).thenReturn(false);
 
-        boolean deleteResult = supplierServiceImpl.delete(supplier);
+        boolean deleteResult = supplierServiceImpl.delete(supplierId);
 
         assertTrue(deleteResult);
     }
