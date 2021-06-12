@@ -17,8 +17,6 @@
         <dependency>
             <groupId>com.epam</groupId>
             <artifactId>liadov-api</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>compile</scope>
         </dependency>
         <!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
         <dependency>

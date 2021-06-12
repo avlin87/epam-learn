@@ -1,7 +1,10 @@
 package com.epam.liadov.resource.impl;
 
-import com.epam.liadov.domain.Customer;
-import com.epam.liadov.domain.factory.EntityFactory;
+import com.epam.liadov.converter.CustomerDtoToCustomerConverter;
+import com.epam.liadov.converter.CustomerToCustomerDtoConverter;
+import com.epam.liadov.domain.entity.Customer;
+import com.epam.liadov.domain.entity.factory.EntityFactory;
+import com.epam.liadov.dto.CustomerDto;
 import com.epam.liadov.service.impl.CustomerServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,7 +30,13 @@ class CustomerResourceImplTest {
 
     @Mock
     private CustomerServiceImpl customerService;
+    @Mock
+    private CustomerToCustomerDtoConverter customerToCustomerDtoConverter;
+    @Mock
+    private CustomerDtoToCustomerConverter customerDtoToCustomerConverter;
+
     private EntityFactory factory;
+    private CustomerToCustomerDtoConverter toCustomerDtoConverter = new CustomerToCustomerDtoConverter();
 
     @InjectMocks
     private CustomerResourceImpl customerResource;
@@ -41,21 +50,26 @@ class CustomerResourceImplTest {
     @Test
     void getCustomer() {
         Customer testCustomer = factory.generateTestCustomer();
+        CustomerDto testCustomerDto = toCustomerDtoConverter.convert(testCustomer);
         when(customerService.find(anyInt())).thenReturn(testCustomer);
+        when(customerToCustomerDtoConverter.convert(any())).thenReturn(testCustomerDto);
 
-        Customer customer = customerResource.getCustomer(1);
+        CustomerDto customerDto = customerResource.getCustomer(1);
 
-        assertEquals(testCustomer, customer);
+        assertEquals(testCustomerDto, customerDto);
     }
 
     @Test
     void addCustomer() {
         Customer testCustomer = factory.generateTestCustomer();
+        CustomerDto testCustomerDto = toCustomerDtoConverter.convert(testCustomer);
+        when(customerToCustomerDtoConverter.convert(any())).thenReturn(testCustomerDto);
+        when(customerDtoToCustomerConverter.convert(any())).thenReturn(testCustomer);
         when(customerService.save(any())).thenReturn(testCustomer);
 
-        Customer customer = customerResource.addCustomer(testCustomer);
+        CustomerDto customerDto = customerResource.addCustomer(testCustomerDto);
 
-        assertEquals(testCustomer, customer);
+        assertEquals(testCustomerDto, customerDto);
     }
 
     @Test
@@ -68,11 +82,13 @@ class CustomerResourceImplTest {
     @Test
     void updateCustomer() {
         Customer testCustomer = factory.generateTestCustomer();
+        CustomerDto testCustomerDto = toCustomerDtoConverter.convert(testCustomer);
         when(customerService.update(any())).thenReturn(testCustomer);
+        when(customerToCustomerDtoConverter.convert(any())).thenReturn(testCustomerDto);
 
-        Customer customer = customerResource.updateCustomer(testCustomer);
+        CustomerDto customerDto = customerResource.updateCustomer(testCustomerDto);
 
-        assertEquals(testCustomer, customer);
+        assertEquals(testCustomerDto, customerDto);
     }
 
     @Test
@@ -80,7 +96,7 @@ class CustomerResourceImplTest {
         List<Customer> customers = new ArrayList<>();
         when(customerService.getAll()).thenReturn(customers);
 
-        List<Customer> customerList = customerResource.getAllCustomers();
+        List<CustomerDto> customerList = customerResource.getAllCustomers();
 
         assertNotNull(customerList);
     }

@@ -1,6 +1,7 @@
-package com.epam.liadov.domain;
+package com.epam.liadov.domain.entity;
 
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -14,6 +15,7 @@ import javax.persistence.Id;
  */
 @Entity
 @Data
+@Accessors(chain = true)
 public class Customer {
 
     @Id

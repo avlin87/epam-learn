@@ -1,4 +1,4 @@
-package com.epam.liadov.domain;
+package com.epam.liadov.domain.entity;
 
 import lombok.Data;
 import lombok.ToString;

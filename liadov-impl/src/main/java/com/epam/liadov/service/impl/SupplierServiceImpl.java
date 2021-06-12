@@ -1,6 +1,8 @@
 package com.epam.liadov.service.impl;
 
-import com.epam.liadov.domain.Supplier;
+import com.epam.liadov.domain.entity.Supplier;
+import com.epam.liadov.exception.BadRequestException;
+import com.epam.liadov.exception.NoContentException;
 import com.epam.liadov.repository.SupplierRepository;
 import com.epam.liadov.service.SupplierService;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +35,7 @@ public class SupplierServiceImpl implements SupplierService {
             supplier = optionalSupplier.get();
             return supplier;
         }
-        return new Supplier();
+        throw new BadRequestException("Supplier was not saved");
     }
 
     @Override
@@ -41,39 +43,39 @@ public class SupplierServiceImpl implements SupplierService {
         Optional<Supplier> optionalSupplier = supplierRepository.findById(supplier.getSupplierId());
         if (optionalSupplier.isPresent()) {
             optionalSupplier = Optional.ofNullable(supplierRepository.save(supplier));
-        }
-        if (optionalSupplier.isPresent()) {
-            supplier = optionalSupplier.get();
-            log.trace("Supplier Updated: {}", supplier);
-            return supplier;
+            if (optionalSupplier.isPresent()) {
+                supplier = optionalSupplier.get();
+                log.trace("Supplier Updated: {}", supplier);
+                return supplier;
+            }
         }
         log.trace("Supplier was not updated");
-        return new Supplier();
+        throw new NoContentException("Supplier does not exist");
     }
 
     @Override
-    public Supplier find(int primaryKey) {
-        Optional<Supplier> optionalSupplier = supplierRepository.findById(primaryKey);
+    public Supplier find(int supplierId) {
+        Optional<Supplier> optionalSupplier = supplierRepository.findById(supplierId);
         boolean findResult = optionalSupplier.isPresent();
         log.trace("Supplier found: {}", findResult);
         if (findResult) {
             Supplier supplier = optionalSupplier.get();
             return supplier;
         }
-        return new Supplier();
+        throw new NoContentException("Supplier does not exist");
     }
 
     @Override
-    public boolean delete(int primaryKey) {
-        boolean existsInDb = supplierRepository.existsById(primaryKey);
+    public boolean delete(int supplierId) {
+        boolean existsInDb = supplierRepository.existsById(supplierId);
         log.trace("Entity for removal exist in BD: {}", existsInDb);
         if (existsInDb) {
-            supplierRepository.deleteById(primaryKey);
-            boolean entityExistAfterRemove = supplierRepository.existsById(primaryKey);
+            supplierRepository.deleteById(supplierId);
+            boolean entityExistAfterRemove = supplierRepository.existsById(supplierId);
             log.trace("Entity removed: {}", entityExistAfterRemove);
             return !entityExistAfterRemove;
         }
-        return false;
+        throw new NoContentException("Supplier does not exist");
     }
 
     @Override

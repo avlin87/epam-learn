@@ -1,6 +1,8 @@
 package com.epam.liadov.service.impl;
 
-import com.epam.liadov.domain.Customer;
+import com.epam.liadov.domain.entity.Customer;
+import com.epam.liadov.exception.BadRequestException;
+import com.epam.liadov.exception.NoContentException;
 import com.epam.liadov.repository.CustomerRepository;
 import com.epam.liadov.service.CustomerService;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +28,6 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public Customer save(Customer customer) {
-
         Optional<Customer> optionalCustomer = Optional.ofNullable(customerRepository.save(customer));
         boolean saveResult = optionalCustomer.isPresent();
         log.trace("Customer created: {}", saveResult);
@@ -34,7 +35,7 @@ public class CustomerServiceImpl implements CustomerService {
             customer = optionalCustomer.get();
             return customer;
         }
-        return new Customer();
+        throw new BadRequestException("Customer was not saved");
     }
 
     @Override
@@ -43,39 +44,39 @@ public class CustomerServiceImpl implements CustomerService {
         Optional<Customer> optionalCustomer = customerRepository.findById(customerId);
         if (optionalCustomer.isPresent()) {
             optionalCustomer = Optional.ofNullable(customerRepository.save(customer));
-        }
-        if (optionalCustomer.isPresent()) {
-            customer = optionalCustomer.get();
-            log.trace("Customer updated: {}", customer);
-            return customer;
+            if (optionalCustomer.isPresent()) {
+                customer = optionalCustomer.get();
+                log.trace("Customer updated: {}", customer);
+                return customer;
+            }
         }
         log.trace("Customer was not updated");
-        return new Customer();
+        throw new NoContentException("Customer does not exist");
     }
 
     @Override
-    public Customer find(int primaryKey) {
-        Optional<Customer> optionalCustomer = customerRepository.findById(primaryKey);
+    public Customer find(int customerId) {
+        Optional<Customer> optionalCustomer = customerRepository.findById(customerId);
         boolean findResult = optionalCustomer.isPresent();
         log.trace("Customer found: {}", findResult);
         if (findResult) {
             Customer customer = optionalCustomer.get();
             return customer;
         }
-        return new Customer();
+        throw new NoContentException("Customer does not exist");
     }
 
     @Override
-    public boolean delete(int primaryKey) {
-        boolean existsInDb = customerRepository.existsById(primaryKey);
+    public boolean delete(int customerId) {
+        boolean existsInDb = customerRepository.existsById(customerId);
         log.trace("Entity for removal exist in BD: {}", existsInDb);
         if (existsInDb) {
-            customerRepository.deleteById(primaryKey);
-            boolean entityExistAfterRemove = customerRepository.existsById(primaryKey);
+            customerRepository.deleteById(customerId);
+            boolean entityExistAfterRemove = customerRepository.existsById(customerId);
             log.trace("Entity removed: {}", entityExistAfterRemove);
             return !entityExistAfterRemove;
         }
-        return false;
+        throw new NoContentException("Customer does not exist");
     }
 
     @Override

@@ -19,8 +19,8 @@ public interface ProductResource {
      * @param id - id of requested entity
      * @return entity object
      */
-    @GetMapping(params = "id")
-    ProductDto getProduct(@RequestParam Integer id);
+    @GetMapping("/{id}")
+    ProductDto getProduct(@PathVariable Integer id);
 
     /**
      * Method parse json POST as Product object
@@ -46,8 +46,8 @@ public interface ProductResource {
      * @param id id of entity to be removed
      * @return true if entity removed
      */
-    @DeleteMapping(params = "id")
-    void deleteProduct(@RequestParam Integer id);
+    @DeleteMapping("/{id}")
+    void deleteProduct(@PathVariable Integer id);
 
     /**
      * Method for requesting all of Product entities

@@ -19,8 +19,8 @@ public interface OrderResource {
      * @param id - id of requested entity
      * @return entity object
      */
-    @GetMapping(params = "id")
-    OrderDto getOrder(@RequestParam Integer id);
+    @GetMapping("/{id}")
+    OrderDto getOrder(@PathVariable Integer id);
 
     /**
      * Method for getting list of all Orders related to specific Customer by customerId
@@ -28,8 +28,8 @@ public interface OrderResource {
      * @param customerId - customerId value
      * @return List of entities
      */
-    @GetMapping(params = "customerId")
-    List<OrderDto> getByCustomerId(@RequestParam Integer customerId);
+    @GetMapping("/customer/{customerId}")
+    List<OrderDto> getByCustomerId(@PathVariable Integer customerId);
 
     /**
      * Method parse json POST as Order object
@@ -55,8 +55,8 @@ public interface OrderResource {
      * @param id id of entity to be removed
      * @return true if entity removed
      */
-    @DeleteMapping
-    void deleteOrder(@RequestParam Integer id);
+    @DeleteMapping("/{id}")
+    void deleteOrder(@PathVariable Integer id);
 
     /**
      * Method for requesting all of Order entities

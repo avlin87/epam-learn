@@ -1,7 +1,7 @@
 package com.epam.liadov.service.stub;
 
-import com.epam.liadov.domain.Supplier;
-import com.epam.liadov.domain.factory.EntityFactory;
+import com.epam.liadov.domain.entity.Supplier;
+import com.epam.liadov.domain.entity.factory.EntityFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

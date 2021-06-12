@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -19,7 +18,6 @@ import java.util.List;
 @Accessors(chain = true)
 public class OrderDto {
 
-    @NotNull
     private int orderID;
 
     private String orderNumber;

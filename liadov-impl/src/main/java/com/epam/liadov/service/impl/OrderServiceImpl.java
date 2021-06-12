@@ -1,6 +1,8 @@
 package com.epam.liadov.service.impl;
 
-import com.epam.liadov.domain.Order;
+import com.epam.liadov.domain.entity.Order;
+import com.epam.liadov.exception.BadRequestException;
+import com.epam.liadov.exception.NoContentException;
 import com.epam.liadov.repository.OrderRepository;
 import com.epam.liadov.service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +36,7 @@ public class OrderServiceImpl implements OrderService {
             order = optionalOrder.get();
             return order;
         }
-        return new Order();
+        throw new BadRequestException("Order was not saved");
     }
 
     @Override
@@ -43,39 +45,39 @@ public class OrderServiceImpl implements OrderService {
         Optional<Order> optionalOrder = orderRepository.findById(orderID);
         if (optionalOrder.isPresent()) {
             optionalOrder = Optional.ofNullable(orderRepository.save(order));
-        }
-        if (optionalOrder.isPresent()) {
-            order = optionalOrder.get();
-            log.trace("Order updated: {}", order);
-            return order;
+            if (optionalOrder.isPresent()) {
+                order = optionalOrder.get();
+                log.trace("Order updated: {}", order);
+                return order;
+            }
         }
         log.trace("Order was not updated");
-        return new Order();
+        throw new NoContentException("Order does not exist");
     }
 
     @Override
-    public Order find(int primaryKey) {
-        Optional<Order> optionalOrder = orderRepository.findById(primaryKey);
+    public Order find(int orderId) {
+        Optional<Order> optionalOrder = orderRepository.findById(orderId);
         boolean findResult = optionalOrder.isPresent();
         log.trace("Order found: {}", findResult);
         if (findResult) {
             Order order = optionalOrder.get();
             return order;
         }
-        return new Order();
+        throw new NoContentException("Order does not exist");
     }
 
     @Override
-    public boolean delete(int primaryKey) {
-        boolean existsInDb = orderRepository.existsById(primaryKey);
+    public boolean delete(int orderId) {
+        boolean existsInDb = orderRepository.existsById(orderId);
         log.trace("Entity for removal exist in BD: {}", existsInDb);
         if (existsInDb) {
-            orderRepository.deleteById(primaryKey);
-            boolean entityExistAfterRemove = orderRepository.existsById(primaryKey);
+            orderRepository.deleteById(orderId);
+            boolean entityExistAfterRemove = orderRepository.existsById(orderId);
             log.trace("Entity removed: {}", entityExistAfterRemove);
             return !entityExistAfterRemove;
         }
-        return false;
+        throw new NoContentException("Order does not exist");
     }
 
     @Override

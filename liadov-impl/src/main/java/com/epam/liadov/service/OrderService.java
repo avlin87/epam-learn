@@ -1,6 +1,6 @@
 package com.epam.liadov.service;
 
-import com.epam.liadov.domain.Order;
+import com.epam.liadov.domain.entity.Order;
 
 import java.util.List;
 
@@ -30,10 +30,10 @@ public interface OrderService {
     /**
      * Find Order by primaryKey
      *
-     * @param primaryKey - id of object
+     * @param orderId - id of object
      * @return found entity
      */
-    Order find(int primaryKey);
+    Order find(int orderId);
 
     /**
      * Find Orders by customerId
@@ -46,10 +46,10 @@ public interface OrderService {
     /**
      * Delete entity
      *
-     * @param primaryKey to be deleted
+     * @param orderId to be deleted
      * @return - true if deleted
      */
-    boolean delete(int primaryKey);
+    boolean delete(int orderId);
 
     /**
      * Return all of Order entities

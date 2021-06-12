@@ -1,7 +1,6 @@
 package com.epam.liadov.converter;
 
-import com.epam.liadov.domain.Order;
-import com.epam.liadov.domain.factory.EntityFactory;
+import com.epam.liadov.domain.entity.Order;
 import com.epam.liadov.dto.OrderDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

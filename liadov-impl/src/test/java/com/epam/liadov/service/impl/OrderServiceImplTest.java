@@ -1,8 +1,8 @@
 package com.epam.liadov.service.impl;
 
-import com.epam.liadov.domain.factory.EntityFactory;
-import com.epam.liadov.domain.Customer;
-import com.epam.liadov.domain.Order;
+import com.epam.liadov.domain.entity.factory.EntityFactory;
+import com.epam.liadov.domain.entity.Customer;
+import com.epam.liadov.domain.entity.Order;
 import com.epam.liadov.repository.OrderRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

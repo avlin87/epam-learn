@@ -1,6 +1,6 @@
 package com.epam.liadov.service.stub;
 
-import com.epam.liadov.domain.Customer;
+import com.epam.liadov.domain.entity.Customer;
 import com.epam.liadov.service.CustomerService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -53,14 +53,14 @@ public class CustomerServiceStub implements CustomerService {
     }
 
     @Override
-    public Customer find(int primaryKey) {
+    public Customer find(int customerId) {
         Customer customer = getCustomer();
         log.debug("Found customer = {}", customer);
         return customer;
     }
 
     @Override
-    public boolean delete(int primaryKey) {
+    public boolean delete(int customerId) {
         log.debug("object removed successfully");
         return true;
     }

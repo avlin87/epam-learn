@@ -1,12 +1,11 @@
-package com.epam.liadov.domain.factory;
+package com.epam.liadov.domain.entity.factory;
 
-import com.epam.liadov.domain.Customer;
-import com.epam.liadov.domain.Order;
-import com.epam.liadov.domain.Product;
-import com.epam.liadov.domain.Supplier;
+import com.epam.liadov.domain.entity.Customer;
+import com.epam.liadov.domain.entity.Order;
+import com.epam.liadov.domain.entity.Product;
+import com.epam.liadov.domain.entity.Supplier;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -17,7 +16,6 @@ import java.util.Date;
  * @author Aleksandr Liadov
  */
 @Slf4j
-//@Component
 public class EntityFactory {
     /**
      * Method generate new Customer based on System.currentTimeMillis()

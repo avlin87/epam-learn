@@ -2,7 +2,7 @@ package com.epam.liadov.resource.impl;
 
 import com.epam.liadov.converter.OrderDtoToOrderConverter;
 import com.epam.liadov.converter.OrderToOrderDtoConverter;
-import com.epam.liadov.domain.Order;
+import com.epam.liadov.domain.entity.Order;
 import com.epam.liadov.dto.OrderDto;
 import com.epam.liadov.resource.OrderResource;
 import com.epam.liadov.service.OrderService;
@@ -24,23 +24,23 @@ import java.util.stream.Collectors;
 public class OrderResourceImpl implements OrderResource {
 
     private final OrderService orderService;
-    private final OrderToOrderDtoConverter orderToOrderDtoConverter;
-    private final OrderDtoToOrderConverter orderDtoToOrderConverter;
+    private final OrderToOrderDtoConverter toOrderDtoConverter;
+    private final OrderDtoToOrderConverter toOrderConverter;
 
     @Override
     public OrderDto getOrder(Integer id) {
         Order order = orderService.find(id);
         log.debug("found order: {}", order);
-        OrderDto orderDto = orderToOrderDtoConverter.convert(order);
+        OrderDto orderDto = toOrderDtoConverter.convert(order);
         return orderDto;
     }
 
     @Override
     public OrderDto addOrder(OrderDto orderDtoToSave) {
-        Order orderToSave = orderDtoToOrderConverter.convert(orderDtoToSave);
+        Order orderToSave = toOrderConverter.convert(orderDtoToSave);
         Order savedOrder = orderService.save(orderToSave);
         log.debug("created orderDtoToSave: {}", savedOrder);
-        OrderDto orderDto = orderToOrderDtoConverter.convert(savedOrder);
+        OrderDto orderDto = toOrderDtoConverter.convert(savedOrder);
         return orderDto;
     }
 
@@ -52,10 +52,10 @@ public class OrderResourceImpl implements OrderResource {
 
     @Override
     public OrderDto updateOrder(OrderDto orderDtoToUpdate) {
-        Order orderToUpdate = orderDtoToOrderConverter.convert(orderDtoToUpdate);
+        Order orderToUpdate = toOrderConverter.convert(orderDtoToUpdate);
         Order updatedOrder = orderService.update(orderToUpdate);
         log.debug("updated orderDtoToUpdate: {}", updatedOrder);
-        OrderDto orderDto = orderToOrderDtoConverter.convert(updatedOrder);
+        OrderDto orderDto = toOrderDtoConverter.convert(updatedOrder);
         return orderDto;
     }
 
@@ -64,7 +64,7 @@ public class OrderResourceImpl implements OrderResource {
         List<Order> orderList = orderService.findByCustomerId(customerId);
         log.trace("Get orders by Customer Id: {}", orderList);
         List<OrderDto> orderDtoList = orderList.stream()
-                .map(orderToOrderDtoConverter::convert)
+                .map(toOrderDtoConverter::convert)
                 .collect(Collectors.toList());
         return orderDtoList;
     }
@@ -74,7 +74,7 @@ public class OrderResourceImpl implements OrderResource {
         List<Order> orderList = orderService.getAll();
         log.trace("Get all orders: {}", orderList);
         List<OrderDto> orderDtoList = orderList.stream()
-                .map(orderToOrderDtoConverter::convert)
+                .map(toOrderDtoConverter::convert)
                 .collect(Collectors.toList());
         return orderDtoList;
     }

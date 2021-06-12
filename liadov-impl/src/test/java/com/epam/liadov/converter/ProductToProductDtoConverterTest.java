@@ -1,6 +1,6 @@
 package com.epam.liadov.converter;
 
-import com.epam.liadov.domain.Product;
+import com.epam.liadov.domain.entity.Product;
 import com.epam.liadov.dto.ProductDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

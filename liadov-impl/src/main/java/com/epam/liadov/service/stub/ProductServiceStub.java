@@ -1,6 +1,6 @@
 package com.epam.liadov.service.stub;
 
-import com.epam.liadov.domain.Product;
+import com.epam.liadov.domain.entity.Product;
 import com.epam.liadov.service.ProductService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -57,14 +57,14 @@ public class ProductServiceStub implements ProductService {
     }
 
     @Override
-    public Product find(int primaryKey) {
+    public Product find(int productId) {
         Product product = getProduct();
         log.debug("Found product = {}", product);
         return product;
     }
 
     @Override
-    public boolean delete(int primaryKey) {
+    public boolean delete(int productId) {
         log.debug("object removed successfully");
         return true;
     }

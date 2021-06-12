@@ -54,6 +54,11 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>com.epam</groupId>
+                <artifactId>liadov-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
             <dependency>
                 <groupId>org.projectlombok</groupId>
@@ -66,7 +71,6 @@
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-classic</artifactId>
                 <version>${logback-classic.version}</version>
-                <scope>compile</scope>
             </dependency>
             <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
             <dependency>
@@ -138,7 +142,6 @@
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-webmvc</artifactId>
                 <version>${spring-core.version}</version>
-                <scope>compile</scope>
             </dependency>
             <!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
             <dependency>
@@ -175,7 +178,6 @@
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-annotations</artifactId>
                 <version>${jackson-databind.version}</version>
-                <scope>compile</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -237,6 +239,7 @@
                 <configuration>
                     <excludes>
                         <exclude>**/config/**</exclude>
+                        <exclude>**/domain/**</exclude>
                     </excludes>
                 </configuration>
                 <executions>

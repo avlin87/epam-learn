@@ -3,10 +3,10 @@
              xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
     <persistence-unit name="EntityPU">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-        <class>com.epam.liadov.domain.Customer</class>
-        <class>com.epam.liadov.domain.Order</class>
-        <class>com.epam.liadov.domain.Product</class>
-        <class>com.epam.liadov.domain.Supplier</class>
+        <class>com.epam.liadov.domain.entity.Customer</class>
+        <class>com.epam.liadov.domain.entity.Order</class>
+        <class>com.epam.liadov.domain.entity.Product</class>
+        <class>com.epam.liadov.domain.entity.Supplier</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>
 </persistence>

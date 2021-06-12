@@ -1,6 +1,6 @@
 package com.epam.liadov.service.stub;
 
-import com.epam.liadov.domain.Order;
+import com.epam.liadov.domain.entity.Order;
 import com.epam.liadov.service.OrderService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -57,7 +57,7 @@ public class OrderServiceStub implements OrderService {
     }
 
     @Override
-    public Order find(int primaryKey) {
+    public Order find(int orderId) {
         Order order = getOrder();
         log.debug("Found order = {}", order);
         return order;
@@ -69,7 +69,7 @@ public class OrderServiceStub implements OrderService {
     }
 
     @Override
-    public boolean delete(int primaryKey) {
+    public boolean delete(int orderId) {
         log.debug("object removed successfully");
         return true;
     }

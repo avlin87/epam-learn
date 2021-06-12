@@ -1,6 +1,6 @@
 package com.epam.liadov.service.stub;
 
-import com.epam.liadov.domain.Supplier;
+import com.epam.liadov.domain.entity.Supplier;
 import com.epam.liadov.service.SupplierService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -52,7 +52,7 @@ public class SupplierServiceStub implements SupplierService {
     }
 
     @Override
-    public Supplier find(int primaryKey) {
+    public Supplier find(int supplierId) {
         Supplier supplier = getSupplier();
         log.debug("Found supplier = {}", supplier);
         return supplier;
@@ -60,7 +60,7 @@ public class SupplierServiceStub implements SupplierService {
     }
 
     @Override
-    public boolean delete(int primaryKey) {
+    public boolean delete(int supplierId) {
         log.debug("object removed successfully");
         return true;
     }

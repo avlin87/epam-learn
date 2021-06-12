@@ -2,9 +2,9 @@ package com.epam.liadov.resource.impl;
 
 import com.epam.liadov.converter.ProductDtoToProductConverter;
 import com.epam.liadov.converter.ProductToProductDtoConverter;
-import com.epam.liadov.domain.Product;
-import com.epam.liadov.domain.Supplier;
-import com.epam.liadov.domain.factory.EntityFactory;
+import com.epam.liadov.domain.entity.Product;
+import com.epam.liadov.domain.entity.Supplier;
+import com.epam.liadov.domain.entity.factory.EntityFactory;
 import com.epam.liadov.dto.ProductDto;
 import com.epam.liadov.service.impl.ProductServiceImpl;
 import org.junit.jupiter.api.BeforeEach;

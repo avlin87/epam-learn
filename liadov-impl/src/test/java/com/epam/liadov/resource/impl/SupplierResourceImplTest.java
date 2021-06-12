@@ -1,7 +1,10 @@
 package com.epam.liadov.resource.impl;
 
-import com.epam.liadov.domain.Supplier;
-import com.epam.liadov.domain.factory.EntityFactory;
+import com.epam.liadov.converter.SupplierDtoToSupplierConverter;
+import com.epam.liadov.converter.SupplierToSupplierDtoConverter;
+import com.epam.liadov.domain.entity.Supplier;
+import com.epam.liadov.domain.entity.factory.EntityFactory;
+import com.epam.liadov.dto.SupplierDto;
 import com.epam.liadov.service.impl.SupplierServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,7 +30,14 @@ class SupplierResourceImplTest {
 
     @Mock
     private SupplierServiceImpl supplierService;
+    @Mock
+    private SupplierToSupplierDtoConverter supplierToSupplierDtoConverter;
+    @Mock
+    private SupplierDtoToSupplierConverter supplierDtoToSupplierConverter;
+
+
     private EntityFactory factory;
+    private SupplierToSupplierDtoConverter toSupplierDtoConverter = new SupplierToSupplierDtoConverter();
 
     @InjectMocks
     private SupplierResourceImpl supplierResource;
@@ -41,21 +51,25 @@ class SupplierResourceImplTest {
     @Test
     void getSupplier() {
         Supplier testSupplier = factory.generateTestSupplier();
+        SupplierDto testSupplierDto = toSupplierDtoConverter.convert(testSupplier);
         when(supplierService.find(anyInt())).thenReturn(testSupplier);
+        when(supplierToSupplierDtoConverter.convert(any())).thenReturn(testSupplierDto);
 
-        Supplier supplier = supplierResource.getSupplier(1);
+        SupplierDto supplierDto = supplierResource.getSupplier(1);
 
-        assertEquals(testSupplier, supplier);
+        assertEquals(testSupplierDto, supplierDto);
     }
 
     @Test
     void addSupplier() {
         Supplier testSupplier = factory.generateTestSupplier();
+        SupplierDto testSupplierDto = toSupplierDtoConverter.convert(testSupplier);
         when(supplierService.save(any())).thenReturn(testSupplier);
+        when(supplierToSupplierDtoConverter.convert(any())).thenReturn(testSupplierDto);
 
-        Supplier supplier = supplierResource.addSupplier(testSupplier);
+        SupplierDto supplierDto = supplierResource.addSupplier(testSupplierDto);
 
-        assertEquals(testSupplier, supplier);
+        assertEquals(testSupplierDto, supplierDto);
     }
 
     @Test
@@ -68,11 +82,13 @@ class SupplierResourceImplTest {
     @Test
     void updateSupplier() {
         Supplier testSupplier = factory.generateTestSupplier();
+        SupplierDto testSupplierDto = toSupplierDtoConverter.convert(testSupplier);
         when(supplierService.update(any())).thenReturn(testSupplier);
+        when(supplierToSupplierDtoConverter.convert(any())).thenReturn(testSupplierDto);
 
-        Supplier supplier = supplierResource.updateSupplier(testSupplier);
+        SupplierDto supplierDto = supplierResource.updateSupplier(testSupplierDto);
 
-        assertEquals(testSupplier, supplier);
+        assertEquals(testSupplierDto, supplierDto);
     }
 
     @Test
@@ -80,7 +96,7 @@ class SupplierResourceImplTest {
         List<Supplier> suppliers = new ArrayList<>();
         when(supplierService.getAll()).thenReturn(suppliers);
 
-        List<Supplier> supplierList = supplierResource.getAllSuppliers();
+        List<SupplierDto> supplierList = supplierResource.getAllSuppliers();
 
         assertNotNull(supplierList);
     }

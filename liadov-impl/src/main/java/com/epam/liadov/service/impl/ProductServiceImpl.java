@@ -1,6 +1,8 @@
 package com.epam.liadov.service.impl;
 
-import com.epam.liadov.domain.Product;
+import com.epam.liadov.domain.entity.Product;
+import com.epam.liadov.exception.BadRequestException;
+import com.epam.liadov.exception.NoContentException;
 import com.epam.liadov.repository.ProductRepository;
 import com.epam.liadov.service.ProductService;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +35,7 @@ public class ProductServiceImpl implements ProductService {
             product = optionalProduct.get();
             return product;
         }
-        return new Product();
+        throw new BadRequestException("Product was not saved");
     }
 
     @Override
@@ -42,39 +44,39 @@ public class ProductServiceImpl implements ProductService {
         Optional<Product> optionalProduct = productRepository.findById(productId);
         if (optionalProduct.isPresent()) {
             optionalProduct = Optional.ofNullable(productRepository.save(product));
-        }
-        if (optionalProduct.isPresent()) {
-            product = optionalProduct.get();
-            log.trace("Product updated: {}", product);
-            return product;
+            if (optionalProduct.isPresent()) {
+                product = optionalProduct.get();
+                log.trace("Product updated: {}", product);
+                return product;
+            }
         }
         log.trace("Product was not updated");
-        return new Product();
+        throw new NoContentException("Product does not exist");
     }
 
     @Override
-    public Product find(int primaryKey) {
-        Optional<Product> optionalProduct = productRepository.findById(primaryKey);
+    public Product find(int productId) {
+        Optional<Product> optionalProduct = productRepository.findById(productId);
         boolean findResult = optionalProduct.isPresent();
         log.trace("Product found: {}", findResult);
         if (findResult) {
             Product product = optionalProduct.get();
             return product;
         }
-        return new Product();
+        throw new NoContentException("Product does not exist");
     }
 
     @Override
-    public boolean delete(int primaryKey) {
-        boolean existsInDb = productRepository.existsById(primaryKey);
+    public boolean delete(int productId) {
+        boolean existsInDb = productRepository.existsById(productId);
         log.trace("Entity for removal exist in BD: {}", existsInDb);
         if (existsInDb) {
-            productRepository.deleteById(primaryKey);
-            boolean entityExistAfterRemove = productRepository.existsById(primaryKey);
+            productRepository.deleteById(productId);
+            boolean entityExistAfterRemove = productRepository.existsById(productId);
             log.trace("Entity removed: {}", entityExistAfterRemove);
             return !entityExistAfterRemove;
         }
-        return false;
+        throw new NoContentException("Product does not exist");
     }
 
     @Override

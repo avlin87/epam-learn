@@ -1,5 +1,6 @@
 package com.epam.liadov.resource;
 
+import com.epam.liadov.dto.CustomerDto;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -7,11 +8,10 @@ import java.util.List;
 /**
  * CustomerResource - interface for Rest operations with Customer entity
  *
- * @param <T> entity
  * @author Aleksandr Liadov
  */
 @RequestMapping("/customer")
-public interface CustomerResource<T> {
+public interface CustomerResource {
 
     /**
      * Method for requesting Customer by id
@@ -19,26 +19,26 @@ public interface CustomerResource<T> {
      * @param id - id of requested entity
      * @return entity object
      */
-    @GetMapping(params = "id")
-    T getCustomer(@RequestParam Integer id);
+    @GetMapping("/{id}")
+    CustomerDto getCustomer(@PathVariable Integer id);
 
     /**
      * Method parse json POST as Customer object
      *
-     * @param customer entity object
+     * @param customerDto entity object
      * @return entity object
      */
     @PostMapping
-    T addCustomer(@RequestBody T customer);
+    CustomerDto addCustomer(@RequestBody CustomerDto customerDto);
 
     /**
      * Method parse json PUT as Customer object
      *
-     * @param customer entity object
+     * @param customerDto entity object
      * @return entity object
      */
     @PutMapping
-    T updateCustomer(@RequestBody T customer);
+    CustomerDto updateCustomer(@RequestBody CustomerDto customerDto);
 
     /**
      * Method for delete request of Customer entity
@@ -46,8 +46,8 @@ public interface CustomerResource<T> {
      * @param id id of entity to be removed
      * @return true if entity removed
      */
-    @DeleteMapping(params = "id")
-    void deleteCustomer(@RequestParam Integer id);
+    @DeleteMapping("/{id}")
+    void deleteCustomer(@PathVariable Integer id);
 
     /**
      * Method for requesting all of Customer entities
@@ -55,5 +55,5 @@ public interface CustomerResource<T> {
      * @return List of entities
      */
     @GetMapping
-    List<T> getAllCustomers();
+    List<CustomerDto> getAllCustomers();
 }

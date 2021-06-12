@@ -1,8 +1,8 @@
 package com.epam.liadov.converter;
 
 
-import com.epam.liadov.domain.Order;
-import com.epam.liadov.domain.Product;
+import com.epam.liadov.domain.entity.Order;
+import com.epam.liadov.domain.entity.Product;
 import com.epam.liadov.dto.OrderDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.converter.Converter;

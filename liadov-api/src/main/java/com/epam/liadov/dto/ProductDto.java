@@ -3,7 +3,6 @@ package com.epam.liadov.dto;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 /**
@@ -15,7 +14,6 @@ import java.math.BigDecimal;
 @Accessors(chain = true)
 public class ProductDto {
 
-    @NotNull
     private int productId;
 
     private String productName;

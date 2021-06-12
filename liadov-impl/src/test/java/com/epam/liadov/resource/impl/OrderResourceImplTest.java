@@ -2,9 +2,9 @@ package com.epam.liadov.resource.impl;
 
 import com.epam.liadov.converter.OrderDtoToOrderConverter;
 import com.epam.liadov.converter.OrderToOrderDtoConverter;
-import com.epam.liadov.domain.Customer;
-import com.epam.liadov.domain.Order;
-import com.epam.liadov.domain.factory.EntityFactory;
+import com.epam.liadov.domain.entity.Customer;
+import com.epam.liadov.domain.entity.Order;
+import com.epam.liadov.domain.entity.factory.EntityFactory;
 import com.epam.liadov.dto.OrderDto;
 import com.epam.liadov.service.impl.OrderServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
