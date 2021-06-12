@@ -9,14 +9,14 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
 import java.util.Locale;
 
 /**
- * StubConfig - Stubbed configuration
+ * MessageSourceConfig - Stubbed configuration
  * spring.profiles.active=local
  *
  * @author Aleksandr Liadov
  */
 @Configuration
 @Profile("local")
-public class StubConfig {
+public class MessageSourceConfig {
 
     /**
      * Bean for getting messageSource
