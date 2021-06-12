@@ -4,27 +4,53 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.context.annotation.Scope;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.HibernateJpaDialect;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 
 /**
  * JpaConfig - configuration for storing objects in database
  *
  * @author Aleksandr Liadov
  */
-@Configuration
-@RequiredArgsConstructor
 @Profile("!local")
+@Configuration
+@EnableTransactionManagement
+@EnableJpaRepositories(basePackages = "com.epam.liadov.repository")
+@RequiredArgsConstructor
 public class JpaConfig {
 
-    @Bean(destroyMethod = "close")
-    @Scope("prototype")
-    public EntityManager entityManager() {
-        EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("EntityPU");
-        EntityManager entityManager = entityManagerFactory.createEntityManager();
-        return entityManager;
+    /**
+     * Bean for EntityManagerFactory
+     *
+     * @return entityManagerFactory
+     */
+    @Bean
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+        var entityManagerFactory = new LocalContainerEntityManagerFactoryBean();
+        entityManagerFactory.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
+        entityManagerFactory.setJpaDialect(new HibernateJpaDialect());
+        entityManagerFactory.setPersistenceUnitName("EntityPU");
+        return entityManagerFactory;
     }
+
+    /**
+     * Bean for TransactionManager
+     *
+     * @param entityManagerFactory target entityManagerFactory
+     * @return JpaTransactionManager
+     */
+    @Bean
+    public PlatformTransactionManager transactionManager(EntityManagerFactory entityManagerFactory) {
+        var transactionManager = new JpaTransactionManager();
+        transactionManager.setEntityManagerFactory(entityManagerFactory);
+        return transactionManager;
+    }
+
 }

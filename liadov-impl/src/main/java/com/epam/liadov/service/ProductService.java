@@ -1,6 +1,6 @@
 package com.epam.liadov.service;
 
-import com.epam.liadov.entity.Product;
+import com.epam.liadov.domain.entity.Product;
 
 import java.util.List;
 
@@ -30,18 +30,18 @@ public interface ProductService {
     /**
      * Find Product by primaryKey
      *
-     * @param primaryKey - id of object
+     * @param productId - id of object
      * @return found entity
      */
-    Product find(int primaryKey);
+    Product find(int productId);
 
     /**
      * Delete entity
      *
-     * @param product to be deleted
+     * @param productId to be deleted
      * @return - true if deleted
      */
-    boolean delete(Product product);
+    boolean delete(int productId);
 
     /**
      * Return all of Product entities

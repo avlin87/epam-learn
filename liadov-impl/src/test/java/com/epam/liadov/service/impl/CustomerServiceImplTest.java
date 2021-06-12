@@ -1,7 +1,7 @@
 package com.epam.liadov.service.impl;
 
-import com.epam.liadov.EntityFactory;
-import com.epam.liadov.entity.Customer;
+import com.epam.liadov.domain.entity.Customer;
+import com.epam.liadov.domain.entity.factory.EntityFactory;
 import com.epam.liadov.repository.CustomerRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,9 +38,9 @@ class CustomerServiceImplTest {
     }
 
     @Test
-    void saveReturnTrue() {
+    void saveReturnCustomer() {
         Customer customer = factory.generateTestCustomer();
-        when(customerRepository.save(any())).thenReturn(Optional.ofNullable(customer));
+        when(customerRepository.save(any())).thenReturn(customer);
 
         Customer saveResult = customerServiceImpl.save(customer);
 
@@ -48,9 +48,10 @@ class CustomerServiceImplTest {
     }
 
     @Test
-    void updateReturnTrue() {
+    void updateReturnCustomer() {
         Customer customer = factory.generateTestCustomer();
-        when(customerRepository.update(any())).thenReturn(Optional.ofNullable(customer));
+        when(customerRepository.findById(any())).thenReturn(Optional.ofNullable(customer));
+        when(customerRepository.save(any())).thenReturn(customer);
 
         Customer updateResult = customerServiceImpl.update(customer);
 
@@ -60,7 +61,7 @@ class CustomerServiceImplTest {
     @Test
     void findReturnNotNull() {
         Customer expectedValue = factory.generateTestCustomer();
-        when(customerRepository.find(anyInt())).thenReturn(Optional.ofNullable(expectedValue));
+        when(customerRepository.findById(anyInt())).thenReturn(Optional.ofNullable(expectedValue));
 
         Customer customer = customerServiceImpl.find(1);
 
@@ -70,9 +71,10 @@ class CustomerServiceImplTest {
     @Test
     void delete() {
         Customer customer = factory.generateTestCustomer();
-        when(customerRepository.delete(any())).thenReturn(true);
+        int customerId = customer.getCustomerId();
+        when(customerRepository.existsById(anyInt())).thenReturn(true).thenReturn(false);
 
-        boolean deleteResult = customerServiceImpl.delete(customer);
+        boolean deleteResult = customerServiceImpl.delete(customerId);
 
         assertTrue(deleteResult);
     }

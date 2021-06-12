@@ -1,6 +1,6 @@
 package com.epam.liadov.service;
 
-import com.epam.liadov.entity.Customer;
+import com.epam.liadov.domain.entity.Customer;
 
 import java.util.List;
 
@@ -30,18 +30,18 @@ public interface CustomerService {
     /**
      * Find Customer by primaryKey
      *
-     * @param primaryKey - id of entity
+     * @param customerId - id of entity
      * @return found entity
      */
-    Customer find(int primaryKey);
+    Customer find(int customerId);
 
     /**
      * Delete entity
      *
-     * @param customer to be deleted
+     * @param customerId to be deleted
      * @return - true if deleted
      */
-    boolean delete(Customer customer);
+    boolean delete(int customerId);
 
     /**
      * Return all of Customer entities
