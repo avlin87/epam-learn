@@ -1,5 +1,6 @@
 package com.epam.liadov.service.impl;
 
+import com.epam.liadov.Logging;
 import com.epam.liadov.domain.entity.Supplier;
 import com.epam.liadov.exception.BadRequestException;
 import com.epam.liadov.exception.NoContentException;
@@ -26,6 +27,7 @@ public class SupplierServiceImpl implements SupplierService {
 
     private final SupplierRepository supplierRepository;
 
+    @Logging
     @Override
     public Supplier save(Supplier supplier) {
         Optional<Supplier> optionalSupplier = Optional.ofNullable(supplierRepository.save(supplier));
@@ -38,6 +40,7 @@ public class SupplierServiceImpl implements SupplierService {
         throw new BadRequestException("Supplier was not saved");
     }
 
+    @Logging
     @Override
     public Supplier update(Supplier supplier) {
         Optional<Supplier> optionalSupplier = supplierRepository.findById(supplier.getSupplierId());
@@ -53,6 +56,7 @@ public class SupplierServiceImpl implements SupplierService {
         throw new NoContentException("Supplier does not exist");
     }
 
+    @Logging
     @Override
     public Supplier find(int supplierId) {
         Optional<Supplier> optionalSupplier = supplierRepository.findById(supplierId);
@@ -65,6 +69,7 @@ public class SupplierServiceImpl implements SupplierService {
         throw new NoContentException("Supplier does not exist");
     }
 
+    @Logging
     @Override
     public boolean delete(int supplierId) {
         boolean existsInDb = supplierRepository.existsById(supplierId);
@@ -78,6 +83,7 @@ public class SupplierServiceImpl implements SupplierService {
         throw new NoContentException("Supplier does not exist");
     }
 
+    @Logging
     @Override
     public List<Supplier> getAll() {
         return supplierRepository.findAll();

@@ -1,5 +1,6 @@
 package com.epam.liadov.service.impl;
 
+import com.epam.liadov.Logging;
 import com.epam.liadov.domain.entity.Order;
 import com.epam.liadov.exception.BadRequestException;
 import com.epam.liadov.exception.NoContentException;
@@ -26,6 +27,7 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
 
+    @Logging
     @Override
     public Order save(Order order) {
 
@@ -39,6 +41,7 @@ public class OrderServiceImpl implements OrderService {
         throw new BadRequestException("Order was not saved");
     }
 
+    @Logging
     @Override
     public Order update(Order order) {
         int orderID = order.getOrderID();
@@ -55,6 +58,7 @@ public class OrderServiceImpl implements OrderService {
         throw new NoContentException("Order does not exist");
     }
 
+    @Logging
     @Override
     public Order find(int orderId) {
         Optional<Order> optionalOrder = orderRepository.findById(orderId);
@@ -67,6 +71,7 @@ public class OrderServiceImpl implements OrderService {
         throw new NoContentException("Order does not exist");
     }
 
+    @Logging
     @Override
     public boolean delete(int orderId) {
         boolean existsInDb = orderRepository.existsById(orderId);
@@ -80,11 +85,13 @@ public class OrderServiceImpl implements OrderService {
         throw new NoContentException("Order does not exist");
     }
 
+    @Logging
     @Override
     public List<Order> findByCustomerId(int customerId) {
         return orderRepository.findAllByCustomerId(customerId);
     }
 
+    @Logging
     @Override
     public List<Order> getAll() {
         return orderRepository.findAll();

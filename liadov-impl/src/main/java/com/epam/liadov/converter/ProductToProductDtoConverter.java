@@ -31,7 +31,7 @@ public class ProductToProductDtoConverter implements Converter<Product, ProductD
                 .setSupplierId(supplierId)
                 .setUnitPrice(unitPrice)
                 .setDiscontinued(discontinued);
-        log.info("convert() - convert from '{}' to {}", product, productDto);
+        log.trace("convert() - convert from '{}' to {}", product, productDto);
         return productDto;
     }
 }

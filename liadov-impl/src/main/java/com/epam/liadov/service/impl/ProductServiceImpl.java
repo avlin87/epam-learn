@@ -1,5 +1,6 @@
 package com.epam.liadov.service.impl;
 
+import com.epam.liadov.Logging;
 import com.epam.liadov.domain.entity.Product;
 import com.epam.liadov.exception.BadRequestException;
 import com.epam.liadov.exception.NoContentException;
@@ -26,6 +27,7 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
 
+    @Logging
     @Override
     public Product save(Product product) {
         Optional<Product> optionalProduct = Optional.ofNullable(productRepository.save(product));
@@ -38,6 +40,7 @@ public class ProductServiceImpl implements ProductService {
         throw new BadRequestException("Product was not saved");
     }
 
+    @Logging
     @Override
     public Product update(Product product) {
         int productId = product.getProductId();
@@ -54,6 +57,7 @@ public class ProductServiceImpl implements ProductService {
         throw new NoContentException("Product does not exist");
     }
 
+    @Logging
     @Override
     public Product find(int productId) {
         Optional<Product> optionalProduct = productRepository.findById(productId);
@@ -66,6 +70,7 @@ public class ProductServiceImpl implements ProductService {
         throw new NoContentException("Product does not exist");
     }
 
+    @Logging
     @Override
     public boolean delete(int productId) {
         boolean existsInDb = productRepository.existsById(productId);
@@ -79,6 +84,7 @@ public class ProductServiceImpl implements ProductService {
         throw new NoContentException("Product does not exist");
     }
 
+    @Logging
     @Override
     public List<Product> getAll() {
         return productRepository.findAll();

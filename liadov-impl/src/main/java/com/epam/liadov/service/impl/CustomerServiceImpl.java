@@ -1,5 +1,6 @@
 package com.epam.liadov.service.impl;
 
+import com.epam.liadov.Logging;
 import com.epam.liadov.domain.entity.Customer;
 import com.epam.liadov.exception.BadRequestException;
 import com.epam.liadov.exception.NoContentException;
@@ -26,6 +27,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerRepository customerRepository;
 
+    @Logging
     @Override
     public Customer save(Customer customer) {
         Optional<Customer> optionalCustomer = Optional.ofNullable(customerRepository.save(customer));
@@ -38,6 +40,7 @@ public class CustomerServiceImpl implements CustomerService {
         throw new BadRequestException("Customer was not saved");
     }
 
+    @Logging
     @Override
     public Customer update(Customer customer) {
         int customerId = customer.getCustomerId();
@@ -54,6 +57,7 @@ public class CustomerServiceImpl implements CustomerService {
         throw new NoContentException("Customer does not exist");
     }
 
+    @Logging
     @Override
     public Customer find(int customerId) {
         Optional<Customer> optionalCustomer = customerRepository.findById(customerId);
@@ -66,6 +70,7 @@ public class CustomerServiceImpl implements CustomerService {
         throw new NoContentException("Customer does not exist");
     }
 
+    @Logging
     @Override
     public boolean delete(int customerId) {
         boolean existsInDb = customerRepository.existsById(customerId);
@@ -79,6 +84,7 @@ public class CustomerServiceImpl implements CustomerService {
         throw new NoContentException("Customer does not exist");
     }
 
+    @Logging
     @Override
     public List<Customer> getAll() {
         return customerRepository.findAll();

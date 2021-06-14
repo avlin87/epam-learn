@@ -27,7 +27,7 @@ public class SupplierToSupplierDtoConverter implements Converter<Supplier, Suppl
         supplierDto.setSupplierId(supplierId)
                 .setCompanyName(companyName)
                 .setPhone(phone);
-        log.info("convert() - convert from '{}' to {}", supplier, supplierDto);
+        log.trace("convert() - convert from '{}' to {}", supplier, supplierDto);
         return supplierDto;
     }
 }
