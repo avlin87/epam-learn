@@ -8,7 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  *
  * @author Aleksandr Liadov
  */
-@SpringBootApplication(scanBasePackages = "com.epam.liadov")
+@SpringBootApplication
 public class Application {
 
     public static void main(String[] args) {

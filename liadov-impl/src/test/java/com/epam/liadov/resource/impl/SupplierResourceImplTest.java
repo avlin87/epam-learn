@@ -1,103 +1,102 @@
 package com.epam.liadov.resource.impl;
 
-import com.epam.liadov.converter.SupplierDtoToSupplierConverter;
-import com.epam.liadov.converter.SupplierToSupplierDtoConverter;
 import com.epam.liadov.domain.entity.Supplier;
 import com.epam.liadov.domain.entity.factory.EntityFactory;
-import com.epam.liadov.dto.SupplierDto;
-import com.epam.liadov.service.impl.SupplierServiceImpl;
-import org.junit.jupiter.api.BeforeEach;
+import com.epam.liadov.resource.SupplierResource;
+import com.epam.liadov.service.SupplierService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * SupplierResourceImplTest - test for {@link SupplierResourceImpl}
  *
  * @author Aleksandr Liadov
  */
+@WebMvcTest(SupplierResource.class)
+@RunWith(SpringRunner.class)
 class SupplierResourceImplTest {
 
-    @Mock
-    private SupplierServiceImpl supplierService;
-    @Mock
-    private SupplierToSupplierDtoConverter supplierToSupplierDtoConverter;
-    @Mock
-    private SupplierDtoToSupplierConverter supplierDtoToSupplierConverter;
+    @Autowired
+    private MockMvc mockMvc;
 
-
-    private EntityFactory factory;
-    private SupplierToSupplierDtoConverter toSupplierDtoConverter = new SupplierToSupplierDtoConverter();
-
-    @InjectMocks
-    private SupplierResourceImpl supplierResource;
-
-    @BeforeEach
-    public void setup() {
-        MockitoAnnotations.openMocks(this);
-        factory = new EntityFactory();
-    }
+    @MockBean
+    private SupplierService supplierService;
+    private final EntityFactory factory = new EntityFactory();
 
     @Test
-    void getSupplier() {
+    public void getSupplier() throws Exception {
         Supplier testSupplier = factory.generateTestSupplier();
-        SupplierDto testSupplierDto = toSupplierDtoConverter.convert(testSupplier);
-        when(supplierService.find(anyInt())).thenReturn(testSupplier);
-        when(supplierToSupplierDtoConverter.convert(any())).thenReturn(testSupplierDto);
+        when(supplierService.find(1)).thenReturn(testSupplier);
 
-        SupplierDto supplierDto = supplierResource.getSupplier(1);
-
-        assertEquals(testSupplierDto, supplierDto);
+        mockMvc.perform(MockMvcRequestBuilders.get("/supplier/1"))
+                .andExpect(status().isOk());
     }
 
     @Test
-    void addSupplier() {
+    void addSupplier() throws Exception {
         Supplier testSupplier = factory.generateTestSupplier();
-        SupplierDto testSupplierDto = toSupplierDtoConverter.convert(testSupplier);
-        when(supplierService.save(any())).thenReturn(testSupplier);
-        when(supplierToSupplierDtoConverter.convert(any())).thenReturn(testSupplierDto);
+        when(supplierService.save(testSupplier)).thenReturn(testSupplier);
+        var mapper = new ObjectMapper();
+        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
+        ObjectWriter objectWriter = mapper.writer().withDefaultPrettyPrinter();
+        String requestJson = objectWriter.writeValueAsString(testSupplier);
 
-        SupplierDto supplierDto = supplierResource.addSupplier(testSupplierDto);
-
-        assertEquals(testSupplierDto, supplierDto);
+        mockMvc.perform(
+                MockMvcRequestBuilders.post("/supplier")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson)
+        )
+                .andExpect(status().isOk());
     }
 
     @Test
-    void deleteSupplier() {
+    void deleteSupplier() throws Exception {
         when(supplierService.delete(anyInt())).thenReturn(true);
 
-        supplierResource.deleteSupplier(1);
+        mockMvc.perform(MockMvcRequestBuilders.delete("/supplier/1"))
+                .andExpect(status().isOk());
     }
 
     @Test
-    void updateSupplier() {
+    void updateSupplier() throws Exception {
         Supplier testSupplier = factory.generateTestSupplier();
-        SupplierDto testSupplierDto = toSupplierDtoConverter.convert(testSupplier);
-        when(supplierService.update(any())).thenReturn(testSupplier);
-        when(supplierToSupplierDtoConverter.convert(any())).thenReturn(testSupplierDto);
+        when(supplierService.update(testSupplier)).thenReturn(testSupplier);
+        var mapper = new ObjectMapper();
+        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
+        ObjectWriter objectWriter = mapper.writer().withDefaultPrettyPrinter();
+        String requestJson = objectWriter.writeValueAsString(testSupplier);
 
-        SupplierDto supplierDto = supplierResource.updateSupplier(testSupplierDto);
-
-        assertEquals(testSupplierDto, supplierDto);
+        mockMvc.perform(
+                MockMvcRequestBuilders.put("/supplier")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson)
+        )
+                .andExpect(status().isOk());
     }
 
     @Test
-    void getAllSuppliers() {
+    void getAllSuppliers() throws Exception {
         List<Supplier> suppliers = new ArrayList<>();
         when(supplierService.getAll()).thenReturn(suppliers);
 
-        List<SupplierDto> supplierList = supplierResource.getAllSuppliers();
-
-        assertNotNull(supplierList);
+        mockMvc.perform(MockMvcRequestBuilders.get("/supplier"))
+                .andExpect(status().isOk());
     }
 }

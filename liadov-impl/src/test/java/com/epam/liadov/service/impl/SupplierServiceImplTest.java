@@ -2,87 +2,126 @@ package com.epam.liadov.service.impl;
 
 import com.epam.liadov.domain.entity.Supplier;
 import com.epam.liadov.domain.entity.factory.EntityFactory;
+import com.epam.liadov.exception.NoContentException;
 import com.epam.liadov.repository.SupplierRepository;
-import org.junit.jupiter.api.BeforeEach;
+import com.epam.liadov.service.SupplierService;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.junit.jupiter.api.function.Executable;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.when;
 
 /**
  * SupplierServiceImplTest - test for {@link SupplierServiceImpl}
  *
  * @author Aleksandr Liadov
  */
+@DataJpaTest
+@RunWith(SpringRunner.class)
 class SupplierServiceImplTest {
 
-    @Mock
-    private SupplierRepository supplierRepository;
-    private EntityFactory factory;
+    private final EntityFactory factory = new EntityFactory();
 
-    @InjectMocks
-    private SupplierServiceImpl supplierServiceImpl;
-
-    @BeforeEach
-    public void setup() {
-        MockitoAnnotations.openMocks(this);
-        factory = new EntityFactory();
-    }
+    @Autowired
+    private SupplierService supplierService;
 
     @Test
     void saveReturnSupplier() {
-        Supplier supplier = factory.generateTestSupplier();
-        when(supplierRepository.save(any())).thenReturn(supplier);
+        Supplier testSupplier = factory.generateTestSupplier();
 
-        Supplier saveResult = supplierServiceImpl.save(supplier);
+        Supplier saveResult = supplierService.save(testSupplier);
 
-        assertEquals(supplier, saveResult);
+        assertEquals(testSupplier, saveResult);
     }
 
     @Test
-    void updateReturnTrue() {
-        Supplier supplier = factory.generateTestSupplier();
-        when(supplierRepository.findById(anyInt())).thenReturn(Optional.ofNullable(supplier));
-        when(supplierRepository.save(any())).thenReturn(supplier);
+    void updateReturnSupplier() {
+        Supplier testSupplier = factory.generateTestSupplier();
+        testSupplier = supplierService.save(testSupplier);
+        testSupplier.setCompanyName("Updated Supplier")
+                .setPhone("22222");
 
-        Supplier updateResult = supplierServiceImpl.update(supplier);
+        Supplier updateResult = supplierService.update(testSupplier);
 
-        assertEquals(supplier, updateResult);
+        assertEquals(testSupplier, updateResult);
     }
 
     @Test
-    void findReturnNotNull() {
-        Supplier expectedValue = factory.generateTestSupplier();
-        when(supplierRepository.findById(anyInt())).thenReturn(Optional.ofNullable(expectedValue));
+    void updateThrowNoContentException() {
+        Supplier testSupplier = factory.generateTestSupplier();
+        testSupplier = supplierService.save(testSupplier);
+        int testSupplierId = testSupplier.getSupplierId() + 999;
+        testSupplier.setSupplierId(testSupplierId);
+        Supplier finalTestSupplier = testSupplier;
 
-        Supplier supplier = supplierServiceImpl.find(1);
+        Executable executeUpdate = () -> supplierService.update(finalTestSupplier);
 
-        assertNotNull(supplier);
+        assertThrows(NoContentException.class, executeUpdate);
     }
 
     @Test
-    void delete() {
-        Supplier supplier = factory.generateTestSupplier();
-        int supplierId = supplier.getSupplierId();
-        when(supplierRepository.existsById(anyInt())).thenReturn(true).thenReturn(false);
+    void findReturnSupplier() {
+        Supplier testSupplier = factory.generateTestSupplier();
+        testSupplier = supplierService.save(testSupplier);
+        int testSupplierId = testSupplier.getSupplierId();
 
-        boolean deleteResult = supplierServiceImpl.delete(supplierId);
+        Supplier foundSupplier = supplierService.find(testSupplierId);
+
+        assertEquals(testSupplier, foundSupplier);
+    }
+
+    @Test
+    void findThrowNoContentException() {
+        Supplier testSupplier = factory.generateTestSupplier();
+        testSupplier = supplierService.save(testSupplier);
+        int testSupplierId = testSupplier.getSupplierId() + 999;
+
+        Executable executeUpdate = () -> supplierService.find(testSupplierId);
+
+        assertThrows(NoContentException.class, executeUpdate);
+    }
+
+    @Test
+    void deleteReturnTrue() {
+        Supplier testSupplier = factory.generateTestSupplier();
+        testSupplier = supplierService.save(testSupplier);
+        int testSupplierId = testSupplier.getSupplierId();
+
+        boolean deleteResult = supplierService.delete(testSupplierId);
 
         assertTrue(deleteResult);
     }
 
     @Test
+    void deleteThrowNoContentException() {
+        Supplier testSupplier = factory.generateTestSupplier();
+        testSupplier = supplierService.save(testSupplier);
+        int testSupplierId = testSupplier.getSupplierId();
+
+        Executable executeDelete = () -> supplierService.delete(testSupplierId + 999);
+
+        assertThrows(NoContentException.class, executeDelete);
+    }
+
+    @Test
     void getAllReturnList() {
-        List<Supplier> all = supplierServiceImpl.getAll();
+        List<Supplier> all = supplierService.getAll();
 
         assertNotNull(all);
+    }
+
+    @TestConfiguration
+    static class MyTestConfiguration {
+        @Bean
+        public SupplierService supplierService(SupplierRepository repository) {
+            return new SupplierServiceImpl(repository);
+        }
     }
 }

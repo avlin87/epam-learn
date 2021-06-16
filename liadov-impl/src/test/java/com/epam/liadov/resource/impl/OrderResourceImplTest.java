@@ -1,107 +1,106 @@
 package com.epam.liadov.resource.impl;
 
-import com.epam.liadov.converter.OrderDtoToOrderConverter;
-import com.epam.liadov.converter.OrderToOrderDtoConverter;
 import com.epam.liadov.domain.entity.Customer;
 import com.epam.liadov.domain.entity.Order;
 import com.epam.liadov.domain.entity.factory.EntityFactory;
-import com.epam.liadov.dto.OrderDto;
-import com.epam.liadov.service.impl.OrderServiceImpl;
-import org.junit.jupiter.api.BeforeEach;
+import com.epam.liadov.resource.OrderResource;
+import com.epam.liadov.service.OrderService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * OrderResourceImplTest - test for {@link OrderResourceImpl}
  *
  * @author Aleksandr Liadov
  */
+@WebMvcTest(OrderResource.class)
+@RunWith(SpringRunner.class)
 class OrderResourceImplTest {
 
-    @Mock
-    private OrderServiceImpl orderService;
-    @Mock
-    private OrderToOrderDtoConverter orderToOrderDtoConverter;
-    @Mock
-    private OrderDtoToOrderConverter orderDtoToOrderConverter;
+    @Autowired
+    private MockMvc mockMvc;
 
-    private EntityFactory factory;
-    private OrderToOrderDtoConverter toOrderDtoConverter = new OrderToOrderDtoConverter();
-
-    @InjectMocks
-    private OrderResourceImpl orderResource;
-
-    @BeforeEach
-    public void setup() {
-        MockitoAnnotations.openMocks(this);
-        factory = new EntityFactory();
-    }
+    @MockBean
+    private OrderService orderService;
+    private final EntityFactory factory = new EntityFactory();
 
     @Test
-    void getOrder() {
+    public void getOrder() throws Exception {
         Customer customer = factory.generateTestCustomer();
         Order testOrder = factory.generateTestOrder(customer);
-        OrderDto testOrderDto = toOrderDtoConverter.convert(testOrder);
-        when(orderService.find(anyInt())).thenReturn(testOrder);
-        when(orderToOrderDtoConverter.convert(any())).thenReturn(testOrderDto);
+        when(orderService.find(1)).thenReturn(testOrder);
 
-        OrderDto orderDto = orderResource.getOrder(1);
-
-        assertEquals(testOrderDto, orderDto);
+        mockMvc.perform(MockMvcRequestBuilders.get("/order/1"))
+                .andExpect(status().isOk());
     }
 
     @Test
-    void addOrder() {
+    void addOrder() throws Exception {
         Customer customer = factory.generateTestCustomer();
         Order testOrder = factory.generateTestOrder(customer);
-        OrderDto testOrderDto = toOrderDtoConverter.convert(testOrder);
-        when(orderToOrderDtoConverter.convert(any())).thenReturn(testOrderDto);
-        when(orderDtoToOrderConverter.convert(any())).thenReturn(testOrder);
-        when(orderService.save(any())).thenReturn(testOrder);
+        when(orderService.save(testOrder)).thenReturn(testOrder);
+        var mapper = new ObjectMapper();
+        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
+        ObjectWriter objectWriter = mapper.writer().withDefaultPrettyPrinter();
+        String requestJson = objectWriter.writeValueAsString(testOrder);
 
-        OrderDto orderDto = orderResource.addOrder(testOrderDto);
-
-        assertEquals(testOrderDto, orderDto);
+        mockMvc.perform(
+                MockMvcRequestBuilders.post("/order")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson)
+        )
+                .andExpect(status().isOk());
     }
 
     @Test
-    void deleteOrder() {
+    void deleteOrder() throws Exception {
         when(orderService.delete(anyInt())).thenReturn(true);
 
-        orderResource.deleteOrder(1);
+        mockMvc.perform(MockMvcRequestBuilders.delete("/order/1"))
+                .andExpect(status().isOk());
     }
 
     @Test
-    void updateOrder() {
+    void updateOrder() throws Exception {
         Customer customer = factory.generateTestCustomer();
         Order testOrder = factory.generateTestOrder(customer);
-        OrderDto testOrderDto = toOrderDtoConverter.convert(testOrder);
-        when(orderService.update(any())).thenReturn(testOrder);
-        when(orderToOrderDtoConverter.convert(any())).thenReturn(testOrderDto);
+        when(orderService.update(testOrder)).thenReturn(testOrder);
+        var mapper = new ObjectMapper();
+        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
+        ObjectWriter objectWriter = mapper.writer().withDefaultPrettyPrinter();
+        String requestJson = objectWriter.writeValueAsString(testOrder);
 
-        OrderDto updateOrder = orderResource.updateOrder(testOrderDto);
-
-        assertEquals(testOrderDto, updateOrder);
+        mockMvc.perform(
+                MockMvcRequestBuilders.put("/order")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson)
+        )
+                .andExpect(status().isOk());
     }
 
     @Test
-    void getAllOrders() {
+    void getAllOrders() throws Exception {
         List<Order> orders = new ArrayList<>();
         when(orderService.getAll()).thenReturn(orders);
 
-        List<OrderDto> orderList = orderResource.getAllOrders();
-
-        assertNotNull(orderList);
+        mockMvc.perform(MockMvcRequestBuilders.get("/order"))
+                .andExpect(status().isOk());
     }
 }

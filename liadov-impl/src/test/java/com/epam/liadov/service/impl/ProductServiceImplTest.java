@@ -1,93 +1,134 @@
 package com.epam.liadov.service.impl;
 
-import com.epam.liadov.domain.entity.factory.EntityFactory;
 import com.epam.liadov.domain.entity.Product;
 import com.epam.liadov.domain.entity.Supplier;
+import com.epam.liadov.domain.entity.factory.EntityFactory;
+import com.epam.liadov.exception.NoContentException;
 import com.epam.liadov.repository.ProductRepository;
-import org.junit.jupiter.api.BeforeEach;
+import com.epam.liadov.service.ProductService;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.junit.jupiter.api.function.Executable;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.when;
 
 /**
  * ProductServiceImplTest - test for {@link ProductServiceImpl}
  *
  * @author Aleksandr Liadov
  */
+@DataJpaTest
+@RunWith(SpringRunner.class)
 class ProductServiceImplTest {
 
-    @Mock
-    private ProductRepository productRepository;
-    private EntityFactory factory;
+    private final EntityFactory factory = new EntityFactory();
 
-    @InjectMocks
-    private ProductServiceImpl productServiceImpl;
+    @Autowired
+    private ProductService productService;
 
-    @BeforeEach
-    public void setup() {
-        MockitoAnnotations.openMocks(this);
-        factory = new EntityFactory();
+    @Test
+    void saveReturnProduct() {
+        Supplier testSupplier = factory.generateTestSupplier();
+        Product testProduct = factory.generateTestProduct(testSupplier);
+
+        Product saveResult = productService.save(testProduct);
+
+        assertEquals(testProduct, saveResult);
     }
 
     @Test
-    void saveReturnTrue() {
-        Supplier supplier = factory.generateTestSupplier();
-        Product product = factory.generateTestProduct(supplier);
-        when(productRepository.save(any())).thenReturn(product);
+    void updateReturnProduct() {
+        Supplier testSupplier = factory.generateTestSupplier();
+        Product testProduct = factory.generateTestProduct(testSupplier);
+        testProduct = productService.save(testProduct);
+        testProduct.setProductName("Updated Product");
 
-        Product saveResult = productServiceImpl.save(product);
+        Product updateResult = productService.update(testProduct);
 
-        assertEquals(product, saveResult);
+        assertEquals(testProduct, updateResult);
     }
 
     @Test
-    void updateReturnTrue() {
-        Supplier supplier = factory.generateTestSupplier();
-        Product product = factory.generateTestProduct(supplier);
-        when(productRepository.findById(anyInt())).thenReturn(Optional.ofNullable(product));
-        when(productRepository.save(any())).thenReturn(product);
+    void updateThrowNoContentException() {
+        Supplier testSupplier = factory.generateTestSupplier();
+        Product testProduct = factory.generateTestProduct(testSupplier);
+        testProduct = productService.save(testProduct);
+        int testProductId = testProduct.getProductId() + 999;
+        testProduct.setProductId(testProductId);
+        Product finalTestProduct = testProduct;
 
-        Product updateResult = productServiceImpl.update(product);
+        Executable executeUpdate = () -> productService.update(finalTestProduct);
 
-        assertEquals(product, updateResult);
+        assertThrows(NoContentException.class, executeUpdate);
     }
 
     @Test
-    void findReturnNotNull() {
-        Supplier supplier = factory.generateTestSupplier();
-        Product expectedValue = factory.generateTestProduct(supplier);
-        when(productRepository.findById(anyInt())).thenReturn(Optional.ofNullable(expectedValue));
+    void findReturnProduct() {
+        Supplier testSupplier = factory.generateTestSupplier();
+        Product testProduct = factory.generateTestProduct(testSupplier);
+        testProduct = productService.save(testProduct);
+        int testProductId = testProduct.getProductId();
 
-        Product product = productServiceImpl.find(1);
+        Product foundProduct = productService.find(testProductId);
 
-        assertNotNull(product);
+        assertEquals(testProduct, foundProduct);
     }
 
     @Test
-    void delete() {
-        Supplier supplier = factory.generateTestSupplier();
-        Product product = factory.generateTestProduct(supplier);
-        int productId = product.getProductId();
-        when(productRepository.existsById(anyInt())).thenReturn(true).thenReturn(false);
+    void findThrowNoContentException() {
+        Supplier testSupplier = factory.generateTestSupplier();
+        Product testProduct = factory.generateTestProduct(testSupplier);
+        testProduct = productService.save(testProduct);
+        int testProductId = testProduct.getProductId() + 999;
 
-        boolean deleteResult = productServiceImpl.delete(productId);
+        Executable executeUpdate = () -> productService.find(testProductId);
+
+        assertThrows(NoContentException.class, executeUpdate);
+    }
+
+    @Test
+    void deleteReturnTrue() {
+        Supplier testSupplier = factory.generateTestSupplier();
+        Product testProduct = factory.generateTestProduct(testSupplier);
+        testProduct = productService.save(testProduct);
+        int testProductId = testProduct.getProductId();
+
+        boolean deleteResult = productService.delete(testProductId);
 
         assertTrue(deleteResult);
     }
 
     @Test
+    void deleteThrowNoContentException() {
+        Supplier testSupplier = factory.generateTestSupplier();
+        Product testProduct = factory.generateTestProduct(testSupplier);
+        testProduct = productService.save(testProduct);
+        int testProductId = testProduct.getProductId();
+
+        Executable executeDelete = () -> productService.delete(testProductId + 999);
+
+        assertThrows(NoContentException.class, executeDelete);
+    }
+
+    @Test
     void getAllReturnList() {
-        List<Product> all = productServiceImpl.getAll();
+        List<Product> all = productService.getAll();
 
         assertNotNull(all);
+    }
+
+    @TestConfiguration
+    static class MyTestConfiguration {
+        @Bean
+        public ProductService productService(ProductRepository repository) {
+            return new ProductServiceImpl(repository);
+        }
     }
 }

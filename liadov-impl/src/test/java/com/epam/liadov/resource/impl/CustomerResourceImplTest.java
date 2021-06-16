@@ -1,103 +1,102 @@
 package com.epam.liadov.resource.impl;
 
-import com.epam.liadov.converter.CustomerDtoToCustomerConverter;
-import com.epam.liadov.converter.CustomerToCustomerDtoConverter;
 import com.epam.liadov.domain.entity.Customer;
 import com.epam.liadov.domain.entity.factory.EntityFactory;
-import com.epam.liadov.dto.CustomerDto;
-import com.epam.liadov.service.impl.CustomerServiceImpl;
-import org.junit.jupiter.api.BeforeEach;
+import com.epam.liadov.resource.CustomerResource;
+import com.epam.liadov.service.CustomerService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * CustomerResourceImplTest - test for {@link CustomerResourceImpl}
  *
  * @author Aleksandr Liadov
  */
+@WebMvcTest(CustomerResource.class)
+@RunWith(SpringRunner.class)
 class CustomerResourceImplTest {
 
-    @Mock
-    private CustomerServiceImpl customerService;
-    @Mock
-    private CustomerToCustomerDtoConverter customerToCustomerDtoConverter;
-    @Mock
-    private CustomerDtoToCustomerConverter customerDtoToCustomerConverter;
+    @Autowired
+    private MockMvc mockMvc;
 
-    private EntityFactory factory;
-    private CustomerToCustomerDtoConverter toCustomerDtoConverter = new CustomerToCustomerDtoConverter();
-
-    @InjectMocks
-    private CustomerResourceImpl customerResource;
-
-    @BeforeEach
-    public void setup() {
-        MockitoAnnotations.openMocks(this);
-        factory = new EntityFactory();
-    }
+    @MockBean
+    private CustomerService customerService;
+    private final EntityFactory factory = new EntityFactory();
 
     @Test
-    void getCustomer() {
+    public void getCustomer() throws Exception {
         Customer testCustomer = factory.generateTestCustomer();
-        CustomerDto testCustomerDto = toCustomerDtoConverter.convert(testCustomer);
-        when(customerService.find(anyInt())).thenReturn(testCustomer);
-        when(customerToCustomerDtoConverter.convert(any())).thenReturn(testCustomerDto);
+        when(customerService.find(1)).thenReturn(testCustomer);
 
-        CustomerDto customerDto = customerResource.getCustomer(1);
-
-        assertEquals(testCustomerDto, customerDto);
+        mockMvc.perform(MockMvcRequestBuilders.get("/customer/1"))
+                .andExpect(status().isOk());
     }
 
     @Test
-    void addCustomer() {
+    void addCustomer() throws Exception {
         Customer testCustomer = factory.generateTestCustomer();
-        CustomerDto testCustomerDto = toCustomerDtoConverter.convert(testCustomer);
-        when(customerToCustomerDtoConverter.convert(any())).thenReturn(testCustomerDto);
-        when(customerDtoToCustomerConverter.convert(any())).thenReturn(testCustomer);
-        when(customerService.save(any())).thenReturn(testCustomer);
+        when(customerService.save(testCustomer)).thenReturn(testCustomer);
+        var mapper = new ObjectMapper();
+        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
+        ObjectWriter objectWriter = mapper.writer().withDefaultPrettyPrinter();
+        String requestJson = objectWriter.writeValueAsString(testCustomer);
 
-        CustomerDto customerDto = customerResource.addCustomer(testCustomerDto);
-
-        assertEquals(testCustomerDto, customerDto);
+        mockMvc.perform(
+                MockMvcRequestBuilders.post("/customer")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson)
+        )
+                .andExpect(status().isOk());
     }
 
     @Test
-    void deleteCustomer() {
+    void deleteCustomer() throws Exception {
         when(customerService.delete(anyInt())).thenReturn(true);
 
-        customerResource.deleteCustomer(1);
+        mockMvc.perform(MockMvcRequestBuilders.delete("/customer/1"))
+                .andExpect(status().isOk());
     }
 
     @Test
-    void updateCustomer() {
+    void updateCustomer() throws Exception {
         Customer testCustomer = factory.generateTestCustomer();
-        CustomerDto testCustomerDto = toCustomerDtoConverter.convert(testCustomer);
-        when(customerService.update(any())).thenReturn(testCustomer);
-        when(customerToCustomerDtoConverter.convert(any())).thenReturn(testCustomerDto);
+        when(customerService.update(testCustomer)).thenReturn(testCustomer);
+        var mapper = new ObjectMapper();
+        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
+        ObjectWriter objectWriter = mapper.writer().withDefaultPrettyPrinter();
+        String requestJson = objectWriter.writeValueAsString(testCustomer);
 
-        CustomerDto customerDto = customerResource.updateCustomer(testCustomerDto);
-
-        assertEquals(testCustomerDto, customerDto);
+        mockMvc.perform(
+                MockMvcRequestBuilders.put("/customer")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson)
+        )
+                .andExpect(status().isOk());
     }
 
     @Test
-    void getAllCustomers() {
+    void getAllCustomers() throws Exception {
         List<Customer> customers = new ArrayList<>();
         when(customerService.getAll()).thenReturn(customers);
 
-        List<CustomerDto> customerList = customerResource.getAllCustomers();
-
-        assertNotNull(customerList);
+        mockMvc.perform(MockMvcRequestBuilders.get("/customer"))
+                .andExpect(status().isOk());
     }
 }
