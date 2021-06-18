@@ -3,7 +3,7 @@ package com.epam.liadov.service.impl;
 import com.epam.liadov.domain.entity.Product;
 import com.epam.liadov.domain.entity.Supplier;
 import com.epam.liadov.domain.entity.factory.EntityFactory;
-import com.epam.liadov.exception.NoContentException;
+import com.epam.liadov.exception.NotFoundException;
 import com.epam.liadov.repository.ProductRepository;
 import com.epam.liadov.service.ProductService;
 import org.junit.jupiter.api.Test;
@@ -56,7 +56,7 @@ class ProductServiceImplTest {
     }
 
     @Test
-    void updateThrowNoContentException() {
+    void updateThrowNotFoundException() {
         Supplier testSupplier = factory.generateTestSupplier();
         Product testProduct = factory.generateTestProduct(testSupplier);
         testProduct = productService.save(testProduct);
@@ -66,7 +66,7 @@ class ProductServiceImplTest {
 
         Executable executeUpdate = () -> productService.update(finalTestProduct);
 
-        assertThrows(NoContentException.class, executeUpdate);
+        assertThrows(NotFoundException.class, executeUpdate);
     }
 
     @Test
@@ -82,7 +82,7 @@ class ProductServiceImplTest {
     }
 
     @Test
-    void findThrowNoContentException() {
+    void findThrowNotFoundException() {
         Supplier testSupplier = factory.generateTestSupplier();
         Product testProduct = factory.generateTestProduct(testSupplier);
         testProduct = productService.save(testProduct);
@@ -90,7 +90,7 @@ class ProductServiceImplTest {
 
         Executable executeUpdate = () -> productService.find(testProductId);
 
-        assertThrows(NoContentException.class, executeUpdate);
+        assertThrows(NotFoundException.class, executeUpdate);
     }
 
     @Test
@@ -106,7 +106,7 @@ class ProductServiceImplTest {
     }
 
     @Test
-    void deleteThrowNoContentException() {
+    void deleteThrowNotFoundException() {
         Supplier testSupplier = factory.generateTestSupplier();
         Product testProduct = factory.generateTestProduct(testSupplier);
         testProduct = productService.save(testProduct);
@@ -114,7 +114,7 @@ class ProductServiceImplTest {
 
         Executable executeDelete = () -> productService.delete(testProductId + 999);
 
-        assertThrows(NoContentException.class, executeDelete);
+        assertThrows(NotFoundException.class, executeDelete);
     }
 
     @Test

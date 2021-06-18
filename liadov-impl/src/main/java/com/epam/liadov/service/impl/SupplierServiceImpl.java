@@ -3,7 +3,7 @@ package com.epam.liadov.service.impl;
 import com.epam.liadov.Logging;
 import com.epam.liadov.domain.entity.Supplier;
 import com.epam.liadov.exception.BadRequestException;
-import com.epam.liadov.exception.NoContentException;
+import com.epam.liadov.exception.NotFoundException;
 import com.epam.liadov.repository.SupplierRepository;
 import com.epam.liadov.service.SupplierService;
 import lombok.RequiredArgsConstructor;
@@ -53,7 +53,7 @@ public class SupplierServiceImpl implements SupplierService {
             }
         }
         log.trace("Supplier was not updated");
-        throw new NoContentException("Supplier does not exist");
+        throw new NotFoundException("Supplier does not exist");
     }
 
     @Logging
@@ -66,7 +66,7 @@ public class SupplierServiceImpl implements SupplierService {
             Supplier supplier = optionalSupplier.get();
             return supplier;
         }
-        throw new NoContentException("Supplier does not exist");
+        throw new NotFoundException("Supplier does not exist");
     }
 
     @Logging
@@ -80,7 +80,7 @@ public class SupplierServiceImpl implements SupplierService {
             log.trace("Entity removed: {}", entityExistAfterRemove);
             return !entityExistAfterRemove;
         }
-        throw new NoContentException("Supplier does not exist");
+        throw new NotFoundException("Supplier does not exist");
     }
 
     @Logging

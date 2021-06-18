@@ -2,7 +2,7 @@ package com.epam.liadov.service.impl;
 
 import com.epam.liadov.domain.entity.Customer;
 import com.epam.liadov.domain.entity.factory.EntityFactory;
-import com.epam.liadov.exception.NoContentException;
+import com.epam.liadov.exception.NotFoundException;
 import com.epam.liadov.repository.CustomerRepository;
 import com.epam.liadov.service.CustomerService;
 import org.junit.jupiter.api.Test;
@@ -54,7 +54,7 @@ class CustomerServiceImplTest {
     }
 
     @Test
-    void updateThrowNoContentException() {
+    void updateThrowNotFoundException() {
         Customer testCustomer = factory.generateTestCustomer();
         testCustomer = customerService.save(testCustomer);
         int testCustomerId = testCustomer.getCustomerId() + 999;
@@ -63,7 +63,7 @@ class CustomerServiceImplTest {
 
         Executable executeUpdate = () -> customerService.update(finalTestCustomer);
 
-        assertThrows(NoContentException.class, executeUpdate);
+        assertThrows(NotFoundException.class, executeUpdate);
     }
 
     @Test
@@ -78,14 +78,14 @@ class CustomerServiceImplTest {
     }
 
     @Test
-    void findThrowNoContentException() {
+    void findThrowNotFoundException() {
         Customer testCustomer = factory.generateTestCustomer();
         testCustomer = customerService.save(testCustomer);
         int testCustomerId = testCustomer.getCustomerId() + 999;
 
         Executable executeUpdate = () -> customerService.find(testCustomerId);
 
-        assertThrows(NoContentException.class, executeUpdate);
+        assertThrows(NotFoundException.class, executeUpdate);
     }
 
     @Test
@@ -100,14 +100,14 @@ class CustomerServiceImplTest {
     }
 
     @Test
-    void deleteThrowNoContentException() {
+    void deleteThrowNotFoundException() {
         Customer testCustomer = factory.generateTestCustomer();
         testCustomer = customerService.save(testCustomer);
         int testCustomerId = testCustomer.getCustomerId();
 
         Executable executeDelete = () -> customerService.delete(testCustomerId + 999);
 
-        assertThrows(NoContentException.class, executeDelete);
+        assertThrows(NotFoundException.class, executeDelete);
     }
 
     @Test

@@ -3,7 +3,7 @@ package com.epam.liadov.service.impl;
 import com.epam.liadov.Logging;
 import com.epam.liadov.domain.entity.Product;
 import com.epam.liadov.exception.BadRequestException;
-import com.epam.liadov.exception.NoContentException;
+import com.epam.liadov.exception.NotFoundException;
 import com.epam.liadov.repository.ProductRepository;
 import com.epam.liadov.service.ProductService;
 import lombok.RequiredArgsConstructor;
@@ -54,7 +54,7 @@ public class ProductServiceImpl implements ProductService {
             }
         }
         log.trace("Product was not updated");
-        throw new NoContentException("Product does not exist");
+        throw new NotFoundException("Product does not exist");
     }
 
     @Logging
@@ -67,7 +67,7 @@ public class ProductServiceImpl implements ProductService {
             Product product = optionalProduct.get();
             return product;
         }
-        throw new NoContentException("Product does not exist");
+        throw new NotFoundException("Product does not exist");
     }
 
     @Logging
@@ -81,7 +81,7 @@ public class ProductServiceImpl implements ProductService {
             log.trace("Entity removed: {}", entityExistAfterRemove);
             return !entityExistAfterRemove;
         }
-        throw new NoContentException("Product does not exist");
+        throw new NotFoundException("Product does not exist");
     }
 
     @Logging

@@ -3,7 +3,7 @@ package com.epam.liadov.service.impl;
 import com.epam.liadov.Logging;
 import com.epam.liadov.domain.entity.Customer;
 import com.epam.liadov.exception.BadRequestException;
-import com.epam.liadov.exception.NoContentException;
+import com.epam.liadov.exception.NotFoundException;
 import com.epam.liadov.repository.CustomerRepository;
 import com.epam.liadov.service.CustomerService;
 import lombok.RequiredArgsConstructor;
@@ -54,7 +54,7 @@ public class CustomerServiceImpl implements CustomerService {
             }
         }
         log.trace("Customer was not updated");
-        throw new NoContentException("Customer does not exist");
+        throw new NotFoundException("Customer does not exist");
     }
 
     @Logging
@@ -67,7 +67,7 @@ public class CustomerServiceImpl implements CustomerService {
             Customer customer = optionalCustomer.get();
             return customer;
         }
-        throw new NoContentException("Customer does not exist");
+        throw new NotFoundException("Customer does not exist");
     }
 
     @Logging
@@ -81,7 +81,7 @@ public class CustomerServiceImpl implements CustomerService {
             log.trace("Entity removed: {}", entityExistAfterRemove);
             return !entityExistAfterRemove;
         }
-        throw new NoContentException("Customer does not exist");
+        throw new NotFoundException("Customer does not exist");
     }
 
     @Logging

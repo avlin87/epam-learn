@@ -3,7 +3,7 @@ package com.epam.liadov.service.impl;
 import com.epam.liadov.Logging;
 import com.epam.liadov.domain.entity.Order;
 import com.epam.liadov.exception.BadRequestException;
-import com.epam.liadov.exception.NoContentException;
+import com.epam.liadov.exception.NotFoundException;
 import com.epam.liadov.repository.OrderRepository;
 import com.epam.liadov.service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -55,7 +55,7 @@ public class OrderServiceImpl implements OrderService {
             }
         }
         log.trace("Order was not updated");
-        throw new NoContentException("Order does not exist");
+        throw new NotFoundException("Order does not exist");
     }
 
     @Logging
@@ -68,7 +68,7 @@ public class OrderServiceImpl implements OrderService {
             Order order = optionalOrder.get();
             return order;
         }
-        throw new NoContentException("Order does not exist");
+        throw new NotFoundException("Order does not exist");
     }
 
     @Logging
@@ -82,7 +82,7 @@ public class OrderServiceImpl implements OrderService {
             log.trace("Entity removed: {}", entityExistAfterRemove);
             return !entityExistAfterRemove;
         }
-        throw new NoContentException("Order does not exist");
+        throw new NotFoundException("Order does not exist");
     }
 
     @Logging

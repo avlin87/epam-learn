@@ -3,7 +3,7 @@ package com.epam.liadov.service.impl;
 import com.epam.liadov.domain.entity.Customer;
 import com.epam.liadov.domain.entity.Order;
 import com.epam.liadov.domain.entity.factory.EntityFactory;
-import com.epam.liadov.exception.NoContentException;
+import com.epam.liadov.exception.NotFoundException;
 import com.epam.liadov.repository.OrderRepository;
 import com.epam.liadov.service.OrderService;
 import org.junit.jupiter.api.Test;
@@ -57,7 +57,7 @@ class OrderServiceImplTest {
     }
 
     @Test
-    void updateThrowNoContentException() {
+    void updateThrowNotFoundException() {
         Customer testCustomer = factory.generateTestCustomer();
         Order testOrder = factory.generateTestOrder(testCustomer);
         testOrder = orderService.save(testOrder);
@@ -67,7 +67,7 @@ class OrderServiceImplTest {
 
         Executable executeUpdate = () -> orderService.update(finalTestOrder);
 
-        assertThrows(NoContentException.class, executeUpdate);
+        assertThrows(NotFoundException.class, executeUpdate);
     }
 
     @Test
@@ -83,7 +83,7 @@ class OrderServiceImplTest {
     }
 
     @Test
-    void findThrowNoContentException() {
+    void findThrowNotFoundException() {
         Customer testCustomer = factory.generateTestCustomer();
         Order testOrder = factory.generateTestOrder(testCustomer);
         testOrder = orderService.save(testOrder);
@@ -91,7 +91,7 @@ class OrderServiceImplTest {
 
         Executable executeUpdate = () -> orderService.find(testOrderId);
 
-        assertThrows(NoContentException.class, executeUpdate);
+        assertThrows(NotFoundException.class, executeUpdate);
     }
 
     @Test
@@ -107,7 +107,7 @@ class OrderServiceImplTest {
     }
 
     @Test
-    void deleteThrowNoContentException() {
+    void deleteThrowNotFoundException() {
         Customer testCustomer = factory.generateTestCustomer();
         Order testOrder = factory.generateTestOrder(testCustomer);
         testOrder = orderService.save(testOrder);
@@ -115,7 +115,7 @@ class OrderServiceImplTest {
 
         Executable executeDelete = () -> orderService.delete(testOrderId + 999);
 
-        assertThrows(NoContentException.class, executeDelete);
+        assertThrows(NotFoundException.class, executeDelete);
     }
 
     @Test
