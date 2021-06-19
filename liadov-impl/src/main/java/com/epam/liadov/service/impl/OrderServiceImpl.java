@@ -1,8 +1,9 @@
 package com.epam.liadov.service.impl;
 
+import com.epam.liadov.Logging;
 import com.epam.liadov.domain.entity.Order;
 import com.epam.liadov.exception.BadRequestException;
-import com.epam.liadov.exception.NoContentException;
+import com.epam.liadov.exception.NotFoundException;
 import com.epam.liadov.repository.OrderRepository;
 import com.epam.liadov.service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
 
+    @Logging
     @Override
     public Order save(Order order) {
 
@@ -39,6 +41,7 @@ public class OrderServiceImpl implements OrderService {
         throw new BadRequestException("Order was not saved");
     }
 
+    @Logging
     @Override
     public Order update(Order order) {
         int orderID = order.getOrderID();
@@ -52,9 +55,10 @@ public class OrderServiceImpl implements OrderService {
             }
         }
         log.trace("Order was not updated");
-        throw new NoContentException("Order does not exist");
+        throw new NotFoundException("Order does not exist");
     }
 
+    @Logging
     @Override
     public Order find(int orderId) {
         Optional<Order> optionalOrder = orderRepository.findById(orderId);
@@ -64,9 +68,10 @@ public class OrderServiceImpl implements OrderService {
             Order order = optionalOrder.get();
             return order;
         }
-        throw new NoContentException("Order does not exist");
+        throw new NotFoundException("Order does not exist");
     }
 
+    @Logging
     @Override
     public boolean delete(int orderId) {
         boolean existsInDb = orderRepository.existsById(orderId);
@@ -77,14 +82,16 @@ public class OrderServiceImpl implements OrderService {
             log.trace("Entity removed: {}", entityExistAfterRemove);
             return !entityExistAfterRemove;
         }
-        throw new NoContentException("Order does not exist");
+        throw new NotFoundException("Order does not exist");
     }
 
+    @Logging
     @Override
     public List<Order> findByCustomerId(int customerId) {
         return orderRepository.findAllByCustomerId(customerId);
     }
 
+    @Logging
     @Override
     public List<Order> getAll() {
         return orderRepository.findAll();

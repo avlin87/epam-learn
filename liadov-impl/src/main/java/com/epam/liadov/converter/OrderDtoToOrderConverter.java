@@ -46,7 +46,7 @@ public class OrderDtoToOrderConverter implements Converter<OrderDto, Order> {
                 .setOrderDate(orderDate)
                 .setTotalAmount(totalAmount)
                 .setProductId(products);
-        log.info("convert() - convert from '{}' to {}", orderDto, order);
+        log.trace("convert() - convert from '{}' to {}", orderDto, order);
         return order;
     }
 }

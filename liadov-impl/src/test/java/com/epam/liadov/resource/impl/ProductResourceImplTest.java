@@ -1,107 +1,169 @@
 package com.epam.liadov.resource.impl;
 
-import com.epam.liadov.converter.ProductDtoToProductConverter;
 import com.epam.liadov.converter.ProductToProductDtoConverter;
 import com.epam.liadov.domain.entity.Product;
 import com.epam.liadov.domain.entity.Supplier;
 import com.epam.liadov.domain.entity.factory.EntityFactory;
 import com.epam.liadov.dto.ProductDto;
-import com.epam.liadov.service.impl.ProductServiceImpl;
-import org.junit.jupiter.api.BeforeEach;
+import com.epam.liadov.exception.NotFoundException;
+import com.epam.liadov.resource.ProductResource;
+import com.epam.liadov.service.ProductService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
+import static net.bytebuddy.matcher.ElementMatchers.is;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
  * ProductResourceImplTest - test for {@link ProductResourceImpl}
  *
  * @author Aleksandr Liadov
  */
+@WebMvcTest(ProductResource.class)
+@RunWith(SpringRunner.class)
 class ProductResourceImplTest {
 
-    @Mock
-    private ProductServiceImpl productService;
-    @Mock
-    private ProductToProductDtoConverter productToProductDtoConverter;
-    @Mock
-    private ProductDtoToProductConverter productDtoToProductConverter;
+    @Autowired
+    private MockMvc mockMvc;
+    @Autowired
+    private ObjectMapper objectMapper;
 
-    private EntityFactory factory;
-    private ProductToProductDtoConverter toProductDtoConverter = new ProductToProductDtoConverter();
-
-    @InjectMocks
-    private ProductResourceImpl productResource;
-
-    @BeforeEach
-    public void setup() {
-        MockitoAnnotations.openMocks(this);
-        factory = new EntityFactory();
-    }
+    @MockBean
+    private ProductService productService;
+    private final EntityFactory factory = new EntityFactory();
 
     @Test
-    void getProduct() {
+    public void getProductResponse200() throws Exception {
         Supplier supplier = factory.generateTestSupplier();
         Product testProduct = factory.generateTestProduct(supplier);
-        ProductDto testProductDto = toProductDtoConverter.convert(testProduct);
-        when(productService.find(anyInt())).thenReturn(testProduct);
-        when(productToProductDtoConverter.convert(any())).thenReturn(testProductDto);
+        when(productService.find(1)).thenReturn(testProduct);
 
-        ProductDto productDto = productResource.getProduct(1);
-
-        assertEquals(testProductDto, productDto);
+        mockMvc.perform(MockMvcRequestBuilders.get("/product/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("productId", is(testProduct.getProductId())).exists())
+                .andExpect(jsonPath("productName", is(testProduct.getProductName())).exists())
+                .andExpect(jsonPath("supplierId", is(testProduct.getSupplierId())).exists())
+                .andExpect(jsonPath("unitPrice", is(testProduct.getUnitPrice())).exists())
+                .andExpect(jsonPath("discontinued", is(testProduct.isDiscontinued())).exists());
     }
 
     @Test
-    void addProduct() {
+    public void getProductResponse404() throws Exception {
+        when(productService.find(anyInt())).thenThrow(new NotFoundException("Product does not exist"));
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/product/999"))
+                .andExpect(status().is(404));
+    }
+
+    @Test
+    void addProduct() throws Exception {
         Supplier supplier = factory.generateTestSupplier();
         Product testProduct = factory.generateTestProduct(supplier);
-        ProductDto testProductDto = toProductDtoConverter.convert(testProduct);
-        when(productToProductDtoConverter.convert(any())).thenReturn(testProductDto);
-        when(productDtoToProductConverter.convert(any())).thenReturn(testProduct);
-        when(productService.save(any())).thenReturn(testProduct);
+        when(productService.save(testProduct)).thenReturn(testProduct);
+        var mapper = new ObjectMapper();
+        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
+        ObjectWriter objectWriter = mapper.writer().withDefaultPrettyPrinter();
+        String requestJson = objectWriter.writeValueAsString(testProduct);
 
-        ProductDto productDto = productResource.addProduct(testProductDto);
-
-        assertEquals(testProductDto, productDto);
+        mockMvc.perform(
+                MockMvcRequestBuilders.post("/product")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson)
+        )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("productId", is(testProduct.getProductId())).exists())
+                .andExpect(jsonPath("productName", is(testProduct.getProductName())).exists())
+                .andExpect(jsonPath("supplierId", is(testProduct.getSupplierId())).exists())
+                .andExpect(jsonPath("unitPrice", is(testProduct.getUnitPrice())).exists())
+                .andExpect(jsonPath("discontinued", is(testProduct.isDiscontinued())).exists());
     }
 
     @Test
-    void deleteProduct() {
+    void deleteProductResponse200() throws Exception {
         when(productService.delete(anyInt())).thenReturn(true);
 
-        productResource.deleteProduct(1);
+        mockMvc.perform(MockMvcRequestBuilders.delete("/product/1"))
+                .andExpect(status().isOk());
     }
 
     @Test
-    void updateProduct() {
+    void deleteProductResponse404() throws Exception {
+        when(productService.delete(anyInt())).thenThrow(new NotFoundException("Product does not exist"));
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/product/1"))
+                .andExpect(status().is(404));
+    }
+
+    @Test
+    void updateProductResponse200() throws Exception {
+        Supplier supplier = factory.generateTestSupplier();
+        Product testProduct = factory.generateTestProduct(supplier);
+        when(productService.update(testProduct)).thenReturn(testProduct);
+        var mapper = new ObjectMapper();
+        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
+        ObjectWriter objectWriter = mapper.writer().withDefaultPrettyPrinter();
+        String requestJson = objectWriter.writeValueAsString(testProduct);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.put("/product")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson)
+        )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("productId", is(testProduct.getProductId())).exists())
+                .andExpect(jsonPath("productName", is(testProduct.getProductName())).exists())
+                .andExpect(jsonPath("supplierId", is(testProduct.getSupplierId())).exists())
+                .andExpect(jsonPath("unitPrice", is(testProduct.getUnitPrice())).exists())
+                .andExpect(jsonPath("discontinued", is(testProduct.isDiscontinued())).exists());
+    }
+
+    @Test
+    void updateProductResponse404() throws Exception {
+        Supplier supplier = factory.generateTestSupplier();
+        Product testProduct = factory.generateTestProduct(supplier);
+        when(productService.update(testProduct)).thenThrow(new NotFoundException("Product does not exist"));
+        var mapper = new ObjectMapper();
+        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
+        ObjectWriter objectWriter = mapper.writer().withDefaultPrettyPrinter();
+        String requestJson = objectWriter.writeValueAsString(testProduct);
+
+        mockMvc.perform(
+                MockMvcRequestBuilders.put("/product")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson)
+        )
+                .andExpect(status().is(404));
+    }
+
+    @Test
+    void getAllProducts() throws Exception {
+        var toProductDtoConverter = new ProductToProductDtoConverter();
         Supplier supplier = factory.generateTestSupplier();
         Product testProduct = factory.generateTestProduct(supplier);
         ProductDto testProductDto = toProductDtoConverter.convert(testProduct);
-        when(productService.update(any())).thenReturn(testProduct);
-        when(productToProductDtoConverter.convert(any())).thenReturn(testProductDto);
-
-        ProductDto updateProduct = productResource.updateProduct(testProductDto);
-
-        assertEquals(testProductDto, updateProduct);
-    }
-
-    @Test
-    void getAllProducts() {
         List<Product> products = new ArrayList<>();
+        List<ProductDto> productDtos = new ArrayList<>();
+        products.add(testProduct);
+        productDtos.add(testProductDto);
         when(productService.getAll()).thenReturn(products);
 
-        List<ProductDto> productList = productResource.getAllProducts();
-
-        assertNotNull(productList);
+        mockMvc.perform(MockMvcRequestBuilders.get("/product"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writeValueAsString(productDtos)));
     }
 }

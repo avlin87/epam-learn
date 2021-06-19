@@ -1,8 +1,9 @@
 package com.epam.liadov.service.impl;
 
+import com.epam.liadov.Logging;
 import com.epam.liadov.domain.entity.Customer;
 import com.epam.liadov.exception.BadRequestException;
-import com.epam.liadov.exception.NoContentException;
+import com.epam.liadov.exception.NotFoundException;
 import com.epam.liadov.repository.CustomerRepository;
 import com.epam.liadov.service.CustomerService;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerRepository customerRepository;
 
+    @Logging
     @Override
     public Customer save(Customer customer) {
         Optional<Customer> optionalCustomer = Optional.ofNullable(customerRepository.save(customer));
@@ -38,6 +40,7 @@ public class CustomerServiceImpl implements CustomerService {
         throw new BadRequestException("Customer was not saved");
     }
 
+    @Logging
     @Override
     public Customer update(Customer customer) {
         int customerId = customer.getCustomerId();
@@ -51,9 +54,10 @@ public class CustomerServiceImpl implements CustomerService {
             }
         }
         log.trace("Customer was not updated");
-        throw new NoContentException("Customer does not exist");
+        throw new NotFoundException("Customer does not exist");
     }
 
+    @Logging
     @Override
     public Customer find(int customerId) {
         Optional<Customer> optionalCustomer = customerRepository.findById(customerId);
@@ -63,9 +67,10 @@ public class CustomerServiceImpl implements CustomerService {
             Customer customer = optionalCustomer.get();
             return customer;
         }
-        throw new NoContentException("Customer does not exist");
+        throw new NotFoundException("Customer does not exist");
     }
 
+    @Logging
     @Override
     public boolean delete(int customerId) {
         boolean existsInDb = customerRepository.existsById(customerId);
@@ -76,9 +81,10 @@ public class CustomerServiceImpl implements CustomerService {
             log.trace("Entity removed: {}", entityExistAfterRemove);
             return !entityExistAfterRemove;
         }
-        throw new NoContentException("Customer does not exist");
+        throw new NotFoundException("Customer does not exist");
     }
 
+    @Logging
     @Override
     public List<Customer> getAll() {
         return customerRepository.findAll();

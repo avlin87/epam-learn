@@ -1,8 +1,9 @@
 package com.epam.liadov.service.impl;
 
+import com.epam.liadov.Logging;
 import com.epam.liadov.domain.entity.Product;
 import com.epam.liadov.exception.BadRequestException;
-import com.epam.liadov.exception.NoContentException;
+import com.epam.liadov.exception.NotFoundException;
 import com.epam.liadov.repository.ProductRepository;
 import com.epam.liadov.service.ProductService;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
 
+    @Logging
     @Override
     public Product save(Product product) {
         Optional<Product> optionalProduct = Optional.ofNullable(productRepository.save(product));
@@ -38,6 +40,7 @@ public class ProductServiceImpl implements ProductService {
         throw new BadRequestException("Product was not saved");
     }
 
+    @Logging
     @Override
     public Product update(Product product) {
         int productId = product.getProductId();
@@ -51,9 +54,10 @@ public class ProductServiceImpl implements ProductService {
             }
         }
         log.trace("Product was not updated");
-        throw new NoContentException("Product does not exist");
+        throw new NotFoundException("Product does not exist");
     }
 
+    @Logging
     @Override
     public Product find(int productId) {
         Optional<Product> optionalProduct = productRepository.findById(productId);
@@ -63,9 +67,10 @@ public class ProductServiceImpl implements ProductService {
             Product product = optionalProduct.get();
             return product;
         }
-        throw new NoContentException("Product does not exist");
+        throw new NotFoundException("Product does not exist");
     }
 
+    @Logging
     @Override
     public boolean delete(int productId) {
         boolean existsInDb = productRepository.existsById(productId);
@@ -76,9 +81,10 @@ public class ProductServiceImpl implements ProductService {
             log.trace("Entity removed: {}", entityExistAfterRemove);
             return !entityExistAfterRemove;
         }
-        throw new NoContentException("Product does not exist");
+        throw new NotFoundException("Product does not exist");
     }
 
+    @Logging
     @Override
     public List<Product> getAll() {
         return productRepository.findAll();

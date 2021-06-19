@@ -27,7 +27,7 @@ public class CustomerDtoToCustomerConverter implements Converter<CustomerDto, Cu
         customer.setCustomerId(customerId)
                 .setCustomerName(customerName)
                 .setPhone(phone);
-        log.info("convert() - convert from '{}' to {}", customerDto, customer);
+        log.trace("convert() - convert from '{}' to {}", customerDto, customer);
         return customer;
     }
 }

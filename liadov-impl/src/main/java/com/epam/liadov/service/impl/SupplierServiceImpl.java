@@ -1,8 +1,9 @@
 package com.epam.liadov.service.impl;
 
+import com.epam.liadov.Logging;
 import com.epam.liadov.domain.entity.Supplier;
 import com.epam.liadov.exception.BadRequestException;
-import com.epam.liadov.exception.NoContentException;
+import com.epam.liadov.exception.NotFoundException;
 import com.epam.liadov.repository.SupplierRepository;
 import com.epam.liadov.service.SupplierService;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ public class SupplierServiceImpl implements SupplierService {
 
     private final SupplierRepository supplierRepository;
 
+    @Logging
     @Override
     public Supplier save(Supplier supplier) {
         Optional<Supplier> optionalSupplier = Optional.ofNullable(supplierRepository.save(supplier));
@@ -38,6 +40,7 @@ public class SupplierServiceImpl implements SupplierService {
         throw new BadRequestException("Supplier was not saved");
     }
 
+    @Logging
     @Override
     public Supplier update(Supplier supplier) {
         Optional<Supplier> optionalSupplier = supplierRepository.findById(supplier.getSupplierId());
@@ -50,9 +53,10 @@ public class SupplierServiceImpl implements SupplierService {
             }
         }
         log.trace("Supplier was not updated");
-        throw new NoContentException("Supplier does not exist");
+        throw new NotFoundException("Supplier does not exist");
     }
 
+    @Logging
     @Override
     public Supplier find(int supplierId) {
         Optional<Supplier> optionalSupplier = supplierRepository.findById(supplierId);
@@ -62,9 +66,10 @@ public class SupplierServiceImpl implements SupplierService {
             Supplier supplier = optionalSupplier.get();
             return supplier;
         }
-        throw new NoContentException("Supplier does not exist");
+        throw new NotFoundException("Supplier does not exist");
     }
 
+    @Logging
     @Override
     public boolean delete(int supplierId) {
         boolean existsInDb = supplierRepository.existsById(supplierId);
@@ -75,9 +80,10 @@ public class SupplierServiceImpl implements SupplierService {
             log.trace("Entity removed: {}", entityExistAfterRemove);
             return !entityExistAfterRemove;
         }
-        throw new NoContentException("Supplier does not exist");
+        throw new NotFoundException("Supplier does not exist");
     }
 
+    @Logging
     @Override
     public List<Supplier> getAll() {
         return supplierRepository.findAll();

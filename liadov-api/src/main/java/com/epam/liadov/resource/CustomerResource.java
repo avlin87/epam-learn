@@ -44,7 +44,6 @@ public interface CustomerResource {
      * Method for delete request of Customer entity
      *
      * @param id id of entity to be removed
-     * @return true if entity removed
      */
     @DeleteMapping("/{id}")
     void deleteCustomer(@PathVariable Integer id);

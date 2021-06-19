@@ -1,101 +1,142 @@
 package com.epam.liadov.service.impl;
 
-import com.epam.liadov.domain.entity.factory.EntityFactory;
 import com.epam.liadov.domain.entity.Customer;
 import com.epam.liadov.domain.entity.Order;
+import com.epam.liadov.domain.entity.factory.EntityFactory;
+import com.epam.liadov.exception.NotFoundException;
 import com.epam.liadov.repository.OrderRepository;
-import org.junit.jupiter.api.BeforeEach;
+import com.epam.liadov.service.OrderService;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.junit.jupiter.api.function.Executable;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.test.context.junit4.SpringRunner;
 
+import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.when;
 
 /**
  * OrderServiceImplTest - test for {@link OrderServiceImpl}
  *
  * @author Aleksandr Liadov
  */
+@DataJpaTest
+@RunWith(SpringRunner.class)
 class OrderServiceImplTest {
 
-    @Mock
-    private OrderRepository orderRepository;
+    private final EntityFactory factory = new EntityFactory();
 
-    private EntityFactory factory;
-
-    @InjectMocks
-    private OrderServiceImpl orderServiceImpl;
-
-    @BeforeEach
-    public void setup() {
-        MockitoAnnotations.openMocks(this);
-        factory = new EntityFactory();
-    }
+    @Autowired
+    private OrderService orderService;
 
     @Test
     void saveReturnOrder() {
-        Customer customer = factory.generateTestCustomer();
-        Order order = factory.generateTestOrder(customer);
-        when(orderRepository.save(order)).thenReturn(order);
+        Customer testCustomer = factory.generateTestCustomer();
+        Order testOrder = factory.generateTestOrder(testCustomer);
 
-        Order saveResult = orderServiceImpl.save(order);
+        Order saveResult = orderService.save(testOrder);
 
-        assertEquals(order, saveResult);
+        assertEquals(testOrder, saveResult);
     }
 
     @Test
     void updateReturnOrder() {
-        Customer customer = factory.generateTestCustomer();
-        Order order = factory.generateTestOrder(customer);
-        when(orderRepository.findById(any())).thenReturn(Optional.ofNullable(order));
-        when(orderRepository.save(any())).thenReturn(order);
+        Customer testCustomer = factory.generateTestCustomer();
+        Order testOrder = factory.generateTestOrder(testCustomer);
+        testOrder = orderService.save(testOrder);
+        testOrder.setTotalAmount(BigDecimal.valueOf(12345)).setOrderNumber("Updated Order");
 
-        Order updateResult = orderServiceImpl.update(order);
+        Order updateResult = orderService.update(testOrder);
 
-        assertEquals(order, updateResult);
+        assertEquals(testOrder, updateResult);
     }
 
     @Test
-    void findReturnNotNull() {
-        Customer customer = factory.generateTestCustomer();
-        Order expectedValue = factory.generateTestOrder(customer);
-        when(orderRepository.findById(anyInt())).thenReturn(Optional.ofNullable(expectedValue));
+    void updateThrowNotFoundException() {
+        Customer testCustomer = factory.generateTestCustomer();
+        Order testOrder = factory.generateTestOrder(testCustomer);
+        testOrder = orderService.save(testOrder);
+        int testOrderId = testOrder.getOrderID() + 999;
+        testOrder.setOrderID(testOrderId);
+        Order finalTestOrder = testOrder;
 
-        Order order = orderServiceImpl.find(1);
+        Executable executeUpdate = () -> orderService.update(finalTestOrder);
 
-        assertNotNull(order);
+        assertThrows(NotFoundException.class, executeUpdate);
     }
 
     @Test
-    void delete() {
-        Customer customer = factory.generateTestCustomer();
-        Order order = factory.generateTestOrder(customer);
-        int orderID = order.getOrderID();
-        when(orderRepository.existsById(anyInt())).thenReturn(true).thenReturn(false);
+    void findReturnOrder() {
+        Customer testCustomer = factory.generateTestCustomer();
+        Order testOrder = factory.generateTestOrder(testCustomer);
+        testOrder = orderService.save(testOrder);
+        int testOrderId = testOrder.getOrderID();
 
-        boolean deleteResult = orderServiceImpl.delete(orderID);
+        Order foundOrder = orderService.find(testOrderId);
+
+        assertEquals(testOrder, foundOrder);
+    }
+
+    @Test
+    void findThrowNotFoundException() {
+        Customer testCustomer = factory.generateTestCustomer();
+        Order testOrder = factory.generateTestOrder(testCustomer);
+        testOrder = orderService.save(testOrder);
+        int testOrderId = testOrder.getOrderID() + 999;
+
+        Executable executeUpdate = () -> orderService.find(testOrderId);
+
+        assertThrows(NotFoundException.class, executeUpdate);
+    }
+
+    @Test
+    void deleteReturnTrue() {
+        Customer testCustomer = factory.generateTestCustomer();
+        Order testOrder = factory.generateTestOrder(testCustomer);
+        testOrder = orderService.save(testOrder);
+        int testOrderId = testOrder.getOrderID();
+
+        boolean deleteResult = orderService.delete(testOrderId);
 
         assertTrue(deleteResult);
     }
 
     @Test
+    void deleteThrowNotFoundException() {
+        Customer testCustomer = factory.generateTestCustomer();
+        Order testOrder = factory.generateTestOrder(testCustomer);
+        testOrder = orderService.save(testOrder);
+        int testOrderId = testOrder.getOrderID();
+
+        Executable executeDelete = () -> orderService.delete(testOrderId + 999);
+
+        assertThrows(NotFoundException.class, executeDelete);
+    }
+
+    @Test
     void getAllReturnList() {
-        List<Order> all = orderServiceImpl.getAll();
+        List<Order> all = orderService.getAll();
 
         assertNotNull(all);
     }
 
     @Test
     void findByCustomerId() {
-        List<Order> byCustomerId = orderServiceImpl.findByCustomerId(1);
+        List<Order> byCustomerId = orderService.findByCustomerId(1);
 
         assertNotNull(byCustomerId);
+    }
+
+    @TestConfiguration
+    static class MyTestConfiguration {
+        @Bean
+        public OrderService orderService(OrderRepository repository) {
+            return new OrderServiceImpl(repository);
+        }
     }
 }

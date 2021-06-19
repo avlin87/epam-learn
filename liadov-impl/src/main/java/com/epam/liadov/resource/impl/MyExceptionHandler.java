@@ -1,7 +1,7 @@
 package com.epam.liadov.resource.impl;
 
 import com.epam.liadov.exception.BadRequestException;
-import com.epam.liadov.exception.NoContentException;
+import com.epam.liadov.exception.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -17,10 +17,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ControllerAdvice
 public class MyExceptionHandler {
 
-    @ExceptionHandler(NoContentException.class)
-    @ResponseStatus(code = HttpStatus.NO_CONTENT, reason = "Entity not present in database")
-    public String handleException(NoContentException e) {
-        log.error("handleException() - HttpStatus.NO_CONTENT \n{}", e.getMessage());
+    @ExceptionHandler(NotFoundException.class)
+    @ResponseStatus(code = HttpStatus.NOT_FOUND, reason = "Entity not present in database")
+    public String handleException(NotFoundException e) {
+        log.error("handleException() - HttpStatus.NOT_FOUND \n{}", e.getMessage());
         return e.getMessage();
     }
 
